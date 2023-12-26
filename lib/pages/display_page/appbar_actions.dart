@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:share_your_q/pages/display_page_relation/comment_list_display.dart';
-import "package:share_your_q/pages/display_page_relation/evaluate_display.dart";
+import 'package:share_your_q/pages/display_page/comment_list_display.dart';
+import 'package:share_your_q/pages/display_page/evaluate_display.dart';
 
 
 class AppBarActions extends StatefulWidget {

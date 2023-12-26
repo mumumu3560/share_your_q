@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/pages/profile_page.dart';
+import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_display.dart';
 
-import 'package:share_your_q/pages/display_page_relation/display_page.dart';
+import 'package:share_your_q/pages/display_page/display_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

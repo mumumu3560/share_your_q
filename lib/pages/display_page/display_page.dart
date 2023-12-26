@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/image_operations/problem_view.dart";
-import 'package:share_your_q/pages/display_page_relation/appbar_actions.dart';
+import 'package:share_your_q/pages/display_page/appbar_actions.dart';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //google_admob
