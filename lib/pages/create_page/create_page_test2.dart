@@ -353,8 +353,6 @@ class _CreatePageState extends State<CreatePage> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -625,18 +623,9 @@ class _CreatePageState extends State<CreatePage> {
 
   // 問題投稿の確認画面を表示する関数
   Widget buildConfirmationView() {
-    print("aaaaaa");
-    print(level);
-    print(subject);
-    print(selectedImage1!=null);
-    print(selectedImage2!=null);
-    print(explainText);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: <Widget>[
-        /*       
-        */
         ProblemViewWidget(
           title: problemTitle!,
 
@@ -662,33 +651,11 @@ class _CreatePageState extends State<CreatePage> {
           problem_id: "",
           comment_id: "",
         ),
-
-        /*
-        Text("タイトル: $problemTitle"),
-        Text("タグ: ${tags.join(', ')}"),
-        Text("レベル: $level"),
-        Text("ジャンル: $subject"),
-        Image.memory(
-          selectedImage1!.bytes!,
-          height: 150,
-        ),
-        Image.memory(
-          selectedImage2!.bytes!,
-          height: 150,
-        ),
-        */
-
         
-
-
         ElevatedButton(
           onPressed: () async {
 
             showLoadingDialog(context,"処理中...");
-
-            // 画像をアップロード
-            //Cloudflare
-            //int checkUpload = await getImageUploadUrls();
 
             int checkGetUploadUrl1 = await getImageUploadUrls(true);
             int checkGetUploadUrl2 = await getImageUploadUrls(false);
