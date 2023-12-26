@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/image_operations/image_display.dart'; // ImageDisplayScreenをインポート
 import "package:share_your_q/utils/various.dart";
 
-import 'package:share_your_q/pages/display_page_relation/display_page.dart';
+import 'package:share_your_q/pages/display_page/display_page.dart';
 
 import "package:share_your_q/image_operations/test_override.dart";
 import "package:share_your_q/image_operations/image_list_display.dart";

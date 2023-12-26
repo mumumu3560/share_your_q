@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 //import 'package:share_your_q/pages/chat_page.dart';
 import 'package:share_your_q/pages/login_relatives/register_page.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:share_your_q/pages/home_page_web.dart';
+import 'package:share_your_q/pages/home_page/home_page_web.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);

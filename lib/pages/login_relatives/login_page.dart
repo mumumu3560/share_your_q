@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/pages/home_page_web.dart';
+import 'package:share_your_q/pages/home_page/home_page_web.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:email_validator/email_validator.dart';
