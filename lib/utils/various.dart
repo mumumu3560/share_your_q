@@ -97,6 +97,7 @@ extension ShowSnackBar on BuildContext {
 }
 
 
+/*
 
 /// チャットのメッセージを表示するためのウィジェット
 class ChatBubble extends StatelessWidget {
@@ -181,6 +182,9 @@ class ChatBubble extends StatelessWidget {
     );
   }
 }
+ */
+
+
 
 class ShowDialogWithFunction {
   final String title;
