@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:share_your_q/pages/display_page/comment_list_display.dart';
-import 'package:share_your_q/pages/display_page/evaluate_display.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/evaluate_display.dart';
 
 
 class AppBarActions extends StatefulWidget {
@@ -247,12 +247,12 @@ class _AppBarActionsState extends State<AppBarActions> {
 
               : ListTile(
                   leading: Icon(Icons.report),
-                  title: Text("この投稿を通報する"),
+                  title: Text("この投稿を報告する"),
                   onTap: () async{
                     await ShowDialogWithFunction(
                       context: context, 
                       title: "確認", 
-                      shownMessage: "この投稿を通報しますか？", 
+                      shownMessage: "この投稿を報告しますか？", 
                       functionOnPressed: () async{
                         await supabase.from("report").insert({
                           "image_data_id": widget.imageId,
@@ -294,7 +294,7 @@ class _AppBarActionsState extends State<AppBarActions> {
     return Row(
       children: [
 
-
+        //コメントを見る
         IconButton(
           icon: const Icon(Icons.chat, color: Colors.green,),
           tooltip: "コメント",
@@ -305,7 +305,7 @@ class _AppBarActionsState extends State<AppBarActions> {
 
         SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
 
-
+        //いいね
         IconButton(
           icon: Icon(
             isLiked ? Icons.favorite : Icons.favorite_border_outlined,
@@ -342,7 +342,7 @@ class _AppBarActionsState extends State<AppBarActions> {
         
 
         
-
+        //setting
         IconButton(
           icon: const Icon(
             Icons.more_vert, color: Colors.white,

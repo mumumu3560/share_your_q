@@ -34,21 +34,46 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // データを格納するリスト
    List<Map<String,dynamic>> imageData = [];
-  //現在のページ番号
-  int currentPage = 1;
-  //1ページに表示するアイテム数
-  int itemsPerPage = 10;
+
   // データ取得中フラグ
   bool isLoading = true;
 
   bool firstFetch = true;
 
+  Future<void> fetchData() async {
+    try {
+      final response = await supabase
+            .from("image_data")
+            .select<List<Map<String, dynamic>>>()
+            .order('created_at');
+      isLoading = false;
+      imageData = response;
+      
+      if(!firstFetch){
+        //ここでヴィジェットが再構築される
+        setState(() {
+          // データ取得完了後、isLoadingフラグをfalseに設定
+          isLoading = false;
+          // imageDataにデータをセット
+          imageData = response;
+        });
+      }
+      else{
+        firstFetch = false;
+      }
+
+    } catch (e) {
+      // エラーハンドリングを実装
+      print('Error fetching data: $e');
+      context.showErrorSnackBar(message: "データの取得に失敗しました。");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
-    fetchData(currentPage);
+    fetchData();
     //
     final String External_id = supabase.auth.currentUser!.id.toString();
     print(External_id);
@@ -67,94 +92,11 @@ class _HomePageState extends State<HomePage> {
 
 
 
-  Future<void> fetchData(int page) async {
-    try {
-      // ここでSupabaseからデータを取得し、imageDataに格納する処理を実装
-      // 例: imageData = await fetchImageData();
-      // 画像情報を新着順で非同期に取得（pageとitemsPerPageを使用してページごとにデータを制御）
-      //final response = await supabase.from("image_data").select().
-      
+  
 
-      /*
-      //参考にしたURLのコードは
-      _messagesStream = supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .order('created_at') // 送信日時が新しいものが先に来るようにソート
-        .map((maps) => maps
-            .map((map) => Message.fromMap(map: map, myUserId: myUserId))
-            .toList());
-      これはList<Map<String,dynamic>>を受け取るが、
-       */
-
-      //なぜだかわからないが、supabaseではrealtimeで取得するときは.select()で
-      //List<Map<String,dynamic>>になるが、一回だけの時はList<dynamic>になる。
-      //ただしselect<List<Map<String,dynamic>>>()とすればいいらしい。
-    
-      final response = await supabase
-            .from("image_data")
-            .select<List<Map<String, dynamic>>>()
-            .order('created_at');
-            //.map((maps) => maps.map((map) => ImageData.fromMap(map: map))
-            //.toList());
-
-      isLoading = false;
-      imageData = response;
-      
-
-      
-      if(!firstFetch){
-        //ここでヴィジェットが再構築される
-        setState(() {
-          // データ取得完了後、isLoadingフラグをfalseに設定
-          isLoading = false;
-          // imageDataにデータをセット
-          imageData = response;
-        });
-      }
-      else{
-        firstFetch = false;
-      }
-      //id(int8),created_at(timestamp),num(int4)これは問題の番号、PorC(int2)これはそれがproblemかcommentか、
-      //title(text)、user_id(uuid)これはユーザーid,level(text)→小中高大学、subject(text)→教科、
-      //P_I_count(int4)これは問題の画像の数、C_I_count(int4)これはコメントの画像の数、
-      //supabaseのテーブルはこうなっている。ここからある画像の情報を取得し保存する。
-      //形式はMap<String, dynamic>で、keyはカラム名、valueはカラムの値となる。
-      //imageData = response;
-      // データを格納するリスト
-      //List<Map<String, dynamic>> imageData = [];
-
-
-    } catch (e) {
-      // エラーハンドリングを実装
-      print('Error fetching data: $e');
-      context.showErrorSnackBar(message: "データの取得に失敗しました。");
-    }
-  }
-
-  // 次のページを読み込む処理
-  void loadNextPage() {
-    currentPage++;
-    fetchData(currentPage);
-  }
-
-  // 前のページを読み込む処理
-  void loadPreviousPage() {
-    if (currentPage > 1) {
-      currentPage--;
-      fetchData(currentPage);
-    }
-  }
 
   int _selectedIndex = 0;
   final _pageViewController = PageController();
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {

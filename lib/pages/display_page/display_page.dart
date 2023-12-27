@@ -2,19 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/image_operations/problem_view.dart";
-import 'package:share_your_q/pages/display_page/appbar_actions.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //google_admob
 //TODO ビルドリリースの時のみ
 //import "package:share_your_q/admob/ad_mob.dart";
-
-//リストをタップした際に遷移するページ問題が見れる
-//UIはわからない
-
-//テキストを保持する。
-//コメントを送信した場合には空
-//入力がありそれを送信していない場合には、そのテキストを保持する
 
 
 class DisplayPage extends StatefulWidget {
