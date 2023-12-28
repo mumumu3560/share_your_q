@@ -7,7 +7,7 @@ import 'package:share_your_q/image_operations/image_display.dart';
 
 import 'package:share_your_q/pages/display_page/display_page.dart';
 
-import "package:share_your_q/models/radar_chart_test1.dart";
+import 'package:share_your_q/graphs/radar_chart_test1.dart';
 
 //TODO ここにプロフィールページを作成する
 //グラフなどで自分の問題の傾向を見れるようにする
@@ -15,10 +15,12 @@ import "package:share_your_q/models/radar_chart_test1.dart";
 class ProfilePage extends StatefulWidget {
 
   final String userId;
+  final String userName;
 
   const ProfilePage({
     Key? key,
     required this.userId,
+    required this.userName,
   }): super(key: key);
   
   @override
@@ -41,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
     
         appBar: AppBar(
-          title: const Text('プロフィール'),
+          title: Text('${widget.userName}のプロフィール'),
 
           bottom: (
     
