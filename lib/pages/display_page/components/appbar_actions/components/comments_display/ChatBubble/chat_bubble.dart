@@ -47,13 +47,31 @@ class ChatBubble extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  commentData["user_name"],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      commentData["user_name"],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    Text(
+                      format
+                      (
+                        DateTime.parse(commentData["created_at"]), 
+                        locale: 'ja'
+                      ),
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
                 ),
+                
                 const SizedBox(height: 4),
 
                 Container(
@@ -71,16 +89,14 @@ class ChatBubble extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                       ),
-                  
+                      softWrap: true,
+                                    
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(width: 12),
-            Text(format(DateTime.parse(commentData["created_at"]), locale: 'ja')),
-             // 時間を表示
-            const SizedBox(width: 60),
+            
         ],
       ),
     );
