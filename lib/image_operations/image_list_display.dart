@@ -49,6 +49,8 @@ class ImageListDisplay extends StatefulWidget {
 class ImageListDisplayState extends State<ImageListDisplay> {
   List<Map<String, dynamic>> imageData = [];
   bool isLoading = true;
+
+  double difficulty = 0;
   
 
   
@@ -468,7 +470,7 @@ class MyListItem extends StatelessWidget {
 
             item["difficulty_point"] != null && item["eval_num"] != 0
               ? Text(
-                  "難易度: " + (item["difficulty_point"]/item["eval_num"]).toStringAsFixed(1) + "点",
+                  "難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1) + "点",
                 )
               : const Text("難易度なし"),
               
@@ -542,6 +544,12 @@ class MyListItem extends StatelessWidget {
                 likes: item["likes"],
 
                 userName: item["user_name"],
+
+                difficulty: item["eval_num"] != 0
+                  ? item["difficulty_point"]/item["eval_num"].toDouble()
+                  : 0,
+
+
               ),
 
               /*
