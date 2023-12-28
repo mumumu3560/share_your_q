@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
 import 'dart:typed_data';
+import "package:share_your_q/pages/profile_page/profile_page.dart";
 
 //ユーザーの問題を表示するヴィジェット
 class ProblemViewWidget extends StatefulWidget {
@@ -21,8 +22,8 @@ class ProblemViewWidget extends StatefulWidget {
 
   final PlatformFile? image1;
   final PlatformFile? image2;
-  final String? imageUrlP;
-  final String? imageUrlC;
+  final String? imageUrlPX;
+  final String? imageUrlCX;
 
   final String? explanation;
 
@@ -32,6 +33,13 @@ class ProblemViewWidget extends StatefulWidget {
 
   final String problem_id;
   final String comment_id;
+
+  final int watched;
+
+  final int likes;
+
+  final String? userName;
+  final String image_own_user_id;
 
   const ProblemViewWidget({
     Key? key,
@@ -48,8 +56,8 @@ class ProblemViewWidget extends StatefulWidget {
     required this.subject,
     required this.image1,
     required this.image2,
-    required this.imageUrlP,
-    required this.imageUrlC,
+    required this.imageUrlPX,
+    required this.imageUrlCX,
 
     required this.explanation,
 
@@ -58,6 +66,11 @@ class ProblemViewWidget extends StatefulWidget {
 
     required this.problem_id,
     required this.comment_id,
+    required this.watched,
+    required this.likes,
+
+    required this.userName,
+    required this.image_own_user_id,
   }) : super(key: key);
 
   @override
@@ -147,6 +160,21 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                
+
+                InkWell(
+                  child: Text("制作者: ${widget.userName}"),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.image_own_user_id, userName: widget.userName!,)),
+                    );
+                  },
+                ),
+                
+
+                SizedBox(height: 5,),
+
                 Text("レベル: ${widget.level}"),
                 // tagは最大5つまでそれぞれをカンマで区切って表示する
 
@@ -167,6 +195,15 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 SizedBox(height: 5,),
 
                 Text("ジャンル: ${widget.subject}"),
+
+                SizedBox(height: 5,),
+
+                Text("閲覧数: ${widget.watched}"),
+
+                SizedBox(height: 5,),
+
+                Text("高評価: ${widget.likes}"),
+                
 
                 SizedBox(height: 15,),
 
@@ -251,7 +288,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                   )
                                   //ここでもし画像が存在しない場合の処理を考える
                                   
-                                : widget.imageUrlP != null
+                                : widget.imageUrlPX != null
                                     ? Image.memory(
                                         image1Bytes!,
                                         fit: BoxFit.contain,
@@ -301,7 +338,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                             fit: BoxFit.contain,
                           )
                           //ここでもし画像が存在しない場合を考える。
-                        : widget.imageUrlC != null
+                        : widget.imageUrlCX != null
                             ? Image.memory(
                                 image2Bytes!,
                                 fit: BoxFit.contain,
@@ -329,7 +366,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                   )
                                   //ここでもし画像が存在しない場合の処理を考える
                                   
-                                : widget.imageUrlC != null
+                                : widget.imageUrlCX != null
                                     ? Image.memory(
                                         image2Bytes!,
                                         fit: BoxFit.contain,
