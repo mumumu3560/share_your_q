@@ -7,7 +7,6 @@ import 'package:share_your_q/pages/display_page/components/appbar_actions/compon
 
 class AppBarActions extends StatefulWidget {
   
-  final bool? isLiked;
   final int? imageId;
   final String? problem_id;
   final String? comment_id;
@@ -17,7 +16,6 @@ class AppBarActions extends StatefulWidget {
 
   const AppBarActions({
     Key? key,
-    required this.isLiked,
     required this.imageId,
     required this.problem_id,
     required this.comment_id,
@@ -32,12 +30,25 @@ class AppBarActions extends StatefulWidget {
 
 class _AppBarActionsState extends State<AppBarActions> {
   bool isLiked = false;
+  bool isFirst = true;
 
   @override
   void initState(){
+
     super.initState();
-    isLiked = widget.isLiked!;
+
+    loadData();
+    
   }
+
+  void loadData(){
+
+    print("setState前");
+    _insertTestSupabase();
+  }
+
+  /*
+   */
 
 
   Future<void> _insertTestSupabase() async{
@@ -53,18 +64,33 @@ class _AppBarActionsState extends State<AppBarActions> {
       if (existingRecord.isNotEmpty) {
         // レコードが存在する場合はアップデート
         print("ここが問題手の");
-        isLiked = existingRecord[0]["add"];
+        
+        setState(() {
+          isLiked = existingRecord[0]["add"];
+        });
         print(existingRecord[0]["add"]);
 
         
         print("どこだよ");
 
         //islikedが!isliked
-        final response = await supabase
+        final response;
+
+        if(isFirst){
+          response = await supabase
+            .from('likes')
+            .update({ 'add': isLiked })
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.imageId);
+          isFirst = false;
+        }
+        else{
+          response = await supabase
             .from('likes')
             .update({ 'add': !isLiked })
-            .eq("image_id", widget.imageId)
-            .eq("user_id", myUserId);
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.imageId);
+        }
 
         //isLiked = !isLiked;
         if (response != null) {
