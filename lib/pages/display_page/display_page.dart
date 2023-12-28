@@ -29,18 +29,24 @@ class DisplayPage extends StatefulWidget {
 
   final PlatformFile? image1;
   final PlatformFile? image2;
-  final String? imageUrlP;
-  final String? imageUrlC;
+  final String? imageUrlPX;
+  final String? imageUrlCX;
 
   final String? explanation;
 
   final int? num;
+
+  final int watched;
+
+  final int likes;
 
   //TODO ここは後でまとめる。itemを受け取る形にする
   //具体的にはMap<String, dynamic>を受け取る形にする
 
   final String? problem_id;
   final String? comment_id;
+
+  final String userName;
   
 
 
@@ -62,14 +68,20 @@ class DisplayPage extends StatefulWidget {
     required this.subject,
     required this.image1,
     required this.image2,
-    required this.imageUrlP,
-    required this.imageUrlC,
+    required this.imageUrlPX,
+    required this.imageUrlCX,
 
     required this.explanation,
     required this.num,
 
     required this.problem_id,
     required this.comment_id,
+
+    required this.watched,
+
+    required this.likes,
+
+    required this.userName,
 
   }) : super(key: key);
 
@@ -252,8 +264,8 @@ class _DisplayPageState extends State<DisplayPage>{
                     subject: widget.subject,
                     image1: null,
                     image2: null,
-                    imageUrlP: widget.imageUrlP,
-                    imageUrlC: widget.imageUrlC,
+                    imageUrlPX: widget.imageUrlPX,
+                    imageUrlCX: widget.imageUrlCX,
       
                     explanation: widget.explanation,
 
@@ -262,6 +274,14 @@ class _DisplayPageState extends State<DisplayPage>{
 
                     problem_id: widget.problem_id!,
                     comment_id: widget.comment_id!,
+
+                    watched: widget.watched,
+
+                    likes: widget.likes,
+
+                    userName: widget.userName,
+
+                    image_own_user_id: widget.image_own_user_id!,
       
                   ),
 
