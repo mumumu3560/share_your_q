@@ -319,11 +319,13 @@ class MyListItem extends StatelessWidget {
     
 
     
+    /*
     final String deliveryURL = dotenv.get('CLOUDFLARE_DELIVERY_URL');
     final String imageUrlC = '$deliveryURL/$imageUrlCX/public';
     final String imageUrlP = '$deliveryURL/$imageUrlPX/public';
+     */
 
-    final String imageUrlEx = "${deliveryURL}/728235a5-f792-4f3e-e4f8-b67ec469d500/public";
+    //final String imageUrlEx = "${deliveryURL}/728235a5-f792-4f3e-e4f8-b67ec469d500/public";
 
     final List<String> titleLines = item['title'].toString().split("\n");
     final List<String> explainLines = item['explain'].toString().split("\n");
@@ -386,7 +388,7 @@ class MyListItem extends StatelessWidget {
                   if(!isLoadingImage){
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ProfilePage(userId: myUserId),
+                        builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"]),
                       ),
                     );
                   }
@@ -463,6 +465,12 @@ class MyListItem extends StatelessWidget {
                   item['subject'],
                 )
               : const Text("教科なし"),
+
+            item["difficulty_point"] != null && item["eval_num"] != 0
+              ? Text(
+                  "難易度: " + (item["difficulty_point"]/item["eval_num"]).toStringAsFixed(1) + "点",
+                )
+              : const Text("難易度なし"),
               
             Row(
               children: [
@@ -492,11 +500,13 @@ class MyListItem extends StatelessWidget {
         ),
         onTap: () async{
 
+          /*
           final response = await loadUserImage(imageUrlC);
           if(response == ""){
             context.showErrorSnackBar(message: "この問題は読み込めません");
             return;
           }
+           */
           
           Navigator.of(context).push(
 
@@ -517,8 +527,8 @@ class MyListItem extends StatelessWidget {
                 subject: item['subject']!,
                 image1: null,
                 image2: null,
-                imageUrlP: imageUrlP,
-                imageUrlC: imageUrlC,
+                imageUrlPX: imageUrlPX,
+                imageUrlCX: imageUrlCX,
 
                 num: item['num'],
 
@@ -526,6 +536,12 @@ class MyListItem extends StatelessWidget {
 
                 problem_id: item["problem_id"],
                 comment_id: item["comment_id"],
+
+                watched: item["watched"],
+
+                likes: item["likes"],
+
+                userName: item["user_name"],
               ),
 
               /*
