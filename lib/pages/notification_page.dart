@@ -7,7 +7,7 @@ import 'package:share_your_q/image_operations/image_display.dart';
 
 import 'package:share_your_q/pages/display_page/display_page.dart';
 
-import "package:share_your_q/models/radar_chart_test1.dart";
+import 'package:share_your_q/graphs/radar_chart_test1.dart';
 
 //TODO ここに通知管理
 //グラフなどで自分の問題の傾向を見れるようにする
