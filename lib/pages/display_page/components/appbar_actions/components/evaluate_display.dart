@@ -10,10 +10,12 @@ int evalValue = 1;
 class EvaluateDisplay extends StatefulWidget{
   
   final int? image_id;
+  final String? image_own_user_id;
 
   const EvaluateDisplay({
     Key? key,
     required this.image_id,
+    required this.image_own_user_id,
   }) : super(key: key);
 
   @override
@@ -28,7 +30,6 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
   @override
   void dispose() {
-    print("${this} dispose() _StateLifecycle.defunct");
     super.dispose();
   }
   
@@ -53,7 +54,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
   void setEvalKind(int eval){
     setState(() {
-      eval_point = eval;
+      evalValue = eval;
     });
   }
 
@@ -65,7 +66,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
   void judPoints(){
     print("eval、diffの順番");
-    print(eval_point);
+    print(evalValue);
     print(diff_point);
   }
 
@@ -73,16 +74,18 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
   /// 評価の更新
   void _submitEvaluation() async {
 
-    if (eval_point == 0 || diff_point == 0) {
+    if (evalValue == 0 || diff_point == 0) {
       context.showErrorSnackBar(message: "評価が入力されていません。");
       return;
     }
+
+    showLoadingDialog(context, "送信中...");
 
     try {
       await supabase.from('likes')
         .update({
           "difficulty": diff_point,
-          "eval": eval_point,
+          "eval": evalValue,
         })
         .eq("image_id", widget.image_id)
         .eq("user_id", myUserId);
@@ -93,6 +96,35 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
     } catch (_) {
       // 予期せぬエラーが起きた際は予期せぬエラー用のメッセージを表示
       context.showErrorSnackBar(message: unexpectedErrorMessage);
+    }
+
+    await Future.delayed(Duration(seconds: 1));
+
+
+
+    if(context.mounted){
+        Navigator.of(context).pop(); // ダイアログを閉じる
+    }
+
+    if(context.mounted){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Done"),
+            content: Text("送信が完了しました！"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  //Navigator.pop(context);
+                  Navigator.of(context).pop(); // ダイアログを閉じる
+                },
+                child: Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
     }
 
     fetchData().then((data) {
@@ -132,25 +164,26 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
           
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            //_ratingBar(setEvalKind, eval_point),
+
+            myUserId == widget.image_own_user_id 
+              ? Container()
+              : EvaluateWithRadio(),
+            
+            
     
-            Text("評価: $evalValue"),
+            myUserId == widget.image_own_user_id 
+              ? Container()
+              : SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
     
-            //_ratingBar(setDiff, diff_point),
-    
-            Text("難易度: $diff_point"),
-    
-            EvaluateWithRadio(),
-    
-            SizedBox(height: SizeConfig.blockSizeVertical!,),
-    
-            ElevatedButton(
-              onPressed: () async{
-                _submitEvaluation();
-                judPoints();
-              },
-              child: Text("ここが評価"),
-            )
+            myUserId == widget.image_own_user_id 
+              ? Container()
+              : ElevatedButton(
+                onPressed: () {
+                  judPoints();
+                  _submitEvaluation();
+                },
+                child: const Text("送信"),
+              ),
     
           ],
         ),
@@ -173,7 +206,7 @@ Widget _ratingBar(Function function, int point){
     minRating: 1,
     direction: Axis.horizontal,
     allowHalfRating: false,
-    itemCount: 5,
+    itemCount: 10,
     itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
     itemBuilder: (context, _) => Icon(
       Icons.star,
@@ -199,6 +232,20 @@ class EvaluateWithRadio extends StatefulWidget{
 
 class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
 
+  void setDiff(int diff){
+    setState(() {
+      diff_point = diff;
+    });
+  }
+
+  void setEval(int eval){
+    setState(() {
+      evalValue = eval;
+    });
+  }
+
+  
+
   @override
   Widget build(BuildContext context){
     //List<String> _evalList = ["educational", "artistic", "calculation", "interesting", "basic"];
@@ -206,9 +253,19 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
       
       child: Column(
         children: [
+
+          const Text(
+            "問題の評価",
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          SizedBox(height: SizeConfig.blockSizeVertical!,),
           
           const Text(
-            "1: この問題はどんな問題？",
+            "Q1: この問題はどんな問題？",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -229,9 +286,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 groupValue: evalValue,
                 onChanged: (value) {
                   print(evalValue);
-                  setState((){
-                    evalValue = value!;
-                  });
+                  setEval(value!);
                   print(evalValue);
                 },
               ),
@@ -243,9 +298,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 groupValue: evalValue,
                 onChanged: (value) {
                   print(evalValue);
-                  setState((){
-                    evalValue = value!;
-                  });
+                  setEval(value!);
                   print(evalValue);
                 },
               ),
@@ -257,9 +310,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 groupValue: evalValue,
                 onChanged: (value) {
                   print(evalValue);
-                  setState((){
-                    evalValue = value!;
-                  });
+                  setEval(value!);
                   print(evalValue);
                 },
               ),
@@ -281,9 +332,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 groupValue: evalValue,
                 onChanged: (value) {
                   print(evalValue);
-                  setState((){
-                    evalValue = value!;
-                  });
+                  setEval(value!);
                   print(evalValue);
                 },
               ),
@@ -295,13 +344,12 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 groupValue: evalValue,
                 onChanged: (value) {
                   print(evalValue);
-                  setState((){
-                    evalValue = value!;
-                  });
+                  setEval(value!);
                   print(evalValue);
                 },
               ),
               Text("基礎的"),
+
 
 
             ],
@@ -310,12 +358,19 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
           SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
 
           const Text(
-            "2: この問題の難易度は？",
+            "Q2: この問題の難易度は？",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
-          )
+          ),
+
+          SizedBox(height: SizeConfig.blockSizeVertical!,),
+
+          
+          _ratingBar(setDiff, diff_point),
+          SizedBox(height: SizeConfig.blockSizeVertical!,),
+          Text("難易度: $diff_point"),
 
         ],
       ),
