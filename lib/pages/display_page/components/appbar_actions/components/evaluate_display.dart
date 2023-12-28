@@ -368,7 +368,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
           SizedBox(height: SizeConfig.blockSizeVertical!,),
 
           
-          _ratingBar(setDiff, diff_point),
+          //_ratingBar(setDiff, diff_point),
           SizedBox(height: SizeConfig.blockSizeVertical!,),
           Text("難易度: $diff_point"),
 

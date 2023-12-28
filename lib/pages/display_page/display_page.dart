@@ -47,6 +47,8 @@ class DisplayPage extends StatefulWidget {
   final String? comment_id;
 
   final String userName;
+
+  final double difficulty;
   
 
 
@@ -83,6 +85,8 @@ class DisplayPage extends StatefulWidget {
 
     required this.userName,
 
+    required this.difficulty,
+
   }) : super(key: key);
 
   @override
@@ -93,7 +97,7 @@ class _DisplayPageState extends State<DisplayPage>{
 
 
   final userId = supabase.auth.currentUser!.id;
-  bool isLiked = false;
+  //bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
   //final AdMob _adMob = AdMob();
@@ -132,7 +136,6 @@ class _DisplayPageState extends State<DisplayPage>{
   Future<void> _initializeData() async {
     try {
       // 非同期処理（データの取得やAPIコールなど）を行う
-      await _insertOrUpdateDataToSupabaseTable();
     } finally {
       // ローディングが終了したことを示すフラグをセットし、ウィジェットを再構築する
       setState(() {
@@ -140,72 +143,6 @@ class _DisplayPageState extends State<DisplayPage>{
       });
     }
   }
-
-
-  Future<void> _insertOrUpdateDataToSupabaseTable() async {
-    try {
-      // `user_id`と`image_id`の組み合わせで既存のレコードを検索する
-      final existingRecord = await supabase
-          .from('likes')
-          .select<List<Map<String, dynamic>>>()
-          .eq('user_id', userId)
-          .eq('image_id', widget.image_id);
-
-      // レコードが存在する場合はアップデート、存在しない場合は挿入する
-      if (existingRecord.isNotEmpty) {
-        // レコードが存在する場合はアップデート
-        print("ここが問題手の");
-        isLiked = existingRecord[0]["add"];
-        print(existingRecord[0]["add"]);
-
-        print("ここが一つ目");
-        final response = await supabase
-            .from('likes')
-            .update({ 'add': isLiked })
-            .eq('user_id', userId)
-            .eq('image_id', widget.image_id);
-
-        if (response != null) {
-          // エラーハンドリング
-          print('Error updating data: ${response}');
-        } else {
-          // 成功時の処理
-          print('Data updated successfully!');
-        }
-      } else {
-        print("ここが二つ目");
-        // レコードが存在しない場合は挿入
-        final response = await supabase
-            .from('likes')
-            .insert({
-              'user_id': userId,
-              "image_own_user_id": widget.image_own_user_id,
-              "add": false,
-              "problem_num": widget.num,
-              "image_id": widget.image_id,
-              // 他のカラムの挿入もここで行う
-            });
-
-        
-        print("here");
-        print(response);
-
-        if (response == null) {
-          // エラーハンドリング
-          print('Error inserting data: ${response}');
-        } else {
-          // 成功時の処理
-          print('Data inserted successfully!');
-        }
-      }
-    } catch (error) {
-      // 例外が発生した場合のエラーハンドリング
-      print('Error: $error');
-    }
-  }
-
-
-
 
 
   @override
@@ -219,7 +156,7 @@ class _DisplayPageState extends State<DisplayPage>{
         
         actions: [
           AppBarActions(
-            isLiked: isLiked,
+            //isLiked: isLiked,
             imageId: widget.image_id,
             problem_id: widget.problem_id,
             comment_id: widget.comment_id,
@@ -282,6 +219,8 @@ class _DisplayPageState extends State<DisplayPage>{
                     userName: widget.userName,
 
                     image_own_user_id: widget.image_own_user_id!,
+
+                    difficulty: widget.difficulty,
       
                   ),
 

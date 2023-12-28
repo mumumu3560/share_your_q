@@ -656,6 +656,7 @@ class _CreatePageState extends State<CreatePage> {
 
           userName: userName,
           image_own_user_id: userId,
+          difficulty: 0,
         ),
         
         ElevatedButton(

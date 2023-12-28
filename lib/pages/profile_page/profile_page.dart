@@ -45,16 +45,32 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text('${widget.userName}のプロフィール'),
 
+          actions: [
+            widget.userId == myUserId
+            ? TextButton(
+              child: Text("編集"),
+              onPressed: () async {
+                //TODO ここに編集ページへの遷移を書く
+              },
+            )
+            : TextButton(
+              child: Text("フォローする"),
+              onPressed: () async {
+                //TODO ここにフォロー機能を書く
+              },  
+            )
+          ],
+
           bottom: (
     
             const TabBar(
               tabs: <Widget>[
-                Tab(text: "作問傾向", icon: Icon(Icons.create)),
-                Tab(text: "解答傾向", icon: Icon(Icons.star)),
+                Tab(text: "作問・解答傾向", icon: Icon(Icons.create)),
                 Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
+                Tab(text: "プロフィール", icon: Icon(Icons.star)),
               ]
             )
-        )
+          )
           
           //title: const Text("プロフィール"),
         ),
