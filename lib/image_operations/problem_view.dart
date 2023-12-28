@@ -41,6 +41,8 @@ class ProblemViewWidget extends StatefulWidget {
   final String? userName;
   final String image_own_user_id;
 
+  final double? difficulty;
+
   const ProblemViewWidget({
     Key? key,
     required this.title,
@@ -71,6 +73,7 @@ class ProblemViewWidget extends StatefulWidget {
 
     required this.userName,
     required this.image_own_user_id,
+    required this.difficulty,
   }) : super(key: key);
 
   @override
@@ -160,10 +163,16 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                
 
                 InkWell(
-                  child: Text("制作者: ${widget.userName}"),
+                  child: Text(
+                    "投稿者: ${widget.userName}",
+                    style: TextStyle(
+                      fontSize: 16, 
+                      fontWeight: FontWeight.bold, 
+                      fontStyle: FontStyle.italic
+                    ),
+                  ),
                   onTap: () {
                     Navigator.push(
                       context,
@@ -171,12 +180,26 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                     );
                   },
                 ),
-                
 
                 SizedBox(height: 5,),
 
-                Text("レベル: ${widget.level}"),
-                // tagは最大5つまでそれぞれをカンマで区切って表示する
+                Row(
+                  children: [
+
+                    Text("${widget.level}"),
+
+                    SizedBox(width: 10,),
+
+                    Text("${widget.subject}"),
+
+                    SizedBox(width: 10,),
+
+                    Text("難易度: ${widget.difficulty}"),
+
+                    
+                  ],
+                ),
+                
 
                 SizedBox(height: 5,),
                 //タグを横並びにする
@@ -184,25 +207,25 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 Row(
 
                   children: [
-                    if (widget.tag1 != null) Text("タグ: #${widget.tag1}"),
-                    if (widget.tag2 != null) Text("#${widget.tag2}"),
-                    if (widget.tag3 != null) Text("#${widget.tag3}"),
-                    if (widget.tag4 != null) Text("#${widget.tag4}"),
-                    if (widget.tag5 != null) Text("#${widget.tag5}"),
+                    if (widget.tag1 != null && widget.tag1 != "") Text("タグ: #${widget.tag1}"),
+                    if (widget.tag2 != null && widget.tag2 != "") Text("#${widget.tag2}"),
+                    if (widget.tag3 != null && widget.tag3 != "") Text("#${widget.tag3}"),
+                    if (widget.tag4 != null && widget.tag4 != "") Text("#${widget.tag4}"),
+                    if (widget.tag5 != null && widget.tag5 != "") Text("#${widget.tag5}"),
                   ],
                 ),
 
                 SizedBox(height: 5,),
 
-                Text("ジャンル: ${widget.subject}"),
+                Row(
+                  children: [
+                    Text("閲覧数: ${widget.watched}"),
 
-                SizedBox(height: 5,),
+                    SizedBox(width: 10,),
 
-                Text("閲覧数: ${widget.watched}"),
-
-                SizedBox(height: 5,),
-
-                Text("高評価: ${widget.likes}"),
+                    Text("高評価: ${widget.likes}"),
+                  ],
+                ),
                 
 
                 SizedBox(height: 15,),
