@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                 // プロフィールページに遷移するコードを追加
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(userId:myUserId), // ImageDisplayに遷移
+                    builder: (context) => ProfilePage(userId:myUserId, userName: "my",), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
         children:  <Widget>[
           ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "",),
           SearchPage(),
-          ProfilePage(userId: myUserId,),
+          ProfilePage(userId: myUserId,userName: "",),
           const TestPages(title: "D"),
         ],
         onPageChanged: (index) {
