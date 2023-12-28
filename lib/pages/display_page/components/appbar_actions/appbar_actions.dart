@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display/comments_display.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/evaluate_display.dart';
 
 
@@ -117,6 +117,78 @@ class _AppBarActionsState extends State<AppBarActions> {
         );
       },
     );
+  }
+
+
+  Future<void> reportRequestSupabase() async{
+      
+    showLoadingDialog(context, "報告中...");
+    print(widget.imageId!);
+
+    //await Future.delayed(Duration(seconds: 5));
+
+    try{
+
+      await supabase.from("report").insert({
+        "image_id": widget.imageId,
+        "user_id": myUserId,
+        "Content": "",
+      });
+
+    
+
+      print("これは削除申請");
+
+    } on PostgrestException catch (error){
+
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+
+    } catch(_){
+
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+
+    print("ここで削除依頼をCloudflareに送る。");
+
+    //TODO ここから変わる
+
+    if(context.mounted){
+      Navigator.of(context).pop(); // ダイアログを閉じる
+    }
+
+
+
+    showLoadingDialog(context, "報告中...");
+    print(widget.imageId!);
+
+    if(context.mounted){
+      Navigator.of(context).pop(); // ダイアログを閉じる
+    }
+
+    if(context.mounted){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Done"),
+            content: Text("報告が終わりました"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  //Navigator.pop(context);
+                  Navigator.of(context).pop(); // ダイアログを閉じる
+                },
+                child: Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> deleteRequestSupabase() async{
@@ -254,11 +326,7 @@ class _AppBarActionsState extends State<AppBarActions> {
                       title: "確認", 
                       shownMessage: "この投稿を報告しますか？", 
                       functionOnPressed: () async{
-                        await supabase.from("report").insert({
-                          "image_data_id": widget.imageId,
-                          "user_id": myUserId,
-                          "content": "",
-                        });
+                        await reportRequestSupabase();
                       },
                     ).show();
                   },
@@ -283,7 +351,7 @@ class _AppBarActionsState extends State<AppBarActions> {
       builder: (BuildContext context) {
         return Container(
           height: SizeConfig.blockSizeVertical! * 60,
-          child: EvaluateDisplay(image_id: imageId),
+          child: EvaluateDisplay(image_id: imageId, image_own_user_id: widget.image_own_user_id,),
         );
       },
     );
