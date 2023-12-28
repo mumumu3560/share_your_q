@@ -640,8 +640,8 @@ class _CreatePageState extends State<CreatePage> {
           subject: subject!,
           image1: selectedImage1,
           image2: selectedImage2,
-          imageUrlP: null,
-          imageUrlC: null,
+          imageUrlPX: null,
+          imageUrlCX: null,
 
           explanation: explainText!,
 
@@ -650,6 +650,12 @@ class _CreatePageState extends State<CreatePage> {
 
           problem_id: "",
           comment_id: "",
+
+          watched: 0,
+          likes:  0,
+
+          userName: userName,
+          image_own_user_id: userId,
         ),
         
         ElevatedButton(
