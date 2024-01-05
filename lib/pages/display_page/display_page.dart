@@ -2,19 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/image_operations/problem_view.dart";
-import 'package:share_your_q/pages/display_page/appbar_actions.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //google_admob
 //TODO ビルドリリースの時のみ
 //import "package:share_your_q/admob/ad_mob.dart";
-
-//リストをタップした際に遷移するページ問題が見れる
-//UIはわからない
-
-//テキストを保持する。
-//コメントを送信した場合には空
-//入力がありそれを送信していない場合には、そのテキストを保持する
 
 
 class DisplayPage extends StatefulWidget {
@@ -36,18 +29,26 @@ class DisplayPage extends StatefulWidget {
 
   final PlatformFile? image1;
   final PlatformFile? image2;
-  final String? imageUrlP;
-  final String? imageUrlC;
+  final String? imageUrlPX;
+  final String? imageUrlCX;
 
   final String? explanation;
 
   final int? num;
+
+  final int watched;
+
+  final int likes;
 
   //TODO ここは後でまとめる。itemを受け取る形にする
   //具体的にはMap<String, dynamic>を受け取る形にする
 
   final String? problem_id;
   final String? comment_id;
+
+  final String userName;
+
+  final double difficulty;
   
 
 
@@ -69,14 +70,22 @@ class DisplayPage extends StatefulWidget {
     required this.subject,
     required this.image1,
     required this.image2,
-    required this.imageUrlP,
-    required this.imageUrlC,
+    required this.imageUrlPX,
+    required this.imageUrlCX,
 
     required this.explanation,
     required this.num,
 
     required this.problem_id,
     required this.comment_id,
+
+    required this.watched,
+
+    required this.likes,
+
+    required this.userName,
+
+    required this.difficulty,
 
   }) : super(key: key);
 
@@ -88,7 +97,7 @@ class _DisplayPageState extends State<DisplayPage>{
 
 
   final userId = supabase.auth.currentUser!.id;
-  bool isLiked = false;
+  //bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
   //final AdMob _adMob = AdMob();
@@ -127,7 +136,6 @@ class _DisplayPageState extends State<DisplayPage>{
   Future<void> _initializeData() async {
     try {
       // 非同期処理（データの取得やAPIコールなど）を行う
-      await _insertOrUpdateDataToSupabaseTable();
     } finally {
       // ローディングが終了したことを示すフラグをセットし、ウィジェットを再構築する
       setState(() {
@@ -135,72 +143,6 @@ class _DisplayPageState extends State<DisplayPage>{
       });
     }
   }
-
-
-  Future<void> _insertOrUpdateDataToSupabaseTable() async {
-    try {
-      // `user_id`と`image_id`の組み合わせで既存のレコードを検索する
-      final existingRecord = await supabase
-          .from('likes')
-          .select<List<Map<String, dynamic>>>()
-          .eq('user_id', userId)
-          .eq('image_id', widget.image_id);
-
-      // レコードが存在する場合はアップデート、存在しない場合は挿入する
-      if (existingRecord.isNotEmpty) {
-        // レコードが存在する場合はアップデート
-        print("ここが問題手の");
-        isLiked = existingRecord[0]["add"];
-        print(existingRecord[0]["add"]);
-
-        print("ここが一つ目");
-        final response = await supabase
-            .from('likes')
-            .update({ 'add': isLiked })
-            .eq('user_id', userId)
-            .eq('image_id', widget.image_id);
-
-        if (response != null) {
-          // エラーハンドリング
-          print('Error updating data: ${response}');
-        } else {
-          // 成功時の処理
-          print('Data updated successfully!');
-        }
-      } else {
-        print("ここが二つ目");
-        // レコードが存在しない場合は挿入
-        final response = await supabase
-            .from('likes')
-            .insert({
-              'user_id': userId,
-              "image_own_user_id": widget.image_own_user_id,
-              "add": false,
-              "problem_num": widget.num,
-              "image_id": widget.image_id,
-              // 他のカラムの挿入もここで行う
-            });
-
-        
-        print("here");
-        print(response);
-
-        if (response == null) {
-          // エラーハンドリング
-          print('Error inserting data: ${response}');
-        } else {
-          // 成功時の処理
-          print('Data inserted successfully!');
-        }
-      }
-    } catch (error) {
-      // 例外が発生した場合のエラーハンドリング
-      print('Error: $error');
-    }
-  }
-
-
-
 
 
   @override
@@ -214,7 +156,7 @@ class _DisplayPageState extends State<DisplayPage>{
         
         actions: [
           AppBarActions(
-            isLiked: isLiked,
+            //isLiked: isLiked,
             imageId: widget.image_id,
             problem_id: widget.problem_id,
             comment_id: widget.comment_id,
@@ -259,8 +201,8 @@ class _DisplayPageState extends State<DisplayPage>{
                     subject: widget.subject,
                     image1: null,
                     image2: null,
-                    imageUrlP: widget.imageUrlP,
-                    imageUrlC: widget.imageUrlC,
+                    imageUrlPX: widget.imageUrlPX,
+                    imageUrlCX: widget.imageUrlCX,
       
                     explanation: widget.explanation,
 
@@ -269,6 +211,16 @@ class _DisplayPageState extends State<DisplayPage>{
 
                     problem_id: widget.problem_id!,
                     comment_id: widget.comment_id!,
+
+                    watched: widget.watched,
+
+                    likes: widget.likes,
+
+                    userName: widget.userName,
+
+                    image_own_user_id: widget.image_own_user_id!,
+
+                    difficulty: widget.difficulty,
       
                   ),
 

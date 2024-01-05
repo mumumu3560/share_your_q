@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:share_your_q/models/bar_chart.dart';
-import 'package:share_your_q/models/example_bar_chart.dart';
-import "package:share_your_q/models/example_radar_chart.dart";
+import 'package:share_your_q/graphs/bar_chart.dart';
+import 'package:share_your_q/graphs/example_bar_chart.dart';
+import 'package:share_your_q/graphs/example_radar_chart.dart';
 
-import "package:share_your_q/models/radar_chart_test1.dart";
+import 'package:share_your_q/graphs/radar_chart_test1.dart';
 
 import 'package:share_your_q/utils/various.dart';
 

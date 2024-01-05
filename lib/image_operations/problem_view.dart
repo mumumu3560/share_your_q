@@ -4,6 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
 import 'dart:typed_data';
+import "package:share_your_q/pages/profile_page/profile_page.dart";
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+
 
 //ユーザーの問題を表示するヴィジェット
 class ProblemViewWidget extends StatefulWidget {
@@ -21,8 +25,8 @@ class ProblemViewWidget extends StatefulWidget {
 
   final PlatformFile? image1;
   final PlatformFile? image2;
-  final String? imageUrlP;
-  final String? imageUrlC;
+  final String? imageUrlPX;
+  final String? imageUrlCX;
 
   final String? explanation;
 
@@ -32,6 +36,15 @@ class ProblemViewWidget extends StatefulWidget {
 
   final String problem_id;
   final String comment_id;
+
+  final int watched;
+
+  final int likes;
+
+  final String? userName;
+  final String image_own_user_id;
+
+  final double? difficulty;
 
   const ProblemViewWidget({
     Key? key,
@@ -48,8 +61,8 @@ class ProblemViewWidget extends StatefulWidget {
     required this.subject,
     required this.image1,
     required this.image2,
-    required this.imageUrlP,
-    required this.imageUrlC,
+    required this.imageUrlPX,
+    required this.imageUrlCX,
 
     required this.explanation,
 
@@ -58,6 +71,12 @@ class ProblemViewWidget extends StatefulWidget {
 
     required this.problem_id,
     required this.comment_id,
+    required this.watched,
+    required this.likes,
+
+    required this.userName,
+    required this.image_own_user_id,
+    required this.difficulty,
   }) : super(key: key);
 
   @override
@@ -109,7 +128,6 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
 
   }
-
   
 
   @override
@@ -147,8 +165,57 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("レベル: ${widget.level}"),
-                // tagは最大5つまでそれぞれをカンマで区切って表示する
+
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePage(
+                            userName: widget.userName!,
+                            userId: widget.image_own_user_id,
+                          )),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/75256745?v=4"),
+                        radius: 20,
+                      ),
+                    ),
+
+                    SizedBox(width: 10,),
+
+                    Text(
+                      "${widget.userName}",
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold, 
+                        fontStyle: FontStyle.italic
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 5,),
+
+                Row(
+                  children: [
+
+                    Text("${widget.level}"),
+
+                    SizedBox(width: 10,),
+
+                    Text("${widget.subject}"),
+
+                    SizedBox(width: 10,),
+
+                    Text("難易度: ${widget.difficulty}"),
+
+                    
+                  ],
+                ),
+                
 
                 SizedBox(height: 5,),
                 //タグを横並びにする
@@ -156,17 +223,26 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 Row(
 
                   children: [
-                    if (widget.tag1 != null) Text("タグ: #${widget.tag1}"),
-                    if (widget.tag2 != null) Text("#${widget.tag2}"),
-                    if (widget.tag3 != null) Text("#${widget.tag3}"),
-                    if (widget.tag4 != null) Text("#${widget.tag4}"),
-                    if (widget.tag5 != null) Text("#${widget.tag5}"),
+                    if (widget.tag1 != null && widget.tag1 != "") Text("タグ: #${widget.tag1}"),
+                    if (widget.tag2 != null && widget.tag2 != "") Text("#${widget.tag2}"),
+                    if (widget.tag3 != null && widget.tag3 != "") Text("#${widget.tag3}"),
+                    if (widget.tag4 != null && widget.tag4 != "") Text("#${widget.tag4}"),
+                    if (widget.tag5 != null && widget.tag5 != "") Text("#${widget.tag5}"),
                   ],
                 ),
 
                 SizedBox(height: 5,),
 
-                Text("ジャンル: ${widget.subject}"),
+                Row(
+                  children: [
+                    Text("閲覧数: ${widget.watched}"),
+
+                    SizedBox(width: 10,),
+
+                    Text("高評価: ${widget.likes}"),
+                  ],
+                ),
+                
 
                 SizedBox(height: 15,),
 
@@ -174,7 +250,10 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 "説明:\n${widget.explanation}",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
+
+                
               ],
+              
 
             ),
           ),
@@ -251,7 +330,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                   )
                                   //ここでもし画像が存在しない場合の処理を考える
                                   
-                                : widget.imageUrlP != null
+                                : widget.imageUrlPX != null
                                     ? Image.memory(
                                         image1Bytes!,
                                         fit: BoxFit.contain,
@@ -301,7 +380,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                             fit: BoxFit.contain,
                           )
                           //ここでもし画像が存在しない場合を考える。
-                        : widget.imageUrlC != null
+                        : widget.imageUrlCX != null
                             ? Image.memory(
                                 image2Bytes!,
                                 fit: BoxFit.contain,
@@ -329,7 +408,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                   )
                                   //ここでもし画像が存在しない場合の処理を考える
                                   
-                                : widget.imageUrlC != null
+                                : widget.imageUrlCX != null
                                     ? Image.memory(
                                         image2Bytes!,
                                         fit: BoxFit.contain,

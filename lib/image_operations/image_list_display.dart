@@ -49,6 +49,8 @@ class ImageListDisplay extends StatefulWidget {
 class ImageListDisplayState extends State<ImageListDisplay> {
   List<Map<String, dynamic>> imageData = [];
   bool isLoading = true;
+
+  double difficulty = 0;
   
 
   
@@ -319,11 +321,13 @@ class MyListItem extends StatelessWidget {
     
 
     
+    /*
     final String deliveryURL = dotenv.get('CLOUDFLARE_DELIVERY_URL');
     final String imageUrlC = '$deliveryURL/$imageUrlCX/public';
     final String imageUrlP = '$deliveryURL/$imageUrlPX/public';
+     */
 
-    final String imageUrlEx = "${deliveryURL}/728235a5-f792-4f3e-e4f8-b67ec469d500/public";
+    //final String imageUrlEx = "${deliveryURL}/728235a5-f792-4f3e-e4f8-b67ec469d500/public";
 
     final List<String> titleLines = item['title'].toString().split("\n");
     final List<String> explainLines = item['explain'].toString().split("\n");
@@ -386,7 +390,7 @@ class MyListItem extends StatelessWidget {
                   if(!isLoadingImage){
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ProfilePage(userId: myUserId),
+                        builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"]),
                       ),
                     );
                   }
@@ -452,26 +456,42 @@ class MyListItem extends StatelessWidget {
               : const Text("説明文なし"),
             
 
-            item["level"] != null
-              ? Text(
-                  item['level'],
-                )
-              : const Text("レベルなし"),
+            Row(
+              children: [
+                item["level"] != null
+                  ? Text(
+                      item['level'],
+                    )
+                  : const Text("レベルなし"),
 
-            item["subject"] != null
-              ? Text(
-                  item['subject'],
-                )
-              : const Text("教科なし"),
+                SizedBox(width: 10,),
+
+                item["subject"] != null
+                  ? Text(
+                      item['subject'],
+                    )
+                  : const Text("教科なし"),
+
+                SizedBox(width: 10,),
+
+                item["difficulty_point"] != null && item["eval_num"] != 0
+                  ? Text(
+                      "難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1) + "点",
+                    )
+                  : const Text("難易度なし"),
+
+                SizedBox(width: 10,),
+              ],
+            ),
               
             Row(
               children: [
 
-                if (item['tag1'] != null) Text("#"+item['tag1']),
-                if (item['tag2'] != null) Text("#"+item['tag2']),
-                if (item['tag3'] != null) Text("#"+item['tag3']),
-                if (item['tag4'] != null) Text("#"+item['tag4']),
-                if (item['tag5'] != null) Text("#"+item['tag5']),                
+                if (item['tag1'] != null && item["tag1"] != "") Text("#"+item['tag1']),
+                if (item['tag2'] != null && item["tag2"] != "") Text("#"+item['tag2']),
+                if (item['tag3'] != null && item["tag3"] != "") Text("#"+item['tag3']),
+                if (item['tag4'] != null && item["tag4"] != "") Text("#"+item['tag4']),
+                if (item['tag5'] != null && item["tag5"] != "") Text("#"+item['tag5']),                
             
             ]),
 
@@ -492,11 +512,13 @@ class MyListItem extends StatelessWidget {
         ),
         onTap: () async{
 
+          /*
           final response = await loadUserImage(imageUrlC);
           if(response == ""){
             context.showErrorSnackBar(message: "この問題は読み込めません");
             return;
           }
+           */
           
           Navigator.of(context).push(
 
@@ -517,8 +539,8 @@ class MyListItem extends StatelessWidget {
                 subject: item['subject']!,
                 image1: null,
                 image2: null,
-                imageUrlP: imageUrlP,
-                imageUrlC: imageUrlC,
+                imageUrlPX: imageUrlPX,
+                imageUrlCX: imageUrlCX,
 
                 num: item['num'],
 
@@ -526,6 +548,18 @@ class MyListItem extends StatelessWidget {
 
                 problem_id: item["problem_id"],
                 comment_id: item["comment_id"],
+
+                watched: item["watched"],
+
+                likes: item["likes"],
+
+                userName: item["user_name"],
+
+                difficulty: item["eval_num"] != 0
+                  ? item["difficulty_point"]/item["eval_num"].toDouble()
+                  : 0,
+
+
               ),
 
               /*

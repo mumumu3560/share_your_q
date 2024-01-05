@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:share_your_q/pages/display_page/comment_list_display.dart';
-import 'package:share_your_q/pages/display_page/evaluate_display.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display/comments_display.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/evaluate_display.dart';
 
 
 class AppBarActions extends StatefulWidget {
   
-  final bool? isLiked;
   final int? imageId;
   final String? problem_id;
   final String? comment_id;
@@ -17,7 +16,6 @@ class AppBarActions extends StatefulWidget {
 
   const AppBarActions({
     Key? key,
-    required this.isLiked,
     required this.imageId,
     required this.problem_id,
     required this.comment_id,
@@ -32,12 +30,25 @@ class AppBarActions extends StatefulWidget {
 
 class _AppBarActionsState extends State<AppBarActions> {
   bool isLiked = false;
+  bool isFirst = true;
 
   @override
   void initState(){
+
     super.initState();
-    isLiked = widget.isLiked!;
+
+    loadData();
+    
   }
+
+  void loadData(){
+
+    print("setState前");
+    _insertTestSupabase();
+  }
+
+  /*
+   */
 
 
   Future<void> _insertTestSupabase() async{
@@ -53,18 +64,33 @@ class _AppBarActionsState extends State<AppBarActions> {
       if (existingRecord.isNotEmpty) {
         // レコードが存在する場合はアップデート
         print("ここが問題手の");
-        isLiked = existingRecord[0]["add"];
+        
+        setState(() {
+          isLiked = existingRecord[0]["add"];
+        });
         print(existingRecord[0]["add"]);
 
         
         print("どこだよ");
 
         //islikedが!isliked
-        final response = await supabase
+        final response;
+
+        if(isFirst){
+          response = await supabase
+            .from('likes')
+            .update({ 'add': isLiked })
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.imageId);
+          isFirst = false;
+        }
+        else{
+          response = await supabase
             .from('likes')
             .update({ 'add': !isLiked })
-            .eq("image_id", widget.imageId)
-            .eq("user_id", myUserId);
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.imageId);
+        }
 
         //isLiked = !isLiked;
         if (response != null) {
@@ -117,6 +143,78 @@ class _AppBarActionsState extends State<AppBarActions> {
         );
       },
     );
+  }
+
+
+  Future<void> reportRequestSupabase() async{
+      
+    showLoadingDialog(context, "報告中...");
+    print(widget.imageId!);
+
+    //await Future.delayed(Duration(seconds: 5));
+
+    try{
+
+      await supabase.from("report").insert({
+        "image_id": widget.imageId,
+        "user_id": myUserId,
+        "Content": "",
+      });
+
+    
+
+      print("これは削除申請");
+
+    } on PostgrestException catch (error){
+
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+
+    } catch(_){
+
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+
+    print("ここで削除依頼をCloudflareに送る。");
+
+    //TODO ここから変わる
+
+    if(context.mounted){
+      Navigator.of(context).pop(); // ダイアログを閉じる
+    }
+
+
+
+    showLoadingDialog(context, "報告中...");
+    print(widget.imageId!);
+
+    if(context.mounted){
+      Navigator.of(context).pop(); // ダイアログを閉じる
+    }
+
+    if(context.mounted){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Done"),
+            content: Text("報告が終わりました"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  //Navigator.pop(context);
+                  Navigator.of(context).pop(); // ダイアログを閉じる
+                },
+                child: Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Future<void> deleteRequestSupabase() async{
@@ -247,18 +345,14 @@ class _AppBarActionsState extends State<AppBarActions> {
 
               : ListTile(
                   leading: Icon(Icons.report),
-                  title: Text("この投稿を通報する"),
+                  title: Text("この投稿を報告する"),
                   onTap: () async{
                     await ShowDialogWithFunction(
                       context: context, 
                       title: "確認", 
-                      shownMessage: "この投稿を通報しますか？", 
+                      shownMessage: "この投稿を報告しますか？", 
                       functionOnPressed: () async{
-                        await supabase.from("report").insert({
-                          "image_data_id": widget.imageId,
-                          "user_id": myUserId,
-                          "content": "",
-                        });
+                        await reportRequestSupabase();
                       },
                     ).show();
                   },
@@ -283,7 +377,7 @@ class _AppBarActionsState extends State<AppBarActions> {
       builder: (BuildContext context) {
         return Container(
           height: SizeConfig.blockSizeVertical! * 60,
-          child: EvaluateDisplay(image_id: imageId),
+          child: EvaluateDisplay(image_id: imageId, image_own_user_id: widget.image_own_user_id,),
         );
       },
     );
@@ -294,7 +388,7 @@ class _AppBarActionsState extends State<AppBarActions> {
     return Row(
       children: [
 
-
+        //コメントを見る
         IconButton(
           icon: const Icon(Icons.chat, color: Colors.green,),
           tooltip: "コメント",
@@ -305,7 +399,7 @@ class _AppBarActionsState extends State<AppBarActions> {
 
         SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
 
-
+        //いいね
         IconButton(
           icon: Icon(
             isLiked ? Icons.favorite : Icons.favorite_border_outlined,
@@ -342,7 +436,7 @@ class _AppBarActionsState extends State<AppBarActions> {
         
 
         
-
+        //setting
         IconButton(
           icon: const Icon(
             Icons.more_vert, color: Colors.white,

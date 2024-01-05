@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import "package:share_your_q/utils/various.dart";
 
 import 'package:share_your_q/utils/various.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ImageSelectionAndRequest {
   final String knownUserInfo;
@@ -17,7 +18,8 @@ class ImageSelectionAndRequest {
 
 
   Future<int> sendRequest() async {
-    final serverUrl = "https://supabase-image.divcurious.com/";
+    await dotenv.load(fileName: '.env');
+    final serverUrl = dotenv.get('CLOUDFLARE_DIRECT_URL');
 
     try {
       
@@ -27,6 +29,7 @@ class ImageSelectionAndRequest {
       //updateは自分の問題の編集の際に使用
       print("here");
       print("serverRequest");
+      print(serverUrl);
       final response = await http.post(
         Uri.parse(serverUrl),
         body: {
