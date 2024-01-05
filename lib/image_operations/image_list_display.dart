@@ -456,32 +456,42 @@ class MyListItem extends StatelessWidget {
               : const Text("説明文なし"),
             
 
-            item["level"] != null
-              ? Text(
-                  item['level'],
-                )
-              : const Text("レベルなし"),
+            Row(
+              children: [
+                item["level"] != null
+                  ? Text(
+                      item['level'],
+                    )
+                  : const Text("レベルなし"),
 
-            item["subject"] != null
-              ? Text(
-                  item['subject'],
-                )
-              : const Text("教科なし"),
+                SizedBox(width: 10,),
 
-            item["difficulty_point"] != null && item["eval_num"] != 0
-              ? Text(
-                  "難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1) + "点",
-                )
-              : const Text("難易度なし"),
+                item["subject"] != null
+                  ? Text(
+                      item['subject'],
+                    )
+                  : const Text("教科なし"),
+
+                SizedBox(width: 10,),
+
+                item["difficulty_point"] != null && item["eval_num"] != 0
+                  ? Text(
+                      "難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1) + "点",
+                    )
+                  : const Text("難易度なし"),
+
+                SizedBox(width: 10,),
+              ],
+            ),
               
             Row(
               children: [
 
-                if (item['tag1'] != null) Text("#"+item['tag1']),
-                if (item['tag2'] != null) Text("#"+item['tag2']),
-                if (item['tag3'] != null) Text("#"+item['tag3']),
-                if (item['tag4'] != null) Text("#"+item['tag4']),
-                if (item['tag5'] != null) Text("#"+item['tag5']),                
+                if (item['tag1'] != null && item["tag1"] != "") Text("#"+item['tag1']),
+                if (item['tag2'] != null && item["tag2"] != "") Text("#"+item['tag2']),
+                if (item['tag3'] != null && item["tag3"] != "") Text("#"+item['tag3']),
+                if (item['tag4'] != null && item["tag4"] != "") Text("#"+item['tag4']),
+                if (item['tag5'] != null && item["tag5"] != "") Text("#"+item['tag5']),                
             
             ]),
 
