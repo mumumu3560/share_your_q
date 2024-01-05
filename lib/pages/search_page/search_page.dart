@@ -118,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
             
               children: [
 
-                SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
+                //SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
                 
                 // レベルとジャンルの横並び
                 Row(
@@ -210,7 +210,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: Text("タグを追加"),
                 ),
 
-                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+                //SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
             
                 Wrap(
                   children: tags
@@ -225,7 +225,7 @@ class _SearchPageState extends State<SearchPage> {
                 .toList(),
                 ),
 
-                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+                //SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
             
                 ElevatedButton(
                   onPressed:(){
