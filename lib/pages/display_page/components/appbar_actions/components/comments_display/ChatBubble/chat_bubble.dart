@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:timeago/timeago.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// チャットのメッセージを表示するためのウィジェット
 class ChatBubble extends StatelessWidget {
@@ -21,17 +21,12 @@ class ChatBubble extends StatelessWidget {
         children: [
             const SizedBox(width: 12),
             GestureDetector(
+              
 
               child: CircleAvatar(
                 radius: 20,
-                child: Image.network("https://storage.divcurious.com/rufy.png"),
-                /*
-                child: Icon(
-                  Icons.error_outline,
-                  color: Colors.blue,
-                  size: 40,
-                ),
-                 */
+                //dotenv.get('SUPABASE_URL'),
+                child: Image.network(dotenv.get("CLOUDFLARE_R2_URL")),
 
               ),
 
