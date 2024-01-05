@@ -5,6 +5,9 @@ import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
 import 'dart:typed_data';
 import "package:share_your_q/pages/profile_page/profile_page.dart";
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+
 
 //ユーザーの問題を表示するヴィジェット
 class ProblemViewWidget extends StatefulWidget {
@@ -125,7 +128,6 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
 
   }
-
   
 
   @override
@@ -164,21 +166,35 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                InkWell(
-                  child: Text(
-                    "投稿者: ${widget.userName}",
-                    style: TextStyle(
-                      fontSize: 16, 
-                      fontWeight: FontWeight.bold, 
-                      fontStyle: FontStyle.italic
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfilePage(
+                            userName: widget.userName!,
+                            userId: widget.image_own_user_id,
+                          )),
+                        );
+                      },
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/75256745?v=4"),
+                        radius: 20,
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage(userId: widget.image_own_user_id, userName: widget.userName!,)),
-                    );
-                  },
+
+                    SizedBox(width: 10,),
+
+                    Text(
+                      "${widget.userName}",
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold, 
+                        fontStyle: FontStyle.italic
+                      ),
+                    ),
+                  ],
                 ),
 
                 SizedBox(height: 5,),
@@ -234,7 +250,10 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 "説明:\n${widget.explanation}",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
+
+                
               ],
+              
 
             ),
           ),
