@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 int eval_point = 0;
-int diff_point = 0;
+int diff_point = -1;
 int evalValue = 1;
 
 class EvaluateDisplay extends StatefulWidget{
@@ -52,18 +52,6 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
     }
   }
 
-  void setEvalKind(int eval){
-    setState(() {
-      evalValue = eval;
-    });
-  }
-
-  void setDiff(int diff){
-    setState(() {
-      diff_point = diff;
-    });
-  }
-
   void judPoints(){
     print("eval、diffの順番");
     print(evalValue);
@@ -74,7 +62,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
   /// 評価の更新
   void _submitEvaluation() async {
 
-    if (evalValue == 0 || diff_point == 0) {
+    if (evalValue == 0 || diff_point == -1) {
       context.showErrorSnackBar(message: "評価が入力されていません。");
       return;
     }
@@ -199,27 +187,6 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
 
 
-Widget _ratingBar(Function function, int point){
-  return RatingBar.builder(
-
-    initialRating: point as double,
-    minRating: 1,
-    direction: Axis.horizontal,
-    allowHalfRating: false,
-    itemCount: 10,
-    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-    itemBuilder: (context, _) => Icon(
-      Icons.star,
-      color: Colors.amber,
-    ),
-    onRatingUpdate: (rating) {
-      function(rating);
-    },
-  );
-
-}
-
-
 class EvaluateWithRadio extends StatefulWidget{
 
   const EvaluateWithRadio({
@@ -252,10 +219,10 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
     return Container(
       
       child: Column(
-        children: [
+        children: <Widget>[
 
           const Text(
-            "問題の評価",
+            "アンケート",
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -264,6 +231,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
 
           SizedBox(height: SizeConfig.blockSizeVertical!,),
           
+          /*
           const Text(
             "Q1: この問題はどんな問題？",
             style: TextStyle(
@@ -356,21 +324,44 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
           ),
 
           SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+           */
 
           const Text(
-            "Q2: この問題の難易度は？",
+            "Q1: この問題は易しい？難しい？",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
 
-          SizedBox(height: SizeConfig.blockSizeVertical!,),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Radio(
+                value: 0,
+                groupValue: diff_point,
+                onChanged: (value) {
+                  setDiff(value!);
+                },
+              ),
 
-          
-          //_ratingBar(setDiff, diff_point),
+              Text("易しい"),
+
+              Radio(
+                value: 1,
+                groupValue: diff_point,
+                onChanged: (value) {
+                  setDiff(value!);
+                },
+              ),
+
+              Text("難しい"),
+
+            ],
+          ),
+
           SizedBox(height: SizeConfig.blockSizeVertical!,),
-          Text("難易度: $diff_point"),
 
         ],
       ),
