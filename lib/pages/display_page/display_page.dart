@@ -49,6 +49,8 @@ class DisplayPage extends StatefulWidget {
   final String userName;
 
   final double difficulty;
+
+  final String profileImage;
   
 
 
@@ -86,6 +88,8 @@ class DisplayPage extends StatefulWidget {
     required this.userName,
 
     required this.difficulty,
+
+    required this.profileImage,
 
   }) : super(key: key);
 
@@ -221,6 +225,8 @@ class _DisplayPageState extends State<DisplayPage>{
                     image_own_user_id: widget.image_own_user_id!,
 
                     difficulty: widget.difficulty,
+
+                    profileImage: widget.profileImage,
       
                   ),
 
