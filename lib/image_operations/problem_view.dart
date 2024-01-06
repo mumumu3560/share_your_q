@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/utils/various.dart";
@@ -46,6 +47,8 @@ class ProblemViewWidget extends StatefulWidget {
 
   final double? difficulty;
 
+  final String? profileImage;
+
   const ProblemViewWidget({
     Key? key,
     required this.title,
@@ -77,6 +80,8 @@ class ProblemViewWidget extends StatefulWidget {
     required this.userName,
     required this.image_own_user_id,
     required this.difficulty,
+
+    required this.profileImage,
   }) : super(key: key);
 
   @override
@@ -93,12 +98,20 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
   Uint8List? image1Bytes = Uint8List(0);
   Uint8List? image2Bytes = Uint8List(0);
+
+  Uint8List? profileImageBytes = Uint8List(0);
   
 
   @override
   void initState() {
 
     super.initState();
+
+    fetchImage(widget.profileImage).then((bytes){
+      setState(() {
+        profileImageBytes = bytes;
+      });
+    });
 
     if(widget.image1 != null || widget.image2 != null){
       isLoadingImage1 = false;
@@ -140,9 +153,6 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
       child: Column(
 
-        //mainAxisAlignment: MainAxisAlignment.center,
-        //crossAxisAlignment: CrossAxisAlignment.center,
-
         children: <Widget>[
 
           Container(
@@ -170,16 +180,22 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   children: [
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfilePage(
-                            userName: widget.userName!,
-                            userId: widget.image_own_user_id,
-                          )),
-                        );
+                        if (widget.userName != null && widget.userName != ""){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ProfilePage(
+                              userName: widget.userName!,
+                              userId: widget.image_own_user_id,
+                              profileImage: widget.profileImage,
+                            )),
+                          );
+                        }
+                        
                       },
                       child: CircleAvatar(
-                        backgroundImage: NetworkImage("https://avatars.githubusercontent.com/u/75256745?v=4"),
+                        backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
+                          ? MemoryImage(profileImageBytes!)
+                          : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
                         radius: 20,
                       ),
                     ),
