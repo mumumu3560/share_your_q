@@ -73,6 +73,29 @@ class _CreatePageState extends State<CreatePage> {
 
   String? userName = "";
 
+  List<Map<String,dynamic>> profileImageId = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchProfileImage();
+  }
+
+  Future<void> fetchProfileImage() async{
+    try{
+      profileImageId = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+  }
+
   // サーバーレスポンスからcustomIdとdirectUploadUrlを受け取る関数
   void onServerResponseReceived(String customId, String directUploadUrl, bool isProblem) {
     setState(() {
@@ -312,6 +335,8 @@ class _CreatePageState extends State<CreatePage> {
     return 0;
   }
 
+
+  //getImageUpload→sendInfotoSupabase右imageUploadWithUrls
   // タグを追加する関数
   void addTag() {
 
@@ -445,9 +470,7 @@ class _CreatePageState extends State<CreatePage> {
                       child: Text("タグを追加"),
                     ),
 
-                    
-
-
+                  
                     Wrap(
                       children: tags
                       .map(
@@ -655,8 +678,9 @@ class _CreatePageState extends State<CreatePage> {
           likes:  0,
 
           userName: userName,
-          image_own_user_id: userId,
+          image_own_user_id: myUserId,
           difficulty: 0,
+          profileImage: profileImageId[0]["profile_image_id"],
         ),
         
         ElevatedButton(
