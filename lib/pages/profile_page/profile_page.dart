@@ -51,7 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> getInfoFromSupabase() async{
     try{
 
-      final profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+      final profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", widget.userId);
 
       setState(() {
         profileId = profileData[0]["profile_image_id"];
