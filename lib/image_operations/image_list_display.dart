@@ -294,17 +294,22 @@ class MyListItem extends StatelessWidget {
 
     final String targetUserId = item["user_id"];
 
-    String profileImageId = dotenv.get("CLOUDFLARE_IMAGE_URL");
+    String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
 
     Future<String> fetchProfileImage(String target) async{
 
       try{
+
+        print("testtesttest");
+
+        print(targetUserId);
         List<Map<String,dynamic>> response = await supabase
           .from("profiles")
-          .select("profile_image_if")
-          .eq("user_id", target);
+          .select<List<Map<String, dynamic>>>()
+          .eq("id", target);
 
         profileImageId = response[0]["profile_image_id"];
+
         return response[0]["profile_image_id"];
 
       } on PostgrestException catch (error){
@@ -312,13 +317,13 @@ class MyListItem extends StatelessWidget {
           context.showErrorSnackBar(message: error.message);
           
         }
-        return dotenv.get("CLOUDFLARE_IMAGE_URL");
+        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
       } catch(_){
         if(context.mounted){
           context.showErrorSnackBar(message: unexpectedErrorMessage);
           
         }
-        return dotenv.get("CLOUDFLARE_IMAGE_URL");
+        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
       }
 
 
@@ -335,17 +340,12 @@ class MyListItem extends StatelessWidget {
         dense: true,
 
         leading: FutureBuilder(
-          future: fetchImageWithCache(fetchProfileImage(targetUserId) as String),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+          future: fetchProfileImage(targetUserId),
+          builder: (context, profileImageSnapshot) {
+            if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
               // データの読み込み中はローディングインジケータなどを表示する
               return CircularProgressIndicator();
-            } else if (snapshot.hasError || snapshot.data == "" ) {
-
-              print("ここはテストかもしれません");
-              print(snapshot.hasError);
-              print(snapshot.data);
-              print(snapshot.hasError);
+            } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
               // エラーが発生した場合は代替のアイコンを表示する
               return GestureDetector(
                 child: const CircleAvatar(
@@ -357,52 +357,68 @@ class MyListItem extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
-                  print('Error occurred. Handle onTap action here.');
-                  context.showErrorSnackBar(message: "プロフィールに遷移出来ません");
-                  // タップした際の処理を記述する
+                  print('エラーが発生しました。onTap アクションをここで処理してください。');
+                  context.showErrorSnackBar(message: "プロフィールに遷移できません");
                 },
               );
             } else {
+              print(targetUserId);
               isLoadingImage = false;
-
               // データが正常に読み込まれた場合に画像を表示する
               return GestureDetector(
                 child: CircleAvatar(
                   radius: 20,
                   child: ClipOval(
-                    child: Image.memory(
-                      snapshot.data as Uint8List,
-                      fit: BoxFit.cover,
-                      width: 40,
-                      height: 40,
-                      errorBuilder: (context, error, stackTrace) {
-                // エラーが発生した場合の代替イメージを表示する
-                return const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 40,
-                );
-              },
+                    child: FutureBuilder(
+                      future: fetchImageWithCache(profileImageSnapshot.data as String),
+                      builder: (context, imageSnapshot) {
+                        if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                          // データの読み込み中はローディングインジケータなどを表示する
+                          return CircularProgressIndicator();
+                        } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
+                          print("ここかもしれないなぁ");
+                          // エラーが発生した場合は代替のアイコンを表示する
+                          return const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 40,
+                          );
+                        } else {
+                          // データが正常に読み込まれた場合に画像を表示する
+                          print("ここは最後の砦です");
+                          print(profileImageSnapshot.data);
+                          return Image.memory(
+                            imageSnapshot.data as Uint8List,
+                            fit: BoxFit.cover,
+                            width: 40,
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) {
+                              print("ここは最後のエラーとアンって");
+                              // エラーが発生した場合の代替イメージを表示する
+                              return const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 40,
+                              );
+                            },
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
-
                 onTap: () {
-                  if(!isLoadingImage){
+                  if (!isLoadingImage) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"], profileImage: profileImageId,),
                       ),
                     );
-                  }
-                  else{
-                    context.showErrorSnackBar(message: "Loading now...");
+                  } else {
+                    context.showErrorSnackBar(message: "現在読み込み中です...");
                   }
                 },
-
               );
-
-              
             }
           },
         ),
