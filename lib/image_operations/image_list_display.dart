@@ -51,6 +51,9 @@ class ImageListDisplayState extends State<ImageListDisplay> {
   bool isLoading = true;
 
   double difficulty = 0;
+
+  List<Map<String, dynamic>> profileImage = [];
+  String profileImageId = "";
   
 
   
@@ -72,6 +75,9 @@ class ImageListDisplayState extends State<ImageListDisplay> {
     //TODO ビルドリリースの時のみ
     //_adMob.dispose();
   }
+
+  
+
 
   Future<void> fetchData() async {
     try {
@@ -238,6 +244,12 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
 
 
+
+
+
+
+
+
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
 class MyListItem extends StatelessWidget {
   final Map<String, dynamic> item;
@@ -275,60 +287,49 @@ class MyListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
 
-    /*
-    final String imageUrlCX =
-        '${item["user_id"]}XCommentXnum${item["num"].toString()}XPnum${item["P_I_count"].toString()}XCnum${item["C_I_count"].toString()}';
-    final String imageUrlPX =
-        '${item["user_id"]}XproblemXnum${item["num"].toString()}XPnum${item["P_I_count"].toString()}XCnum${item["C_I_count"].toString()}';
-    
-     */
 
     final String? imageUrlPX = item["problem_id"];
     final String? imageUrlCX = item["comment_id"];
 
-    Uint8List? image1Bytes = Uint8List(0);
-    Uint8List? image2Bytes = Uint8List(0);
+    final String targetUserId = item["user_id"];
 
-    /*
-    fetchImage(imageUrlPX!).then((value) => image1Bytes = value);
-    fetchImage(imageUrlCX!).then((value) => image2Bytes = value);
+    String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
 
-     */
-    Future<Uint8List> fetchImageWithCache(String imageId) async {
-      // キャッシュから画像を取得
-      Uint8List? cachedImage = cache.get(imageId);
-      if (cachedImage != null) {
-        // キャッシュにある場合はキャッシュから返す
-        return cachedImage;
+    Future<String> fetchProfileImage(String target) async{
+
+      try{
+
+        print("testtesttest");
+
+        print(targetUserId);
+        List<Map<String,dynamic>> response = await supabase
+          .from("profiles")
+          .select<List<Map<String, dynamic>>>()
+          .eq("id", target);
+
+        profileImageId = response[0]["profile_image_id"];
+
+        return response[0]["profile_image_id"];
+
+      } on PostgrestException catch (error){
+        if(context.mounted){
+          context.showErrorSnackBar(message: error.message);
+          
+        }
+        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      } catch(_){
+        if(context.mounted){
+          context.showErrorSnackBar(message: unexpectedErrorMessage);
+          
+        }
+        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
       }
 
-      // キャッシュにない場合は既存の fetchImage 関数を呼ぶ
-      Uint8List imageBytes = await fetchImage(imageId);
 
-      // 取得した画像をキャッシュに保存
-      cache.put(imageId, imageBytes);
-      return imageBytes;
     }
 
-
-
-
-
-
-
-    
-
-    
-    /*
-    final String deliveryURL = dotenv.get('CLOUDFLARE_DELIVERY_URL');
-    final String imageUrlC = '$deliveryURL/$imageUrlCX/public';
-    final String imageUrlP = '$deliveryURL/$imageUrlPX/public';
-     */
-
-    //final String imageUrlEx = "${deliveryURL}/728235a5-f792-4f3e-e4f8-b67ec469d500/public";
-
+   
     final List<String> titleLines = item['title'].toString().split("\n");
     final List<String> explainLines = item['explain'].toString().split("\n");
 
@@ -339,12 +340,12 @@ class MyListItem extends StatelessWidget {
         dense: true,
 
         leading: FutureBuilder(
-          future: fetchImageWithCache(imageUrlCX!),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
+          future: fetchProfileImage(targetUserId),
+          builder: (context, profileImageSnapshot) {
+            if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
               // データの読み込み中はローディングインジケータなどを表示する
               return CircularProgressIndicator();
-            } else if (snapshot.hasError || snapshot.data == "" || snapshot.hasError) {
+            } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
               // エラーが発生した場合は代替のアイコンを表示する
               return GestureDetector(
                 child: const CircleAvatar(
@@ -356,52 +357,68 @@ class MyListItem extends StatelessWidget {
                   ),
                 ),
                 onTap: () {
-                  print('Error occurred. Handle onTap action here.');
-                  context.showErrorSnackBar(message: "プロフィールに遷移出来ません");
-                  // タップした際の処理を記述する
+                  print('エラーが発生しました。onTap アクションをここで処理してください。');
+                  context.showErrorSnackBar(message: "プロフィールに遷移できません");
                 },
               );
             } else {
+              print(targetUserId);
               isLoadingImage = false;
-
               // データが正常に読み込まれた場合に画像を表示する
               return GestureDetector(
                 child: CircleAvatar(
                   radius: 20,
                   child: ClipOval(
-                    child: Image.memory(
-                      snapshot.data as Uint8List,
-                      fit: BoxFit.cover,
-                      width: 40,
-                      height: 40,
-                      errorBuilder: (context, error, stackTrace) {
-                // エラーが発生した場合の代替イメージを表示する
-                return const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 40,
-                );
-              },
+                    child: FutureBuilder(
+                      future: fetchImageWithCache(profileImageSnapshot.data as String),
+                      builder: (context, imageSnapshot) {
+                        if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                          // データの読み込み中はローディングインジケータなどを表示する
+                          return CircularProgressIndicator();
+                        } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
+                          print("ここかもしれないなぁ");
+                          // エラーが発生した場合は代替のアイコンを表示する
+                          return const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                            size: 40,
+                          );
+                        } else {
+                          // データが正常に読み込まれた場合に画像を表示する
+                          print("ここは最後の砦です");
+                          print(profileImageSnapshot.data);
+                          return Image.memory(
+                            imageSnapshot.data as Uint8List,
+                            fit: BoxFit.cover,
+                            width: 40,
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) {
+                              print("ここは最後のエラーとアンって");
+                              // エラーが発生した場合の代替イメージを表示する
+                              return const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 40,
+                              );
+                            },
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
-
                 onTap: () {
-                  if(!isLoadingImage){
+                  if (!isLoadingImage) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"]),
+                        builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"], profileImage: profileImageId,),
                       ),
                     );
-                  }
-                  else{
-                    context.showErrorSnackBar(message: "Loading now...");
+                  } else {
+                    context.showErrorSnackBar(message: "現在読み込み中です...");
                   }
                 },
-
               );
-
-              
             }
           },
         ),
@@ -511,14 +528,6 @@ class MyListItem extends StatelessWidget {
           ],
         ),
         onTap: () async{
-
-          /*
-          final response = await loadUserImage(imageUrlC);
-          if(response == ""){
-            context.showErrorSnackBar(message: "この問題は読み込めません");
-            return;
-          }
-           */
           
           Navigator.of(context).push(
 
@@ -559,34 +568,10 @@ class MyListItem extends StatelessWidget {
                   ? item["difficulty_point"]/item["eval_num"].toDouble()
                   : 0,
 
+                profileImage: profileImageId,
+
 
               ),
-
-              /*
-              builder: (context) => DisplayPage(
-                title: item['title'],
-
-                image_id: item["image_data_id"],
-                image_own_user_id: item["user_id"],
-                tag1: item['tag1'],
-                tag2: item['tag2'],
-                tag3: item['tag3'],
-                tag4: item['tag4'],
-                tag5: item['tag5'],
-
-                //tags: item['tags'],
-                level: item['level']!,
-                subject: item['subject']!,
-                image1: null,
-                image2: null,
-                imageUrlP: imageUrlP,
-                imageUrlC: imageUrlC,
-
-                num: item['num'],
-
-                explanation: item['explain'],
-              ),
-               */
 
             ),
 

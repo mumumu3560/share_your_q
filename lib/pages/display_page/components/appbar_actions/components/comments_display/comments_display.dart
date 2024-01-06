@@ -32,7 +32,7 @@ class _CommentListDisplayState extends State<CommentListDisplay>{
             .eq('image_id', widget.image_id)
             .order("created_at");
     return data; 
-}
+  }
 
 
   /// メッセージを送信する

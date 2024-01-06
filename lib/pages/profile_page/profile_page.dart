@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:share_your_q/image_operations/image_request.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_display.dart';
 
@@ -9,6 +10,13 @@ import 'package:share_your_q/pages/display_page/display_page.dart';
 
 import 'package:share_your_q/graphs/radar_chart_test1.dart';
 import 'package:share_your_q/pages/profile_page/components/profile.dart';
+import 'package:share_your_q/pages/profile_page/components/settings/profile_setting.dart';
+import 'package:share_your_q/pages/profile_page/components/settings/icon_setting.dart';
+import 'dart:typed_data';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+
 
 //TODO ここにプロフィールページを作成する
 //グラフなどで自分の問題の傾向を見れるようにする
@@ -17,11 +25,13 @@ class ProfilePage extends StatefulWidget {
 
   final String userId;
   final String userName;
+  final String? profileImage;
 
   const ProfilePage({
     Key? key,
     required this.userId,
     required this.userName,
+    required this.profileImage,
   }): super(key: key);
   
   @override
@@ -29,6 +39,58 @@ class ProfilePage extends StatefulWidget {
 }
 class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> imageData = [];
+
+  Uint8List? profileImageBytes = Uint8List(0);
+  String profileId = "";
+
+  String userName ="";
+  int selectedYear = 2000;
+  String explainText = "";
+  String linkText = "";
+
+  Future<void> getInfoFromSupabase() async{
+    try{
+
+      final profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+
+      setState(() {
+        profileId = profileData[0]["profile_image_id"];
+        userName = profileData[0]["username"];
+        selectedYear = profileData[0]["age"];
+        explainText = profileData[0]["explain"];
+        linkText = profileData[0]["Links"];
+      });
+
+      fetchImageWithCache(profileId).then((bytes){
+        setState(() {
+          profileImageBytes = bytes;
+        });
+      });
+
+      return ;
+
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return ;
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return ;
+    }
+
+  }
+
+
+  @override
+  void initState() {
+
+    getInfoFromSupabase();
+    super.initState();
+  }
 
 
   @override
@@ -41,14 +103,50 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
     
         appBar: AppBar(
-          title: Text('${widget.userName}のプロフィール'),
+          title: Row(
+            children: [
+              Row(
+                children: [
+                  InkWell(
+                    onTap: () {
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
+                        ? MemoryImage(profileImageBytes!)
+                        : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
+                      radius: 20,
+                    ),
+                  ),
+
+                  if (widget.userId == myUserId)
+                    TextButton(
+                      onPressed: () async {
+                        //TODO ここにアイコン変更機能を書く
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => IconSettings(profileImage: profileId)),
+                        );
+                      },
+                      child: Text("アイコン変更")
+                    )
+
+                ],
+              ),
+              SizedBox(width: 10,),
+              Text('${widget.userName}のプロフィール'),
+            ],
+          ),
 
           actions: [
             widget.userId == myUserId
             ? TextButton(
               child: Text("プロフィール編集"),
               onPressed: () async {
-                //TODO ここに編集ページへの遷移を書く
+                //TODO ここにプロフィール編集機能を書く
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileSettings()),
+                );
               },
             )
             : TextButton(
@@ -83,10 +181,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 child: Column(
                   children: [
+                    SizedBox(height: SizeConfig.blockSizeVertical!*10,),
                     
                     Container(
-                      width: SizeConfig.blockSizeHorizontal! * 90,
-                      height: SizeConfig.blockSizeVertical! * 90,
                       child: Profile(
                         userId: widget.userId,
                         userName: widget.userName,
@@ -96,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     SizedBox(height: 50,),
                     
                     Container(
-                      width: SizeConfig.blockSizeHorizontal! * 80,
+                      width: SizeConfig.blockSizeHorizontal! * 90,
                       height: SizeConfig.blockSizeVertical! * 80,
                       child: RadarChartSample(),
                     ),

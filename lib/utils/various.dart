@@ -9,6 +9,8 @@ import 'package:timeago/timeago.dart';
 import 'dart:collection';
 import 'dart:typed_data';
 
+import "package:share_your_q/image_operations/image_request.dart";
+
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
@@ -304,4 +306,35 @@ class LRUCache {
 }
 
 //キャッシュのインスタンス
-var cache = LRUCache.create(10);
+var cache = LRUCache.create(20);
+
+
+Future<Uint8List?> fetchImageWithCache(String? imageId) async {
+  // キャッシュから画像を取得
+
+  print("ここはfetchImageWithCacheの中です");
+  print(imageId);
+
+  if(imageId == null){
+    return Uint8List(0);
+  }
+  Uint8List? cachedImage = cache.get(imageId);
+  if (cachedImage != null) {
+    // キャッシュにある場合はキャッシュから返す
+    return cachedImage;
+  }
+
+  // キャッシュにない場合は既存の fetchImage 関数を呼ぶ
+  Uint8List? imageBytes = await fetchImage(imageId);
+
+  if(imageBytes == null){
+    print("ここに入ってくるかな？");
+    print("ここじゃなかったらどうなるんだ？？");
+    return null;
+  }
+
+
+  // 取得した画像をキャッシュに保存
+  cache.put(imageId, imageBytes);
+  return imageBytes;
+}
