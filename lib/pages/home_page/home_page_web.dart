@@ -40,6 +40,26 @@ class _HomePageState extends State<HomePage> {
 
   bool firstFetch = true;
 
+  String profileId = "";
+  String userName = "";
+
+  Future<void> fetchProfile() async{
+    try{
+      final response = await supabase
+        .from('profiles')
+        .select<List<Map<String, dynamic>>>()
+        .eq('id', myUserId);
+      setState(() {
+        profileId = response[0]["profile_image_id"];
+        userName = response[0]["username"];
+      });
+    }
+    catch(e){
+      print("error");
+    }
+  }
+
+
   Future<void> fetchData() async {
     try {
       final response = await supabase
@@ -74,6 +94,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
     fetchData();
+    fetchProfile();
     //
     final String External_id = supabase.auth.currentUser!.id.toString();
     print(External_id);
@@ -149,9 +170,10 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 
                 // プロフィールページに遷移するコードを追加
+                
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(userId:myUserId, userName: "my",), // ImageDisplayに遷移
+                    builder: (context) => ProfilePage(userId:myUserId, userName: userName, profileImage: profileId,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -178,7 +200,7 @@ class _HomePageState extends State<HomePage> {
         children:  <Widget>[
           ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "",),
           SearchPage(),
-          ProfilePage(userId: myUserId,userName: "",),
+          ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           const TestPages(title: "D"),
         ],
         onPageChanged: (index) {
