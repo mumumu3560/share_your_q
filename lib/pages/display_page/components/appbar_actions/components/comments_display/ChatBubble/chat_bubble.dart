@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 /// チャットのメッセージを表示するためのウィジェット
 class ChatBubble extends StatelessWidget {
 
   final Map<String, dynamic> commentData;
+  
   
   const ChatBubble({
     Key? key,
@@ -23,11 +26,13 @@ class ChatBubble extends StatelessWidget {
             GestureDetector(
               
 
-              child: CircleAvatar(
-                radius: 20,
-                //dotenv.get('SUPABASE_URL'),
-                child: Image.network(dotenv.get("CLOUDFLARE_R2_URL")),
-
+              child: ClipOval(
+                child: CircleAvatar(
+                  radius: 20,
+                  //dotenv.get('SUPABASE_URL'),
+                  child: Image.network(dotenv.get("CLOUDFLARE_IMAGE_URL")),
+              
+                ),
               ),
 
               onTap: () async{
