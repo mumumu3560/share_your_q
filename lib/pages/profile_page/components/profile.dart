@@ -22,11 +22,12 @@ class Profile extends StatefulWidget {
   }): super(key: key);
   
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfileState createState() => _ProfileState();
 }
 
-class _ProfilePageState extends State<Profile> {
+class _ProfileState extends State<Profile> {
   List<Map<String, dynamic>> imageData = [];
+  List<Map<String, dynamic>> profileData = [];
 
 
   Future<void> fetchData() async{
@@ -37,8 +38,10 @@ class _ProfilePageState extends State<Profile> {
         .select<List<Map<String, dynamic>>>()
         .eq('user_id', widget.userId);
 
-      print("imageData is here");
-      print(imageData);
+      profileData = await supabase
+        .from('profiles')
+        .select<List<Map<String, dynamic>>>()
+        .eq('id', widget.userId);
 
     } on PostgrestException catch (error) {
       context.showErrorSnackBar(message: error.message);
@@ -62,14 +65,22 @@ class _ProfilePageState extends State<Profile> {
     SizeConfig().init(context);
 
     return Container(
-      child: Row(
+
+      child: Column(
         children: [
-          Text("aaaaa"),
-          SizedBox(width: 10,),
-          Text("bbbbb"),
-          
+          SingleChildScrollView(
+            child: Container(
+              width: SizeConfig.safeBlockHorizontal! * 80,
+              height: SizeConfig.safeBlockVertical! * 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.green),
+              ),
+            ),
+          ),
         ],
       ),
+
     );
 
   }
