@@ -101,7 +101,7 @@ class _CommentListDisplayState extends State<CommentListDisplay>{
           borderRadius: BorderRadius.circular(10),
         ),
         
-        //height: SizeConfig.blockSizeVertical! * 80,
+        height: SizeConfig.blockSizeVertical! * 80,
         width: SizeConfig.blockSizeHorizontal! * 100,
         
         child: Column(
