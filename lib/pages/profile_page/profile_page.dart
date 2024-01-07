@@ -92,6 +92,11 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
   }
 
+  /*
+  length: 3,
+      initialIndex: 0,
+   */
+
 
   @override
   Widget build(BuildContext context) {
@@ -145,62 +150,88 @@ class _ProfilePageState extends State<ProfilePage> {
             )
           ],
 
-          bottom: (
+          flexibleSpace: Container(
+
+          ),
+
+          
+          //title: const Text("プロフィール"),
+        ),
     
-            const TabBar(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+
+              Container(
+                width: SizeConfig.blockSizeHorizontal! * 90,
+                height: SizeConfig.blockSizeVertical! * 40,
+                child: Text("aaaaaaaaaaaa"),
+              ),
+
+              const TabBar(
               tabs: <Widget>[
                 Tab(text: "プロフィール", icon: Icon(Icons.star)),
                 Tab(text: "作問・解答傾向", icon: Icon(Icons.create)),
                 Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
                 
               ]
-            )
-          )
-          
-          //title: const Text("プロフィール"),
-        ),
-    
-        body: TabBarView(
-          children: <Widget>[
-              
-            Center(
-              
-              child: SingleChildScrollView(
+            ),
 
-                child: Column(
-                  children: [
-                    SizedBox(height: SizeConfig.blockSizeVertical!*10,),
-                    
-                    Container(
-                      child: Profile(
-                        userId: widget.userId,
-                        userName: widget.userName,
-                      )
+              SizedBox(height: 10,),
+              
+              Container(
+                height: SizeConfig.blockSizeVertical! * 70,
+
+                child: TabBarView(
+                  
+                  children: <Widget>[
+                      
+                    Center(
+                      
+                      child: SingleChildScrollView(
+                      
+                        child: Column(
+                          children: [
+                            SizedBox(height: SizeConfig.blockSizeVertical!*10,),
+                            
+                            Container(
+                              width: SizeConfig.blockSizeHorizontal! * 90,
+                              height: SizeConfig.blockSizeVertical! * 80,
+                              child: Profile(
+                                userId: widget.userId,
+                                userName: widget.userName,
+                              )
+                            ),
+                            
+                            SizedBox(height: 50,),
+                            
+                            /*
+                            Container(
+                              width: SizeConfig.blockSizeHorizontal! * 90,
+                              height: SizeConfig.blockSizeVertical! * 80,
+                              child: RadarChartSample(),
+                            ),
+                             */
+                            
+                          ]
+                        ),
+                      ),
                     ),
-                    
-                    SizedBox(height: 50,),
-                    
-                    Container(
-                      width: SizeConfig.blockSizeHorizontal! * 90,
-                      height: SizeConfig.blockSizeVertical! * 80,
-                      child: RadarChartSample(),
+                      
+                    Center(
+                      child: Text("It's rainy here"),
                     ),
-                    
-                  ]
+                      
+                    Center(
+                      child: Text("It's sunny here"),
+                    ),
+                      
+                  ],
+                      
                 ),
               ),
-            ),
-              
-            Center(
-              child: Text("It's rainy here"),
-            ),
-              
-            Center(
-              child: Text("It's sunny here"),
-            ),
-              
-          ],
-              
+            ],
+          ),
         ),
     
       ),
