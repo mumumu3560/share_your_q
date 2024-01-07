@@ -105,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Row(
             children: [
-              Row(
+              Column(
                 children: [
                   InkWell(
                     onTap: () {
@@ -117,23 +117,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       radius: 20,
                     ),
                   ),
-
-                  if (widget.userId == myUserId)
-                    TextButton(
-                      onPressed: () async {
-                        //TODO ここにアイコン変更機能を書く
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => IconSettings(profileImage: profileId)),
-                        );
-                      },
-                      child: Text("アイコン変更")
-                    )
-
+                  
                 ],
               ),
               SizedBox(width: 10,),
-              Text('${widget.userName}のプロフィール'),
+              Text('${widget.userName}'),
             ],
           ),
 
@@ -145,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 //TODO ここにプロフィール編集機能を書く
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileSettings()),
+                  MaterialPageRoute(builder: (context) => ProfileSettings(profileImage: widget.profileImage,)),
                 );
               },
             )

@@ -186,9 +186,6 @@ class _IconSettingsState extends State<IconSettings> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('アイコン編集'),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [

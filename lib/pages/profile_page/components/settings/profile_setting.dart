@@ -11,12 +11,24 @@ import 'package:share_your_q/utils/various.dart';
 
 import "package:share_your_q/image_operations/problem_view.dart";
 
+import "package:share_your_q/pages/profile_page/components/settings/icon_setting.dart";
+
 //問題を作るページ
 
 //TODO textformfieldの長さの制限を考える。
 
 
 class ProfileSettings extends StatefulWidget {
+
+
+  final String? profileImage;
+
+  const ProfileSettings({
+    Key? key,
+    required this.profileImage,
+  }): super(key: key);
+
+
   @override
   _ProfileSettingsState createState() => _ProfileSettingsState();
 }
@@ -130,7 +142,17 @@ class _ProfileSettingsState extends State<ProfileSettings> {
             children: <Widget>[
               Column(
 
+
+
                 children: [
+
+                  SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 90,
+                    height: SizeConfig.blockSizeVertical! * 70,
+                    child: IconSettings(profileImage: widget.profileImage,),
+                  ),
+
+                  
 
 
 
