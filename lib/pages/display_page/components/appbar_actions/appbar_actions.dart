@@ -138,7 +138,7 @@ class _AppBarActionsState extends State<AppBarActions> {
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          height: SizeConfig.blockSizeVertical! * 90,
+          height: SizeConfig.blockSizeVertical! * 70,
           child: CommentListDisplay(image_id: imageId),
         );
       },
