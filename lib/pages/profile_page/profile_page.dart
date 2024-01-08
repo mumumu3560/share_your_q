@@ -15,6 +15,7 @@ import 'package:share_your_q/pages/profile_page/components/settings/icon_setting
 import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -46,7 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String userName ="";
   int selectedYear = 2000;
   String explainText = "";
-  String linkText = "";
+  List<dynamic> linkText = [];
 
   Future<void> getInfoFromSupabase() async{
     try{
@@ -58,7 +59,13 @@ class _ProfilePageState extends State<ProfilePage> {
         userName = profileData[0]["username"];
         selectedYear = profileData[0]["age"];
         explainText = profileData[0]["explain"];
-        linkText = profileData[0]["Links"];
+
+        if (profileData[0]["links"] == null){
+        }
+        else{
+          linkText = profileData[0]["links"];
+        }
+        
       });
 
       fetchImageWithCache(profileId).then((bytes){
@@ -108,6 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
     
         appBar: AppBar(
+          /*
           title: Row(
             children: [
               Column(
@@ -129,6 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Text('${widget.userName}'),
             ],
           ),
+           */
 
           actions: [
             widget.userId == myUserId
@@ -149,38 +158,36 @@ class _ProfilePageState extends State<ProfilePage> {
               },  
             )
           ],
-
-          flexibleSpace: Container(
-
-          ),
-
-          
-          //title: const Text("プロフィール"),
         ),
     
         body: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 10,),
 
-              Container(
-                width: SizeConfig.blockSizeHorizontal! * 90,
-                height: SizeConfig.blockSizeVertical! * 40,
-                child: Text("aaaaaaaaaaaa"),
+              ProfileHeader(
+                userName: userName, 
+                explainText: explainText, 
+                age: selectedYear, 
+                linkText: linkText, 
+                profileImageBytes: profileImageBytes,
               ),
 
+              SizedBox(height: 10,),
+
               const TabBar(
-              tabs: <Widget>[
-                Tab(text: "プロフィール", icon: Icon(Icons.star)),
-                Tab(text: "作問・解答傾向", icon: Icon(Icons.create)),
-                Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
-                
-              ]
-            ),
+                tabs: <Widget>[
+                  Tab(text: "プロフィール", icon: Icon(Icons.star)),
+                  Tab(text: "作問・解答傾向", icon: Icon(Icons.create)),
+                  Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
+                  
+                ]
+              ),
 
               SizedBox(height: 10,),
               
               Container(
-                height: SizeConfig.blockSizeVertical! * 70,
+                height: SizeConfig.blockSizeVertical! * 75,
 
                 child: TabBarView(
                   
@@ -235,6 +242,185 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
     
       ),
+    );
+
+
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class ProfileHeader extends StatelessWidget {
+
+  final String userName;
+  final String explainText;
+  final int age;
+  final Uint8List? profileImageBytes;
+
+  final List<dynamic> linkText;
+
+  const ProfileHeader({
+    Key? key,
+    required this.userName,
+    required this.explainText,
+    required this.age,
+    required this.linkText,
+    required this.profileImageBytes,
+  }): super(key: key);
+
+
+  
+  
+  @override
+  Widget build(BuildContext context) {
+
+    Future<void> _launchURL(String target) async {
+    try {
+      final targetUrl = target;
+      if (await canLaunchUrl(Uri.parse(targetUrl))) {
+        await launchUrl(Uri.parse(targetUrl));
+      } else {
+        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+      }
+    } catch(_){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return ;
+    }
+  }
+    
+    SizeConfig().init(context);
+
+    return Container(
+      width: SizeConfig.blockSizeHorizontal! * 92,
+      height: SizeConfig.blockSizeVertical! * 40,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+
+
+            Row(
+              children: [
+                InkWell(
+                    onTap: () {
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
+                        ? MemoryImage(profileImageBytes!)
+                        : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
+                      radius: 20,
+                    ),
+                  ),
+
+                SizedBox(width: 10,),
+
+                Text(
+                  userName,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 10,),
+
+            Row(
+              children: [
+                Opacity(
+                  opacity: 0.5,
+                  child: Text(
+                    "誕生年: $age",
+                    style: TextStyle(
+                      fontSize: 14,
+                      //fontStyleは薄くしたい
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 10,),
+
+            Row(
+              children: [
+                /*
+                const Opacity(
+                  opacity: 0.5,
+                  child: Text(
+                    "リンク:",
+                    style: TextStyle(
+                      fontSize: 14,
+                      //fontStyleは薄くしたい
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+                 */
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: linkText.map((linkText) {
+                    return Column(
+                      children: [
+                        InkWell(
+                          onTap: () async{
+                            await _launchURL(linkText);
+                          },
+                          child: Text(
+                            linkText,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              // fontStyleは薄くしたい
+                              fontStyle: FontStyle.italic,
+                              color: Colors.blue, // リンクの色
+                              decoration: TextDecoration.underline, // 下線
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 5,),
+                      ],
+                    );
+                  }).toList(),
+                ),
+
+
+                
+                
+              ],
+            ),
+
+            
+            //ここには自己紹介などを書く
+
+            Container(
+              alignment: Alignment.centerLeft,
+
+              child: Text(
+                explainText,
+                style: TextStyle(
+                  fontSize: 14,
+                  //fontStyleは薄くしたい
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+      
+          ],
+        ),
+      )
     );
 
 
