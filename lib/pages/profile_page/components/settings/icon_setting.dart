@@ -187,93 +187,99 @@ class _IconSettingsState extends State<IconSettings> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-
-            Center(
-              child: Column(
-                children: [
-
-                  SizedBox(height: 20),
-
-                  Text("現在のアイコン", style: TextStyle(fontSize: 20),),
-
-                  SizedBox(height: 20),
-
-                  CircleAvatar(
-                    backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                      ? MemoryImage(profileImageBytes!)
-                      : null,//NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
-                    radius: 30,
-                  ),
-
-                  SizedBox(height: 30),
-
-                  Text("新しいアイコン", style: TextStyle(fontSize: 20),),
-
-                  SizedBox(height: 20),
-
-
-                  if (selectedImage1 == null)
-                    Column(
-                      children: [
-                        const Text(
-                          "アイコン画像を選択してください",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        ImageSelectionWidget(
-                          onImageSelected: (image) {
-                            setState(() {
-                              selectedImage1 = image;
-                            });
-                          },
-                        ),
-                      ],
-                    )
-                  else
-                    Column(
-                      children: [
-                        Image.memory(
-                          selectedImage1!.bytes!,
-                          height: 150,
-                        ),
-                        SizedBox(height: 10),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              selectedImage1 = null;
-                            });
-                          },
-                          child: const Text(
-                            "画像を削除",
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.green),
+          ),
+          child: Column(
+            children: [
+        
+              Center(
+                child: Column(
+                  children: [
+        
+                    SizedBox(height: 20),
+        
+                    Text("現在のアイコン", style: TextStyle(fontSize: 20),),
+        
+                    SizedBox(height: 20),
+        
+                    CircleAvatar(
+                      backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
+                        ? MemoryImage(profileImageBytes!)
+                        : null,//NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
+                      radius: 30,
+                    ),
+        
+                    SizedBox(height: 30),
+        
+                    Text("新しいアイコン", style: TextStyle(fontSize: 20),),
+        
+                    SizedBox(height: 20),
+        
+        
+                    if (selectedImage1 == null)
+                      Column(
+                        children: [
+                          const Text(
+                            "アイコン画像を選択してください",
                             style: TextStyle(color: Colors.red),
                           ),
-                        ),
-                      ],
+                          ImageSelectionWidget(
+                            onImageSelected: (image) {
+                              setState(() {
+                                selectedImage1 = image;
+                              });
+                            },
+                          ),
+                        ],
+                      )
+                    else
+                      Column(
+                        children: [
+                          Image.memory(
+                            selectedImage1!.bytes!,
+                            height: 150,
+                          ),
+                          SizedBox(height: 10),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedImage1 = null;
+                              });
+                            },
+                            child: const Text(
+                              "画像を削除",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+        
+                    SizedBox(height: 20),
+        
+                    ElevatedButton(
+                      onPressed: () async {
+                        if(selectedImage1 != null){
+                          await doUploadSeries();
+                          Navigator.pop(context);
+                        }
+                        else{
+                          context.showErrorSnackBar(message: "画像を選択してください。");
+                        }
+                      },
+                      child: const Text("アイコンを更新"),
                     ),
-
-                  SizedBox(height: 20),
-
-                  ElevatedButton(
-                    onPressed: () async {
-                      if(selectedImage1 != null){
-                        await doUploadSeries();
-                        Navigator.pop(context);
-                      }
-                      else{
-                        context.showErrorSnackBar(message: "画像を選択してください。");
-                      }
-                    },
-                    child: const Text("アイコンを更新"),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-
-            SizedBox(height: 20),
-
-
-          ],
+        
+              SizedBox(height: 20),
+        
+        
+            ],
+          ),
         ),
       ),
     );
