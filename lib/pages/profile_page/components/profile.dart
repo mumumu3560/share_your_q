@@ -71,32 +71,8 @@ class _ProfileState extends State<Profile> {
           SingleChildScrollView(
             child: Column(
               children: [
-                /*
-                InkWell(
-                  onTap: () {
-                  },
-                  child: CircleAvatar(
-                    backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                      ? MemoryImage(profileImageBytes!)
-                      : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
-                    radius: 20,
-                  ),
-                ),
-
-                if (widget.userId == myUserId)
-                  TextButton(
-                    onPressed: () async {
-                      //TODO ここにアイコン変更機能を書く
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => IconSettings(profileImage: profileId)),
-                      );
-                    },
-                    child: Text("アイコン変更")
-                  )
-                 */
                 Container(
-                  width: SizeConfig.safeBlockHorizontal! * 80,
+                  width: SizeConfig.safeBlockHorizontal! * 85,
                   height: SizeConfig.safeBlockVertical! * 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
