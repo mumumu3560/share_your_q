@@ -16,7 +16,7 @@ import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import "package:share_your_q/image_operations/image_list_display.dart";
 
 
 //TODO ここにプロフィールページを作成する
@@ -115,29 +115,6 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Scaffold(
     
         appBar: AppBar(
-          /*
-          title: Row(
-            children: [
-              Column(
-                children: [
-                  InkWell(
-                    onTap: () {
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                        ? MemoryImage(profileImageBytes!)
-                        : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
-                      radius: 20,
-                    ),
-                  ),
-                  
-                ],
-              ),
-              SizedBox(width: 10,),
-              Text('${widget.userName}'),
-            ],
-          ),
-           */
 
           actions: [
             widget.userId == myUserId
@@ -165,20 +142,31 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               SizedBox(height: 10,),
 
-              ProfileHeader(
-                userName: userName, 
-                explainText: explainText, 
-                age: selectedYear, 
-                linkText: linkText, 
-                profileImageBytes: profileImageBytes,
+              Container(
+                width: SizeConfig.blockSizeHorizontal! * 90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.green),
+                ),
+
+                padding: EdgeInsets.all(10),
+
+                child: ProfileHeader(
+                  userName: userName, 
+                  explainText: explainText, 
+                  age: selectedYear, 
+                  linkText: linkText, 
+                  profileImageBytes: profileImageBytes,
+                ),
               ),
 
               SizedBox(height: 10,),
 
               const TabBar(
+
                 tabs: <Widget>[
-                  Tab(text: "プロフィール", icon: Icon(Icons.star)),
-                  Tab(text: "作問・解答傾向", icon: Icon(Icons.create)),
+                  Tab(text: "投稿", icon: Icon(Icons.star)),
+                  Tab(text: "傾向", icon: Icon(Icons.create)),
                   Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
                   
                 ]
@@ -187,6 +175,7 @@ class _ProfilePageState extends State<ProfilePage> {
               SizedBox(height: 10,),
               
               Container(
+                width: SizeConfig.blockSizeHorizontal! * 90,
                 height: SizeConfig.blockSizeVertical! * 75,
 
                 child: TabBarView(
@@ -195,33 +184,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       
                     Center(
                       
-                      child: SingleChildScrollView(
-                      
-                        child: Column(
-                          children: [
-                            SizedBox(height: SizeConfig.blockSizeVertical!*10,),
-                            
-                            Container(
-                              width: SizeConfig.blockSizeHorizontal! * 90,
-                              height: SizeConfig.blockSizeVertical! * 80,
-                              child: Profile(
-                                userId: widget.userId,
-                                userName: widget.userName,
-                              )
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10,),
+
+                          Container(
+                            width: SizeConfig.blockSizeHorizontal! * 90,
+                            height: SizeConfig.blockSizeVertical! * 70,
+                            child: ImageListDisplay(
+                              searchUserId: widget.userId,
+                              level: "全て",
+                              method: "新着",
+                              subject: "全て",
+                              tags: [],
+                              title: "${userName}の投稿一覧",
+                              showAppbar: false,
                             ),
-                            
-                            SizedBox(height: 50,),
-                            
-                            /*
-                            Container(
-                              width: SizeConfig.blockSizeHorizontal! * 90,
-                              height: SizeConfig.blockSizeVertical! * 80,
-                              child: RadarChartSample(),
-                            ),
-                             */
-                            
-                          ]
-                        ),
+                          ),
+                        ]
                       ),
                     ),
                       
