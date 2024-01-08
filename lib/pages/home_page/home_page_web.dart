@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString()), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: false,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -198,7 +198,7 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageViewController,
         children:  <Widget>[
-          ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "",),
+          ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false,),
           SearchPage(),
           ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           const TestPages(title: "D"),

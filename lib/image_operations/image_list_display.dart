@@ -30,6 +30,9 @@ class ImageListDisplay extends StatefulWidget {
   final String? title;
   final String? searchUserId;
 
+  final bool showAppbar;
+  
+
   const ImageListDisplay({
     Key? key,
     required this.subject,
@@ -38,6 +41,7 @@ class ImageListDisplay extends StatefulWidget {
     required this.tags,
     required this.title,
     required this.searchUserId,
+    required this.showAppbar,
   }) :super(key: key);
 
   @override
@@ -165,6 +169,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: widget.showAppbar,
         title: Text(widget.title as String), // アプリバーに表示するタイトル
         actions: [
           IconButton(

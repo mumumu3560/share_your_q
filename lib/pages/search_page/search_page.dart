@@ -231,7 +231,7 @@ class _SearchPageState extends State<SearchPage> {
                   onPressed:(){
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",), // ImageDisplayに遷移
+                        builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true,), // ImageDisplayに遷移
                       ),
                     );
                   },
