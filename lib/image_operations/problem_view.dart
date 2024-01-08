@@ -217,6 +217,50 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
                 Row(
                   children: [
+                    Text("難易度: ${widget.difficulty}"),
+
+                    SizedBox(width: 10,),
+
+                    /*
+                    GestureDetector(
+                      child: CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        child: Text(
+                          "易",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        radius: 15,
+                      )
+                    ),
+
+                    SizedBox(width: 10,),
+
+                    GestureDetector(
+                      child: CircleAvatar(
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          "難",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        radius: 15,
+                      )
+                    ),
+                     */
+                  ],
+                ),
+
+                SizedBox(height: 5,),
+
+                Row(
+                  children: [
 
                     Text("${widget.level}"),
 
@@ -224,9 +268,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
                     Text("${widget.subject}"),
 
-                    SizedBox(width: 10,),
-
-                    Text("難易度: ${widget.difficulty}"),
+                
 
                     
                   ],

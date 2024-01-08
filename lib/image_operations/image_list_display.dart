@@ -300,7 +300,8 @@ class MyListItem extends StatelessWidget {
 
       try{
 
-        print("testtesttest");
+        print("これからlistの確認を行います");
+        print(target);
 
         print(targetUserId);
         List<Map<String,dynamic>> response = await supabase
@@ -309,6 +310,8 @@ class MyListItem extends StatelessWidget {
           .eq("id", target);
 
         profileImageId = response[0]["profile_image_id"];
+
+        print(profileImageId);
 
         return response[0]["profile_image_id"];
 
