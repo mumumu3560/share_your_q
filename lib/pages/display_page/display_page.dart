@@ -173,7 +173,7 @@ class _DisplayPageState extends State<DisplayPage>{
 
       ),
 
-      endDrawer: const Drawer(child: Center(child: Text("EndDrawer"))),
+      //endDrawer: const Drawer(child: Center(child: Text("EndDrawer"))),
 
       body: SingleChildScrollView(
         
