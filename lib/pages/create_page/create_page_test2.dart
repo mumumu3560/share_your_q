@@ -49,11 +49,18 @@ class _CreatePageState extends State<CreatePage> {
   String? subject;
   //小学校、中学校などいつ習ったものか
   String? level;
+
   //タグ
   List<String> tags = [];
 
+  //url
+  List<String> urls = [];
+
   //tagの入力コントローラー
   TextEditingController _tagController = TextEditingController();
+
+  //参考文献の入力コントローラー
+  TextEditingController _urlController = TextEditingController();
 
   //説明文の入力コントローラー
   TextEditingController _explainController = TextEditingController();
@@ -63,6 +70,9 @@ class _CreatePageState extends State<CreatePage> {
 
   // タグの入力値
   String tagInput = '';
+
+  // 参考文献の入力値
+  String urlInput = '';
 
   //cloudflare imagesのURLにつかうdirectUploadUrl
   String? directUploadUrl1;
@@ -145,6 +155,20 @@ class _CreatePageState extends State<CreatePage> {
 
     //numとusernameはsupabase側で行えばよい
     try{
+
+      print("supabaseに情報をここで渡すのだが、どれがnull火がわからない");
+      print("customId1: $customId1");
+      print("customId2: $customId2");
+
+      print(problemTitle);
+      print(subject);
+      print(level);
+      print(tags);
+      print(explainText);
+
+
+      
+
       //ここでは、問題の情報をsupabaseに送る。
       //P_I_CountとC_I_Countは、問題文の画像と解説の画像の数を表す。今は1にしておく。
       await supabase.from("image_data").insert({
@@ -159,7 +183,7 @@ class _CreatePageState extends State<CreatePage> {
         "tag3": tags.length > 2 ? tags[2] : "",
         "tag4": tags.length > 3 ? tags[3] : "",
         "tag5": tags.length > 4 ? tags[4] : "",
-        "user_id": userId,
+        "user_id": myUserId,
         "p_num": 1,
         "c_num": 1,
         //"user_name" : userName,
@@ -167,6 +191,7 @@ class _CreatePageState extends State<CreatePage> {
         "problem_id": customId1,
         "comment_id": customId2,
         //"likes": 100,
+        "links": urls,
       });
 
       //ここでは、ユーザーの問題の投稿数を増やす。
@@ -378,6 +403,47 @@ class _CreatePageState extends State<CreatePage> {
     });
   }
 
+
+  // タグを追加する関数
+  void addUrl() {
+
+    bool jad = false;
+
+    if (urlInput.isNotEmpty && urls.length < 10) {
+
+      if (!urls.contains(urlInput)) {
+        setState(() {
+          urls.add(urlInput);
+          urlInput = '';
+          _urlController.clear(); // 入力フォームを空にする
+        });
+
+      } else {
+        jad = true;
+        context.showErrorSnackBar(message: '同じ参考文献は追加できません');
+      }
+
+    } else {
+      if(!jad){
+        context.showErrorSnackBar(message: '参考文献は10個までしか追加できません');
+      }
+      
+    }
+
+    print(jad);
+    print(urls);
+  }
+
+  // タグを削除する関数
+  void removeUrl(String url) {
+    setState(() {
+      urls.remove(url);
+    });
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -448,6 +514,8 @@ class _CreatePageState extends State<CreatePage> {
                       hint: const Text('ジャンルを選択してください'),
                     ),
 
+                    
+
 
                     // タグの入力フォーム
                     TextFormField(
@@ -484,6 +552,52 @@ class _CreatePageState extends State<CreatePage> {
                     .toList(),
                     ),
 
+                    SizedBox(height: 10),
+
+
+
+
+                    
+
+                    // 参考文献リンクの入力フォーム
+                    TextFormField(
+                      maxLength: 200,
+                      controller: _urlController,
+                      onChanged: (value) {
+                        
+                        setState(() {
+                          urlInput = value;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: '参考文献を入力(リンクなど)',
+                      ),
+                    ),
+
+
+                    ElevatedButton(
+                      onPressed: addUrl,
+                      child: Text("参考文献を追加"),
+                    ),
+
+                  
+                    Wrap(
+                      children: urls
+                      .map(
+                        (url) => Chip(
+                          label: Text(url),
+                          onDeleted: () {
+                            removeUrl(url);
+                          },
+                        ),
+                      )
+                    .toList(),
+                    ),
+
+
+
+
+                    //ここは説明分
                     SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 90,
                       child: TextFormField(
@@ -505,6 +619,12 @@ class _CreatePageState extends State<CreatePage> {
                     
                       ),
                     ),
+
+
+
+                    
+
+                    
 
 
 
