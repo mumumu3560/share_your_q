@@ -62,10 +62,14 @@ class _CreatePageState extends State<CreatePage> {
   //参考文献の入力コントローラー
   TextEditingController _urlController = TextEditingController();
 
+  //参考文献説明の入力コントローラー
+  TextEditingController _refController = TextEditingController();
+
   //説明文の入力コントローラー
   TextEditingController _explainController = TextEditingController();
 
   String? explainText = '';
+  String? refText = '';
 
 
   // タグの入力値
@@ -192,6 +196,7 @@ class _CreatePageState extends State<CreatePage> {
         "comment_id": customId2,
         //"likes": 100,
         "links": urls,
+        "ref_explain": refText,
       });
 
       //ここでは、ユーザーの問題の投稿数を増やす。
@@ -594,6 +599,31 @@ class _CreatePageState extends State<CreatePage> {
                     .toList(),
                     ),
 
+                    SizedBox(height: 10),
+
+                    //ここは参考文献についての説明
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal! * 90,
+                      child: TextFormField(
+                        //大きさを変えたい
+                        
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 3,
+                        maxLength: 200,
+                        controller: _refController,
+                        onChanged: (value) {
+                          setState(() {
+                            refText = value;
+                          });
+                        },
+                    
+                        decoration: const InputDecoration(
+                          labelText: '参考文献の簡単な説明',
+                        ),
+                    
+                      ),
+                    ),
+
 
 
 
@@ -614,7 +644,7 @@ class _CreatePageState extends State<CreatePage> {
                         },
                     
                         decoration: const InputDecoration(
-                          labelText: '簡単な説明',
+                          labelText: '問題の簡単な説明',
                         ),
                     
                       ),
