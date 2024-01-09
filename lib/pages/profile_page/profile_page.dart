@@ -45,7 +45,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String profileId = "";
 
   String userName ="";
-  int selectedYear = 2000;
+  int selectedYear = 0;
   String explainText = "";
   List<dynamic> linkText = [];
 
@@ -266,18 +266,18 @@ class ProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
 
     Future<void> _launchURL(String target) async {
-    try {
-      final targetUrl = target;
-      if (await canLaunchUrl(Uri.parse(targetUrl))) {
-        await launchUrl(Uri.parse(targetUrl));
-      } else {
-        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+      try {
+        final targetUrl = target;
+        if (await canLaunchUrl(Uri.parse(targetUrl))) {
+          await launchUrl(Uri.parse(targetUrl));
+        } else {
+          context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+        }
+      } catch(_){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+        return ;
       }
-    } catch(_){
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
-      return ;
     }
-  }
     
     SizeConfig().init(context);
 
@@ -321,8 +321,10 @@ class ProfileHeader extends StatelessWidget {
                 Opacity(
                   opacity: 0.5,
                   child: Text(
-                    "誕生年: $age",
-                    style: TextStyle(
+                    age == 0
+                      ? "誕生年:非公開"
+                      : "誕生年:${age}",
+                    style: const TextStyle(
                       fontSize: 14,
                       //fontStyleは薄くしたい
                       fontStyle: FontStyle.italic,
