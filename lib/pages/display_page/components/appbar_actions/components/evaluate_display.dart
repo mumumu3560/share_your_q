@@ -1,7 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 int eval_point = 0;
 int diff_point = -1;
@@ -25,6 +27,9 @@ class EvaluateDisplay extends StatefulWidget{
 class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
   late List<Map<String, dynamic>> _imageData = [];
+  List<dynamic> linkText = [];
+
+  String refExplain = "";
 
   late final TextEditingController _textController = TextEditingController();
 
@@ -40,6 +45,18 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
         .from('image_data')
         .select<List<Map<String, dynamic>>>()
         .eq('image_data_id', widget.image_id!);
+
+        print(data[0]["links"]);
+        setState(() {
+          if (data[0]["links"] == null){
+          }
+          else{
+            linkText = data[0]["links"];
+          }
+
+          refExplain = data[0]["ref_explain"];
+        });
+
       return data; 
 
     } on PostgrestException catch (error) {
@@ -123,6 +140,20 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
     
   }
 
+  Future<void> _launchURL(String target) async {
+    try {
+      final targetUrl = target;
+      if (await canLaunchUrl(Uri.parse(targetUrl))) {
+        await launchUrl(Uri.parse(targetUrl));
+      } else {
+        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+      }
+    } catch(_){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return ;
+    }
+  }
+
   @override
   void initState(){
     super.initState();
@@ -132,6 +163,8 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
         _imageData = data;
       });
     });
+
+    //print(_imageData[0]["links"]);
 
   }
 
@@ -150,28 +183,117 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
     
         child: Column(
           
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            myUserId == widget.image_own_user_id 
-              ? Container()
-              : EvaluateWithRadio(),
-            
-            
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                myUserId == widget.image_own_user_id 
+                  ? Container()
+                  : EvaluateWithRadio(),
+                
+                
     
-            myUserId == widget.image_own_user_id 
-              ? Container()
-              : SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+                myUserId == widget.image_own_user_id 
+                  ? Container()
+                  : SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
     
-            myUserId == widget.image_own_user_id 
-              ? Container()
-              : ElevatedButton(
-                onPressed: () {
-                  judPoints();
-                  _submitEvaluation();
-                },
-                child: const Text("送信"),
+                myUserId == widget.image_own_user_id 
+                  ? Container()
+                  : ElevatedButton(
+                    onPressed: () {
+                      judPoints();
+                      _submitEvaluation();
+                    },
+                    child: const Text("送信"),
+                  ),
+              ],
+            ),
+
+            SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "参考",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+            
+                  SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+                  
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: linkText.asMap().entries.map((entry) {
+                      // entry.key がインデックス（0-based）ですので、1を加えて1-basedの参考番号にします。
+                      int referenceNumber = entry.key + 1;
+            
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+            
+                              Text("参考$referenceNumber"),
+            
+                              SizedBox(width: 5),
+                              
+                              InkWell(
+                                onTap: () async {
+                                  //await _launchURL(entry.value);
+                                },
+                                child: Text(
+                                  entry.value,
+                                ).urlToLink(context),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
+            ),
+
+            SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "説明",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  SizedBox(height: 10),
+            
+                  Text(
+                    refExplain,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      // fontStyleは薄くしたい
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+             
+
+
+
     
           ],
         ),
@@ -371,3 +493,51 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
 }
 
 
+
+//https://qiita.com/Hiiisan/items/f0bbc5715fab7e6787ad
+RegExp _urlReg = RegExp(
+  r'https?://([\w-]+\.)+[\w-]+(/[\w-./?%&=#]*)?',
+);
+
+extension TextEx on Text {
+
+  RichText urlToLink(
+    BuildContext context,
+  ) {
+    final textSpans = <InlineSpan>[];
+
+    data!.splitMapJoin(
+      _urlReg,
+      onMatch: (Match match) {
+        final _match = match[0] ?? '';
+        textSpans.add(
+          TextSpan(
+            text: _match,
+            style: const TextStyle(
+              color: Colors.blue,
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async => await launchUrl(
+                    Uri.parse(_match),
+                  ),
+          ),
+        );
+        return '';
+      },
+      onNonMatch: (String text) {
+        textSpans.add(
+          TextSpan(
+            text: text,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        );
+        return '';
+      },
+    );
+
+    return RichText(text: TextSpan(children: textSpans));
+  }
+}
