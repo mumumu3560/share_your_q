@@ -458,338 +458,353 @@ class _CreatePageState extends State<CreatePage> {
       appBar: AppBar(
         title: const Text('作成ページ'),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              if (!isConfirmationMode)
-                Column(
-
-                  children: [
-                    // タイトルの入力フォーム
-                    TextFormField(
-                      maxLength: 30,
-                      initialValue: problemTitle,
-                      onChanged: (value) {
-                        setState(() {
-                          problemTitle = value;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: '問題のタイトル',
-                      ),
-                    ),
-
-                    
-                    // レベルとジャンルの横並び
-                    DropdownButton<String>(
-                      value: level,
-                      onChanged: (value) {
-                        setState(() {
-                          level = value;
-                        });
-                      },
-                      items: <String>['小学校', '中学校', '高校', '大学', 'その他']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      hint: const Text('レベルを選択してください'),
-                    ),
-
-                    
-                    DropdownButton<String>(
-                      value: subject,
-                      onChanged: (value) {
-                        setState(() {
-                          subject = value;
-                        });
-                      },
-                      items: <String>['数学', '物理', '化学', 'その他']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      hint: const Text('ジャンルを選択してください'),
-                    ),
-
-                    
-
-
-                    // タグの入力フォーム
-                    TextFormField(
-                      maxLength: 10,
-                      controller: _tagController,
-                      onChanged: (value) {
-                        
-                        setState(() {
-                          tagInput = value;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'タグを入力',
-                      ),
-                    ),
-
-
-                    ElevatedButton(
-                      onPressed: addTag,
-                      child: Text("タグを追加"),
-                    ),
-
-                  
-                    Wrap(
-                      children: tags
-                      .map(
-                        (tag) => Chip(
-                          label: Text(tag),
-                          onDeleted: () {
-                            removeTag(tag);
-                          },
-                        ),
-                      )
-                    .toList(),
-                    ),
-
-                    SizedBox(height: 10),
-
-
-
-
-                    
-
-                    // 参考文献リンクの入力フォーム
-                    TextFormField(
-                      maxLength: 200,
-                      controller: _urlController,
-                      onChanged: (value) {
-                        
-                        setState(() {
-                          urlInput = value;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: '参考文献を入力(リンクなど)',
-                      ),
-                    ),
-
-
-                    ElevatedButton(
-                      onPressed: addUrl,
-                      child: Text("参考文献を追加"),
-                    ),
-
-                  
-                    Wrap(
-                      children: urls
-                      .map(
-                        (url) => Chip(
-                          label: Text(url),
-                          onDeleted: () {
-                            removeUrl(url);
-                          },
-                        ),
-                      )
-                    .toList(),
-                    ),
-
-                    SizedBox(height: 10),
-
-                    //ここは参考文献についての説明
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal! * 90,
-                      child: TextFormField(
-                        //大きさを変えたい
-                        
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 3,
-                        maxLength: 200,
-                        controller: _refController,
-                        onChanged: (value) {
-                          setState(() {
-                            refText = value;
-                          });
-                        },
-                    
-                        decoration: const InputDecoration(
-                          labelText: '参考文献の簡単な説明',
-                        ),
-                    
-                      ),
-                    ),
-
-
-
-
-                    //ここは説明分
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal! * 90,
-                      child: TextFormField(
-                        //大きさを変えたい
-                        
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 3,
-                        maxLength: 100,
-                        controller: _explainController,
-                        onChanged: (value) {
-                          setState(() {
-                            explainText = value;
-                          });
-                        },
-                    
-                        decoration: const InputDecoration(
-                          labelText: '問題の簡単な説明',
-                        ),
-                    
-                      ),
-                    ),
-
-
-
-                    
-
-                    
-
-
-
-                    SizedBox(height: SizeConfig.blockSizeVertical! * 20),
-                    
-                    // 画像1の選択ウィジェット
-                    Column(
-                      children: [
-                        if (selectedImage1 == null)
-                          Column(
-                            children: [
-                              const Text(
-                                "問題文の画像を選択してください",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              ImageSelectionWidget(
-                                onImageSelected: (image) {
-                                  setState(() {
-                                    selectedImage1 = image;
-                                  });
-                                },
-                              ),
-                            ],
-                          )
-                        else
-                          Column(
-                            children: [
-                              Image.memory(
-                                selectedImage1!.bytes!,
-                                height: 150,
-                              ),
-                              SizedBox(height: 10),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    selectedImage1 = null;
-                                  });
-                                },
-                                child: const Text(
-                                  "画像を削除",
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                    
-                    SizedBox(height: SizeConfig.blockSizeVertical! * 20), // 適宜間隔を設定
-                    
-                    // 画像2の選択ウィジェット
-                    Column(
-                      children: [
-                        if (selectedImage2 == null)
-                          Column(
-                            children: [
-                              const Text(
-                                "解説の画像を選択してください",
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              ImageSelectionWidget(
-                                onImageSelected: (image) {
-                                  setState(() {
-                                    selectedImage2 = image;
-                                  });
-                                },
-                              ),
-                            ],
-                          )
-                        else
-                          Column(
-                            children: [
-                              Image.memory(
-                                selectedImage2!.bytes!,
-                                height: 150,
-                              ),
-                              SizedBox(height: 10),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    selectedImage2 = null;
-                                  });
-                                },
-                                child: const Text(
-                                  "画像を削除",
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-
-                    SizedBox(height: SizeConfig.blockSizeVertical! * 20),
-
-                    ElevatedButton(
-                      onPressed: () async{
-                        print("now");
-                        //await fetchProblemNum();
-                        print("isOK");
-
-                        if (selectedImage1 == null ||
-                            selectedImage2 == null ||
-                            problemTitle == null ||
-                            subject == null ||
-                            level == null ||
-                            tags.isEmpty) {
-                          // エラーがある場合の処理
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('全ての情報を入力してください。'),
-                              backgroundColor: Colors.red,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (!isConfirmationMode)
+                      Column(
+          
+                        children: [
+                          // タイトルの入力フォーム
+                          TextFormField(
+                            maxLength: 30,
+                            initialValue: problemTitle,
+                            onChanged: (value) {
+                              setState(() {
+                                problemTitle = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              labelText: '問題のタイトル',
                             ),
-                          );
-                        } else {
-                          print("ここは？");
-                          //print(selectedImage1!.bytes!);
-                          //fetchProblemNum();
-                          setState(() {
-                            
-                            isConfirmationMode = true;
-                          });
-                        }
-                      },
-                      child: Text("問題のプレビュー"),
-                    ),
-                    SizedBox(height: 20),
+                          ),
+          
+                          
+                          // レベルとジャンルの横並び
+                          DropdownButton<String>(
+                            value: level,
+                            onChanged: (value) {
+                              setState(() {
+                                level = value;
+                              });
+                            },
+                            items: <String>['小学校', '中学校', '高校', '大学', 'その他']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            hint: const Text('レベルを選択してください'),
+                          ),
+          
+                          
+                          DropdownButton<String>(
+                            value: subject,
+                            onChanged: (value) {
+                              setState(() {
+                                subject = value;
+                              });
+                            },
+                            items: <String>['数学', '物理', '化学', 'その他']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            hint: const Text('ジャンルを選択してください'),
+                          ),
+          
+                          
+          
+          
+                          // タグの入力フォーム
+                          TextFormField(
+                            maxLength: 10,
+                            controller: _tagController,
+                            onChanged: (value) {
+                              
+                              setState(() {
+                                tagInput = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'タグを入力',
+                            ),
+                          ),
+          
+          
+                          ElevatedButton(
+                            onPressed: addTag,
+                            child: Text("タグを追加"),
+                          ),
+          
+                        
+                          Wrap(
+                            children: tags
+                            .map(
+                              (tag) => Chip(
+                                label: Text(tag),
+                                onDeleted: () {
+                                  removeTag(tag);
+                                },
+                              ),
+                            )
+                          .toList(),
+                          ),
+          
+                          SizedBox(height: 10),
+          
+          
+          
+          
+                          
+          
+                          // 参考文献リンクの入力フォーム
+                          TextFormField(
+                            maxLength: 200,
+                            controller: _urlController,
+                            onChanged: (value) {
+                              
+                              setState(() {
+                                urlInput = value;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              labelText: '参考文献を入力(リンクなど)',
+                            ),
+                          ),
+          
+          
+                          ElevatedButton(
+                            onPressed: addUrl,
+                            child: Text("参考文献を追加"),
+                          ),
+          
+                        
+                          Wrap(
+                            children: urls
+                            .map(
+                              (url) => Chip(
+                                label: Text(url),
+                                onDeleted: () {
+                                  removeUrl(url);
+                                },
+                              ),
+                            )
+                          .toList(),
+                          ),
+          
+                          SizedBox(height: 10),
+          
+                          //ここは参考文献についての説明
+                          SizedBox(
+                            width: SizeConfig.blockSizeHorizontal! * 90,
+                            child: TextFormField(
+                              //大きさを変えたい
+                              
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 3,
+                              maxLength: 200,
+                              controller: _refController,
+                              onChanged: (value) {
+                                setState(() {
+                                  refText = value;
+                                });
+                              },
+                          
+                              decoration: const InputDecoration(
+                                labelText: '参考文献の簡単な説明',
+                              ),
+                          
+                            ),
+                          ),
+          
+          
+          
+          
+                          //ここは説明分
+                          SizedBox(
+                            width: SizeConfig.blockSizeHorizontal! * 90,
+                            child: TextFormField(
+                              //大きさを変えたい
+                              
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 3,
+                              maxLength: 100,
+                              controller: _explainController,
+                              onChanged: (value) {
+                                setState(() {
+                                  explainText = value;
+                                });
+                              },
+                          
+                              decoration: const InputDecoration(
+                                labelText: '問題の簡単な説明',
+                              ),
+                          
+                            ),
+                          ),
+          
+          
+          
+                          
+          
+                          
+          
+          
+          
+                          SizedBox(height: SizeConfig.blockSizeVertical! * 20),
+                          
+                          // 画像1の選択ウィジェット
+                          Column(
+                            children: [
+                              if (selectedImage1 == null)
+                                Column(
+                                  children: [
+                                    const Text(
+                                      "問題文の画像を選択してください",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    ImageSelectionWidget(
+                                      onImageSelected: (image) {
+                                        setState(() {
+                                          selectedImage1 = image;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    Image.memory(
+                                      selectedImage1!.bytes!,
+                                      height: 150,
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedImage1 = null;
+                                        });
+                                      },
+                                      child: const Text(
+                                        "画像を削除",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                          
+                          SizedBox(height: SizeConfig.blockSizeVertical! * 20), // 適宜間隔を設定
+                          
+                          // 画像2の選択ウィジェット
+                          Column(
+                            children: [
+                              if (selectedImage2 == null)
+                                Column(
+                                  children: [
+                                    const Text(
+                                      "解説の画像を選択してください",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    ImageSelectionWidget(
+                                      onImageSelected: (image) {
+                                        setState(() {
+                                          selectedImage2 = image;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    Image.memory(
+                                      selectedImage2!.bytes!,
+                                      height: 150,
+                                    ),
+                                    SizedBox(height: 10),
+                                    TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          selectedImage2 = null;
+                                        });
+                                      },
+                                      child: const Text(
+                                        "画像を削除",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+          
+                          SizedBox(height: SizeConfig.blockSizeVertical! * 20),
+          
+                          ElevatedButton(
+                            onPressed: () async{
+                              print("now");
+                              //await fetchProblemNum();
+                              print("isOK");
+          
+                              if (selectedImage1 == null ||
+                                  selectedImage2 == null ||
+                                  problemTitle == null ||
+                                  subject == null ||
+                                  level == null ||
+                                  tags.isEmpty) {
+                                // エラーがある場合の処理
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('全ての情報を入力してください。'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              } else {
+                                print("ここは？");
+                                //print(selectedImage1!.bytes!);
+                                //fetchProblemNum();
+                                setState(() {
+                                  
+                                  isConfirmationMode = true;
+                                });
+                              }
+                            },
+                            child: Text("問題のプレビュー"),
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                    if (isConfirmationMode)
+                      buildConfirmationView(),
+          
                   ],
                 ),
-              if (isConfirmationMode)
-                buildConfirmationView(),
-
-            ],
+              ),
+            ),
           ),
-        ),
+
+          Container(
+            height: SizeConfig.blockSizeVertical! * 15,
+            //height: 100 ,
+            width: double.infinity,
+            color: Colors.white,
+            //TODO ビルドリリースの時のみ
+            //child: _adMob.getAdBanner(),
+          ),
+        ],
       ),
     );
   }
