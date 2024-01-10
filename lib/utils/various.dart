@@ -11,6 +11,9 @@ import 'dart:typed_data';
 
 import "package:share_your_q/image_operations/image_request.dart";
 
+//TODO ビルドリリースの時のみ
+import "package:share_your_q/admob/ad_mob.dart";
+
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
@@ -340,13 +343,48 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
 }
 
 
-Widget BannerContainer(){
-  return Container(
-    height: SizeConfig.blockSizeVertical! * 10,
-    //height: 100 ,
-    width: double.infinity,
-    color: Colors.white,
+class BannerContainer extends StatefulWidget{
+
+  final double height;
+
+  const BannerContainer({
+    Key? key,
+    required this.height,
+  }) : super(key: key);
+
+  @override
+  _BannerContainerState createState() => _BannerContainerState();
+}
+
+class _BannerContainerState extends State<BannerContainer> {
+
+  //TODO ビルドリリースの時のみ
+  final AdMob _adMob = AdMob();
+
+  @override
+  void initState() {
+    super.initState();
     //TODO ビルドリリースの時のみ
-    //child: _adMob.getAdBanner(),
-  );
+    _adMob.load();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    //TODO ビルドリリースの時のみ
+    _adMob.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+
+    return Container(
+      height: widget.height,
+      //height: 100 ,
+      width: double.infinity,
+      color: Colors.white,
+      //TODO ビルドリリースの時のみ
+      child: _adMob.getAdBanner(),
+    );
+  }
 }
