@@ -17,7 +17,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "package:share_your_q/image_operations/image_list_display.dart";
-
+import 'package:share_your_q/pages/profile_page/components/create_trend.dart';
 
 //TODO ここにプロフィールページを作成する
 //グラフなどで自分の問題の傾向を見れるようにする
@@ -206,7 +206,19 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                       
                     Center(
-                      child: Text("It's rainy here"),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10,),
+
+                          Container(
+                            width: SizeConfig.blockSizeHorizontal! * 100,
+                            height: SizeConfig.blockSizeVertical! * 70,
+                            child: CreateTrend(
+                              image_own_user_id: widget.userId,
+                            ),
+                          ),
+                        ]
+                      ),
                     ),
                       
                     Center(
