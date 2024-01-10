@@ -796,6 +796,7 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
 
+          /*
           Container(
             height: SizeConfig.blockSizeVertical! * 15,
             //height: 100 ,
@@ -804,6 +805,9 @@ class _CreatePageState extends State<CreatePage> {
             //TODO ビルドリリースの時のみ
             //child: _adMob.getAdBanner(),
           ),
+           */
+
+          BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
         ],
       ),
     );

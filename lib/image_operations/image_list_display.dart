@@ -215,6 +215,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                               final item = imageData[index];
                               return Column(
                                 children: [
+                                  /*
                                   Container(
                                     height: 64,
                                     width: double.infinity,
@@ -222,6 +223,9 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                     //TODO ビルドリリースの時のみ
                                     //child: _adMob.getAdBanner(),
                                   ),
+                                   */
+
+                                  BannerContainer(height:64),
 
                                   
                                   MyListItem(item: item),

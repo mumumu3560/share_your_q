@@ -237,7 +237,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
 
-            BannerContainer()
+            BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10,)
           ],
         ),
     
