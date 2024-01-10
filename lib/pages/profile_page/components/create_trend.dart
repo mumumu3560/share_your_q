@@ -25,6 +25,7 @@ class CreateTrend extends StatefulWidget{
 class _CreateTrendState extends State<CreateTrend>{
 
   late List<Map<String, dynamic>> _imageData = [];
+  late List<Map<String, dynamic>> _likesData = [];
   Map<DateTime, int>? _heatmapData = {};
 
   int maxSize = 0;
@@ -42,14 +43,13 @@ class _CreateTrendState extends State<CreateTrend>{
         .select<List<Map<String, dynamic>>>()
         .eq('user_id', widget.image_own_user_id);
 
-      print(_imageData[0]['created_at']);
-      print("hhhhhhhhhhhhhhhhh");
+      _likesData = await supabase
+        .from("likes")
+        .select<List<Map<String, dynamic>>>()
+        .eq("user_id", widget.image_own_user_id)
+        .eq("add", true);
 
-      print(DateTime.parse(_imageData[0]["created_at"])); 
-
-      print(DateTime(2021, 1, 6));
-      
-      convertData();
+      convertData("watched", _imageData);
 
 
     } on PostgrestException catch (error) {
@@ -62,13 +62,15 @@ class _CreateTrendState extends State<CreateTrend>{
     }
   }
 
-
-  void convertData(){
-    for(int i = 0; i < _imageData.length; i++){
-      DateTime date = DateTime.parse(_imageData[i]["created_at"]);
+  //ここではheatmapで使えるデータ型に変更する。
+  //typeはwatchedかlikesのどちらか
+  //targetは_imageDataか_likesDataのどちらか
+  void convertData(String type, List<Map<String, dynamic>> target){
+    for(int i = 0; i < target.length; i++){
+      DateTime date = DateTime.parse(target[i]["created_at"]);
       DateTime truncatedDateTime = DateTime(date.year, date.month, date.day);
 
-      int watchedCount = _imageData[i]["watched"]! as int;
+      int watchedCount = target[i][type]! as int;
       int watchedCount2 = 0;
 
       if(_heatmapData![truncatedDateTime] != null){
@@ -78,11 +80,8 @@ class _CreateTrendState extends State<CreateTrend>{
       int watchedCount3 = watchedCount + watchedCount2;
 
       _heatmapData![truncatedDateTime] = watchedCount3;//_imageData[i]["watched"]! as int;
-      maxSize = max(maxSize, _imageData[i]["watched"]);
+      maxSize = max(maxSize, target[i][type]);
 
-      print("truncate");
-      print(truncatedDateTime);
-      print(_imageData[i]["watched"]);
     }
 
     setState(() {
@@ -107,7 +106,7 @@ class _CreateTrendState extends State<CreateTrend>{
     
             SizedBox(height: 10,),
     
-            Text(
+            const Text(
               "閲覧数の推移",
               style: TextStyle(
                 fontSize: 20,
