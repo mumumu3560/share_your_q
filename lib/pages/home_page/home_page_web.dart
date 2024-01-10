@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: false,), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true,), // ImageDisplayに遷移
                   ),
                 );
               },
