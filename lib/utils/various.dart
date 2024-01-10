@@ -338,3 +338,15 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   cache.put(imageId, imageBytes);
   return imageBytes;
 }
+
+
+Widget BannerContainer(){
+  return Container(
+    height: SizeConfig.blockSizeVertical! * 10,
+    //height: 100 ,
+    width: double.infinity,
+    color: Colors.white,
+    //TODO ビルドリリースの時のみ
+    //child: _adMob.getAdBanner(),
+  );
+}
