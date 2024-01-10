@@ -137,100 +137,108 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
     
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 10,),
-
-              Container(
-                width: SizeConfig.blockSizeHorizontal! * 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.green),
-                ),
-
-                padding: EdgeInsets.all(10),
-
-                child: ProfileHeader(
-                  userName: userName, 
-                  explainText: explainText, 
-                  age: selectedYear, 
-                  linkText: linkText, 
-                  profileImageBytes: profileImageBytes,
-                ),
-              ),
-
-              SizedBox(height: 10,),
-
-              const TabBar(
-
-                tabs: <Widget>[
-                  Tab(text: "投稿", icon: Icon(Icons.star)),
-                  Tab(text: "傾向", icon: Icon(Icons.create)),
-                  Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
-                  
-                ]
-              ),
-
-              SizedBox(height: 10,),
-              
-              Container(
-                width: SizeConfig.blockSizeHorizontal! * 90,
-                height: SizeConfig.blockSizeVertical! * 75,
-
-                child: TabBarView(
-                  
-                  children: <Widget>[
-                      
-                    Center(
-                      
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10,),
-
-                          Container(
-                            width: SizeConfig.blockSizeHorizontal! * 90,
-                            height: SizeConfig.blockSizeVertical! * 70,
-                            child: ImageListDisplay(
-                              searchUserId: widget.userId,
-                              level: "全て",
-                              method: "新着",
-                              subject: "全て",
-                              tags: [],
-                              title: "${userName}の投稿一覧",
-                              showAppbar: false,
-                            ),
-                          ),
-                        ]
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(height: 10,),
+            
+                    Container(
+                      width: SizeConfig.blockSizeHorizontal! * 90,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.green),
+                      ),
+            
+                      padding: EdgeInsets.all(10),
+            
+                      child: ProfileHeader(
+                        userName: userName, 
+                        explainText: explainText, 
+                        age: selectedYear, 
+                        linkText: linkText, 
+                        profileImageBytes: profileImageBytes,
                       ),
                     ),
-                      
-                    Center(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10,),
-
-                          Container(
-                            width: SizeConfig.blockSizeHorizontal! * 100,
-                            height: SizeConfig.blockSizeVertical! * 70,
-                            child: CreateTrend(
-                              image_own_user_id: widget.userId,
+            
+                    SizedBox(height: 10,),
+            
+                    const TabBar(
+            
+                      tabs: <Widget>[
+                        Tab(text: "投稿", icon: Icon(Icons.star)),
+                        Tab(text: "傾向", icon: Icon(Icons.create)),
+                        Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
+                        
+                      ]
+                    ),
+            
+                    SizedBox(height: 10,),
+                    
+                    Container(
+                      width: SizeConfig.blockSizeHorizontal! * 90,
+                      height: SizeConfig.blockSizeVertical! * 75,
+            
+                      child: TabBarView(
+                        
+                        children: <Widget>[
+                            
+                          Center(
+                            
+                            child: Column(
+                              children: [
+                                SizedBox(height: 10,),
+            
+                                Container(
+                                  width: SizeConfig.blockSizeHorizontal! * 90,
+                                  height: SizeConfig.blockSizeVertical! * 70,
+                                  child: ImageListDisplay(
+                                    searchUserId: widget.userId,
+                                    level: "全て",
+                                    method: "新着",
+                                    subject: "全て",
+                                    tags: [],
+                                    title: "${userName}の投稿一覧",
+                                    showAppbar: false,
+                                  ),
+                                ),
+                              ]
                             ),
                           ),
-                        ]
+                            
+                          Center(
+                            child: Column(
+                              children: [
+                                SizedBox(height: 10,),
+            
+                                Container(
+                                  width: SizeConfig.blockSizeHorizontal! * 100,
+                                  height: SizeConfig.blockSizeVertical! * 70,
+                                  child: CreateTrend(
+                                    image_own_user_id: widget.userId,
+                                  ),
+                                ),
+                              ]
+                            ),
+                          ),
+                            
+                          Center(
+                            child: Text("It's sunny here"),
+                          ),
+                            
+                        ],
+                            
                       ),
                     ),
-                      
-                    Center(
-                      child: Text("It's sunny here"),
-                    ),
-                      
                   ],
-                      
                 ),
               ),
-            ],
-          ),
+            ),
+
+            BannerContainer()
+          ],
         ),
     
       ),
