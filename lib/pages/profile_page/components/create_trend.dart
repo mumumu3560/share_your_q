@@ -67,7 +67,17 @@ class _CreateTrendState extends State<CreateTrend>{
     for(int i = 0; i < _imageData.length; i++){
       DateTime date = DateTime.parse(_imageData[i]["created_at"]);
       DateTime truncatedDateTime = DateTime(date.year, date.month, date.day);
-      _heatmapData![truncatedDateTime] = _imageData[i]["watched"]! as int;
+
+      int watchedCount = _imageData[i]["watched"]! as int;
+      int watchedCount2 = 0;
+
+      if(_heatmapData![truncatedDateTime] != null){
+        watchedCount2 = _heatmapData![truncatedDateTime]!;
+      }
+      
+      int watchedCount3 = watchedCount + watchedCount2;
+
+      _heatmapData![truncatedDateTime] = watchedCount3;//_imageData[i]["watched"]! as int;
       maxSize = max(maxSize, _imageData[i]["watched"]);
 
       print("truncate");
@@ -80,11 +90,6 @@ class _CreateTrendState extends State<CreateTrend>{
     });
   }
 
-  
-
-
-
-
 
   @override
   void initState(){
@@ -95,40 +100,57 @@ class _CreateTrendState extends State<CreateTrend>{
 
   @override
   Widget build(BuildContext context){
-    return Container(
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            
-            //scrollDirection: Axis.horizontal,
-            child: HeatMap(
-              //defaultColor: Colors.white,
-              colorMode: ColorMode.opacity,
-              datasets: _heatmapData!,
-              scrollable: true,
-              defaultColor: Colors.white.withOpacity(0.4),
-              /*
-              datasets: {
-                DateTime(2024, 1, 6, 9): 3,
-                DateTime(2024, 1, 7): 7,
-                DateTime(2024, 1, 5): 10,
-                DateTime(2024, 1, 3): 13,
-                DateTime(2023, 12, 13): 6,
-              },
-              
-               */
-              
-              colorsets: const {
-                
-                10: Color.fromARGB(255, 0, 255, 8),
-              },
-              
-              onClick: (value) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.toString())));
-              },
+    return SingleChildScrollView(
+      child: Container(
+        child: Column(
+          children: [
+    
+            SizedBox(height: 10,),
+    
+            Text(
+              "閲覧数の推移",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          )
-        ],
+    
+            SizedBox(height: SizeConfig.blockSizeVertical!*5,),
+
+
+            SingleChildScrollView(
+              
+              //scrollDirection: Axis.horizontal,
+              child: Container(
+                child: HeatMap(
+                  //defaultColor: Colors.white,
+                  colorMode: ColorMode.opacity,
+                  datasets: _heatmapData!,
+                  scrollable: true,
+                  defaultColor: Colors.white.withOpacity(0.2),
+                  
+                  colorsets: {
+                    maxSize: const Color.fromARGB(255, 0, 255, 8),
+                  },
+                  
+                  onClick: (value) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.toString())));
+                  },
+                ),
+              ),
+            ),
+    
+
+
+
+            SizedBox(height: SizeConfig.blockSizeVertical!*10,),
+    
+
+
+
+            
+          ],
+        ),
       ),
     );
 
