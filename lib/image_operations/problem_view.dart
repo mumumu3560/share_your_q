@@ -338,8 +338,12 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
               GestureDetector(
 
                 child: Container(
-                  width: SizeConfig.blockSizeHorizontal! * 90,
-                  height: SizeConfig.blockSizeVertical! * 90,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  //width: SizeConfig.blockSizeHorizontal! * 100,
+                  //height: SizeConfig.blockSizeVertical! * 100,
                   
                   padding: EdgeInsets.all(8.0),
                   margin: EdgeInsets.all(8.0),
@@ -366,41 +370,47 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
               
                 ),
 
-                onTap: () {
-                  //画像をタップしたら拡大表示する
+                onTap:(){
+                  //画像を拡大表示する
                   showDialog(
                     context: context,
                     builder: (_) {
                       return Dialog(
-                        child: Container(
-                          //width: SizeConfig.blockSizeHorizontal! * 90,
-                          //height: SizeConfig.blockSizeVertical! * 90,
-                          padding: EdgeInsets.all(8.0),
-                          margin: EdgeInsets.all(8.0),
-                          //decoration: BoxDecoration(border: Border.all(), color: Colors.black),
-                          child: SizedBox(
-                            //width: SizeConfig.safeBlockHorizontal! * 80,
-                            //height: SizeConfig.safeBlockVertical! * 30,
-                            child: widget.image1 != null
-                                ? Image.memory(
-                                    widget.image1!.bytes!,
-                                    fit: BoxFit.contain,
-                                  )
-                                  //ここでもし画像が存在しない場合の処理を考える
-                                  
-                                : widget.imageUrlPX != null
-                                    ? Image.memory(
-                                        image1Bytes!,
-                                        fit: BoxFit.contain,
-                                      )
-                                    //TODO No imageの画像を表示する  
-                                    : null,
-                          ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: Image.memory(
+                                    image1Bytes!,
+                                    fit: BoxFit.cover,
+                                  ).image,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 16.0,
+                              left: 16.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop(); // ダイアログを閉じる
+                                },
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                  size: 24.0,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
                   );
-                },
+                 
+                }
 
 
               ),
@@ -423,8 +433,8 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             else
               GestureDetector(
                 child: Container(
-                  width: SizeConfig.blockSizeHorizontal! * 90,
-                  height: SizeConfig.blockSizeVertical! * 90,
+                  width: SizeConfig.blockSizeHorizontal! * 100,
+                  height: SizeConfig.blockSizeVertical! * 100,
               
                   padding: EdgeInsets.all(8.0),
                   margin: EdgeInsets.all(8.0),
@@ -454,30 +464,40 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                     context: context,
                     builder: (_) {
                       return Dialog(
-                        child: Container(
-                          padding: EdgeInsets.all(8.0),
-                          margin: EdgeInsets.all(8.0),
-                          
-                          child: SizedBox(
-                            child: widget.image2 != null
-                                ? Image.memory(
-                                    widget.image2!.bytes!,
-                                    fit: BoxFit.contain,
-                                  )
-                                  //ここでもし画像が存在しない場合の処理を考える
-                                  
-                                : widget.imageUrlCX != null
-                                    ? Image.memory(
-                                        image2Bytes!,
-                                        fit: BoxFit.contain,
-                                      )
-                                    //TODO No imageの画像を表示する  
-                                    : null,
-                          ),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: Image.memory(
+                                    image2Bytes!,
+                                    fit: BoxFit.cover,
+                                  ).image,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 16.0,
+                              left: 16.0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).pop(); // ダイアログを閉じる
+                                },
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: Colors.white,
+                                  size: 24.0,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },
-                  );                  
+                  );
+                 
                 }
               ),
 
