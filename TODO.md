@@ -16,3 +16,17 @@ create_pageの方で参考文献を追加する項目を追加。最大でも10�
 displayの方でlinkは見れるようになった。理解が足りていないかも。     
 create_pageのpreviewでもこれが見れるようにしたい。
 
+
+### admobをどうするか？
+自分が今使おうとしているもの
+1, バナー
+2, インタースティシャル
+
+1
+バナーの方はadaptiveの方がいいらしいのでこれをどう使うかを考える
+
+2
+インタースティシャルはdialogで使えばいい？何かしらのアクションが終わったことを表すときに同時に示すようにすればよさそう？
+場所は作成の終わったときとローディングの時(create_page)、報告のとき(display_page)
+https://developers.google.com/search/docs/appearance/avoid-intrusive-interstitials?hl=ja
+
