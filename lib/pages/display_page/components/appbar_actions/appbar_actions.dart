@@ -95,7 +95,7 @@ class _AppBarActionsState extends State<AppBarActions> {
         //isLiked = !isLiked;
         if (response != null) {
           // エラーハンドリング
-          print('Error updating data: ${response}');
+          print('Error updating data: $response');
         } else {
           // 成功時の処理
           print('Data updated successfully!');
@@ -119,7 +119,7 @@ class _AppBarActionsState extends State<AppBarActions> {
 
         if (response == null) {
           // エラーハンドリング
-          print('Error inserting data: ${response}');
+          print('Error inserting data: $response');
         } else {
           // 成功時の処理
           print('Data inserted successfully!');
@@ -137,7 +137,7 @@ class _AppBarActionsState extends State<AppBarActions> {
       //これがないと高さが変わらない
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: SizeConfig.blockSizeVertical! * 70,
           child: CommentListDisplay(image_id: imageId),
         );
@@ -200,15 +200,15 @@ class _AppBarActionsState extends State<AppBarActions> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Done"),
-            content: Text("報告が終わりました"),
+            title: const Text("Done"),
+            content: const Text("報告が終わりました"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   //Navigator.pop(context);
                   Navigator.of(context).pop(); // ダイアログを閉じる
                 },
-                child: Text('閉じる'),
+                child: const Text('閉じる'),
               ),
             ],
           );
@@ -296,15 +296,15 @@ class _AppBarActionsState extends State<AppBarActions> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Done"),
-            content: Text("問題の削除が終わりました"),
+            title: const Text("Done"),
+            content: const Text("問題の削除が終わりました"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   //Navigator.pop(context);
                   Navigator.of(context).pop(); // ダイアログを閉じる
                 },
-                child: Text('閉じる'),
+                child: const Text('閉じる'),
               ),
             ],
           );
@@ -330,8 +330,8 @@ class _AppBarActionsState extends State<AppBarActions> {
 
               widget.image_own_user_id == myUserId
               ? ListTile(
-                  leading: Icon(Icons.delete),
-                  title: Text("この投稿を削除する"),
+                  leading: const Icon(Icons.delete),
+                  title: const Text("この投稿を削除する"),
                   onTap: () async{
                     await ShowDialogWithFunction(
                       context: context, 
@@ -344,8 +344,8 @@ class _AppBarActionsState extends State<AppBarActions> {
                 )
 
               : ListTile(
-                  leading: Icon(Icons.report),
-                  title: Text("この投稿を報告する"),
+                  leading: const Icon(Icons.report),
+                  title: const Text("この投稿を報告する"),
                   onTap: () async{
                     await ShowDialogWithFunction(
                       context: context, 
@@ -375,7 +375,7 @@ class _AppBarActionsState extends State<AppBarActions> {
       //これがないと高さが変わらない
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return Container(
+        return SizedBox(
           height: SizeConfig.blockSizeVertical! * 60,
           child: EvaluateDisplay(image_id: imageId, image_own_user_id: widget.image_own_user_id,),
         );

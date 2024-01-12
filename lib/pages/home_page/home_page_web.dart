@@ -8,8 +8,6 @@ import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 //import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import "package:share_your_q/utils/various.dart";
-import "package:share_your_q/image_operations/test_override.dart";
 
 
 
@@ -20,10 +18,12 @@ import "package:share_your_q/image_operations/test_override.dart";
 
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   
   static MaterialPageRoute route() {
     return MaterialPageRoute(
-      builder: (_) => HomePage(),
+      builder: (_) => const HomePage(),
     );
   }
 
@@ -96,8 +96,8 @@ class _HomePageState extends State<HomePage> {
     fetchData();
     fetchProfile();
     //
-    final String External_id = supabase.auth.currentUser!.id.toString();
-    print(External_id);
+    final String externalId = supabase.auth.currentUser!.id.toString();
+    print(externalId);
     //TODO ここはandroidビルドリリースの時のみ
     //OneSignal.login(External_id);
   }
@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             SizedBox(
               height: SizeConfig.blockSizeVertical! * 15,
-              child: DrawerHeader(
+              child: const DrawerHeader(
                 child: Text("Share"),
               ),
             ),
@@ -147,18 +147,18 @@ class _HomePageState extends State<HomePage> {
                 // 画像投稿ページに遷移するコードを追加
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => CreatePage(), // ImageDisplayに遷移
+                    builder: (context) => const CreatePage(), // ImageDisplayに遷移
                   ),
                 );
               },
             ),
 
             ListTile(
-              title: Text('問題を探す'),
+              title: const Text('問題を探す'),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => SearchPage(), // ImageDisplayに遷移
+                    builder: (context) => const SearchPage(), // ImageDisplayに遷移
                   ),
                 );
                 // 画像探しページに遷移するコードを追加
@@ -184,7 +184,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true,), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -198,8 +198,8 @@ class _HomePageState extends State<HomePage> {
       body: PageView(
         controller: _pageViewController,
         children:  <Widget>[
-          ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false,),
-          SearchPage(),
+          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false,),
+          const SearchPage(),
           ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           const TestPages(title: "D"),
         ],
@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          _pageViewController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeOut);
+          _pageViewController.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

@@ -1,10 +1,7 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 
-import 'package:timeago/timeago.dart';
 
 import 'dart:collection';
 import 'dart:typed_data';
@@ -12,7 +9,7 @@ import 'dart:typed_data';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //TODO ビルドリリースの時のみ
-import "package:share_your_q/admob/ad_mob.dart";
+//import "package:share_your_q/admob/ad_mob.dart";
 
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
@@ -31,8 +28,8 @@ void showLoadingDialog(BuildContext context, String message) {
       return AlertDialog(
         content: Row(
           children: [
-            CircularProgressIndicator(color: Colors.orange),
-            SizedBox(width: 20),
+            const CircularProgressIndicator(color: Colors.orange),
+            const SizedBox(width: 20),
             Text(message), // ローディング中のメッセージ
           ],
         ),
@@ -54,7 +51,7 @@ void showFinisheDialog(BuildContext context, String title, String message) {
             onPressed: () {
               Navigator.of(context).pop(); // ダイアログを閉じる
             },
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       );
@@ -217,14 +214,14 @@ class ShowDialogWithFunction {
               onPressed: () {
                 Navigator.of(context).pop(); // ダイアログを閉じる
               },
-              child: Text('キャンセル'),
+              child: const Text('キャンセル'),
             ),
             TextButton(
               onPressed: () async{
                 Navigator.of(context).pop(); // ダイアログを閉じる
                 await functionOnPressed();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -359,32 +356,36 @@ class BannerContainer extends StatefulWidget{
 class _BannerContainerState extends State<BannerContainer> {
 
   //TODO ビルドリリースの時のみ
-  final AdMob _adMob = AdMob();
+  //final AdMob _adMob = AdMob();
 
   @override
   void initState() {
     super.initState();
     //TODO ビルドリリースの時のみ
-    _adMob.load();
+    //_adMob.load();
   }
 
   @override
   void dispose() {
     super.dispose();
     //TODO ビルドリリースの時のみ
-    _adMob.dispose();
+    //_adMob.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
-
+    SizeConfig().init(context);
+    print("height");
+    print(widget.height);
+    print("height2222");
+    print(SizeConfig.blockSizeVertical! * 10);
     return Container(
-      height: widget.height,
+      height: SizeConfig.blockSizeVertical! * 13,
       //height: 100 ,
       width: double.infinity,
       color: Colors.white,
       //TODO ビルドリリースの時のみ
-      child: _adMob.getAdBanner(),
+      //child: _adMob.getAdBanner(),
     );
   }
 }

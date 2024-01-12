@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -18,6 +17,8 @@ import "package:share_your_q/image_operations/problem_view.dart";
 //textは最大で2GBまで入るので問題がある(flutterのtextformfieldの制限変えられる)
 
 class CreatePage extends StatefulWidget {
+  const CreatePage({super.key});
+
   @override
   _CreatePageState createState() => _CreatePageState();
 }
@@ -44,7 +45,7 @@ class _CreatePageState extends State<CreatePage> {
 
   //supabaseに送るもの。
   String? problemTitle = '';
-  TextEditingController _titleController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   //教科、数学など
   String? subject;
   //小学校、中学校などいつ習ったものか
@@ -57,16 +58,16 @@ class _CreatePageState extends State<CreatePage> {
   List<String> urls = [];
 
   //tagの入力コントローラー
-  TextEditingController _tagController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
 
   //参考文献の入力コントローラー
-  TextEditingController _urlController = TextEditingController();
+  final TextEditingController _urlController = TextEditingController();
 
   //参考文献説明の入力コントローラー
-  TextEditingController _refController = TextEditingController();
+  final TextEditingController _refController = TextEditingController();
 
   //説明文の入力コントローラー
-  TextEditingController _explainController = TextEditingController();
+  final TextEditingController _explainController = TextEditingController();
 
   String? explainText = '';
   String? refText = '';
@@ -130,7 +131,7 @@ class _CreatePageState extends State<CreatePage> {
       final uploadUrl = directUploadUrl;
       int responseNum;
       try{
-        responseNum = await uploadImage(uploadUrl, selectedImage).timeout(Duration(seconds: 10));
+        responseNum = await uploadImage(uploadUrl, selectedImage).timeout(const Duration(seconds: 10));
       }catch(e){
         responseNum = 1;
       }
@@ -182,7 +183,7 @@ class _CreatePageState extends State<CreatePage> {
         //"PorC": 1,
         "level": level,
         //"tags": tags,
-        "tag1": tags.length > 0 ? tags[0] : "",
+        "tag1": tags.isNotEmpty ? tags[0] : "",
         "tag2": tags.length > 1 ? tags[1] : "",
         "tag3": tags.length > 2 ? tags[2] : "",
         "tag4": tags.length > 3 ? tags[3] : "",
@@ -250,7 +251,7 @@ class _CreatePageState extends State<CreatePage> {
         },
 
       
-      ).sendRequest().timeout(Duration(seconds: 10));
+      ).sendRequest().timeout(const Duration(seconds: 10));
 
     } catch(e){
       response1 = 1;
@@ -350,14 +351,14 @@ class _CreatePageState extends State<CreatePage> {
     if(isOne){
       final checkUpload1 = await uploadSelectedImage(selectedImage1, customId1!, directUploadUrl1);
     
-      if(checkUpload1 as int != 0){
+      if(checkUpload1 != 0){
         return 1;
       }
     }
     else{
       final checkUpload2 = await uploadSelectedImage(selectedImage2, customId2!, directUploadUrl2);
     
-      if(checkUpload2 as int != 0){
+      if(checkUpload2 != 0){
         return 1;
       }
     }
@@ -543,7 +544,7 @@ class _CreatePageState extends State<CreatePage> {
           
                           ElevatedButton(
                             onPressed: addTag,
-                            child: Text("タグを追加"),
+                            child: const Text("タグを追加"),
                           ),
           
                         
@@ -560,7 +561,7 @@ class _CreatePageState extends State<CreatePage> {
                           .toList(),
                           ),
           
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
           
           
           
@@ -585,7 +586,7 @@ class _CreatePageState extends State<CreatePage> {
           
                           ElevatedButton(
                             onPressed: addUrl,
-                            child: Text("参考文献を追加"),
+                            child: const Text("参考文献を追加"),
                           ),
           
                         
@@ -602,7 +603,7 @@ class _CreatePageState extends State<CreatePage> {
                           .toList(),
                           ),
           
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
           
                           //ここは参考文献についての説明
                           SizedBox(
@@ -689,7 +690,7 @@ class _CreatePageState extends State<CreatePage> {
                                       selectedImage1!.bytes!,
                                       height: 150,
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     TextButton(
                                       onPressed: () {
                                         setState(() {
@@ -734,7 +735,7 @@ class _CreatePageState extends State<CreatePage> {
                                       selectedImage2!.bytes!,
                                       height: 150,
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     TextButton(
                                       onPressed: () {
                                         setState(() {
@@ -782,9 +783,9 @@ class _CreatePageState extends State<CreatePage> {
                                 });
                               }
                             },
-                            child: Text("問題のプレビュー"),
+                            child: const Text("問題のプレビュー"),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                         ],
                       ),
                     if (isConfirmationMode)
@@ -821,7 +822,7 @@ class _CreatePageState extends State<CreatePage> {
         ProblemViewWidget(
           title: problemTitle!,
 
-          tag1: tags.length > 0 ? tags[0] : null,
+          tag1: tags.isNotEmpty ? tags[0] : null,
           tag2: tags.length > 1 ? tags[1] : null,
           tag3: tags.length > 2 ? tags[2] : null,
           tag4: tags.length > 3 ? tags[3] : null,
@@ -872,14 +873,14 @@ class _CreatePageState extends State<CreatePage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                          title: Text("エラー"),
-                          content: Text("サーバーエラーにより、URLの取得ができませんでした。"),
+                          title: const Text("エラー"),
+                          content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop(); // ダイアログを閉じる
                               },
-                              child: Text('OK'),
+                              child: const Text('OK'),
                             ),
                           ],
                         );
@@ -907,14 +908,14 @@ class _CreatePageState extends State<CreatePage> {
                   builder: (BuildContext context) {
                     return AlertDialog(
 
-                      title: Text("エラー"),
-                      content: Text("サーバーエラーにより、問題の投稿ができませんでした。"),
+                      title: const Text("エラー"),
+                      content: const Text("サーバーエラーにより、問題の投稿ができませんでした。"),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(); // ダイアログを閉じる
                           },
-                          child: Text('OK'),
+                          child: const Text('OK'),
                         ),
                       ],
                     );
@@ -945,14 +946,14 @@ class _CreatePageState extends State<CreatePage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("エラー"),
-                      content: Text("サーバーエラーにより、画像のアップロードができませんでした。"),
+                      title: const Text("エラー"),
+                      content: const Text("サーバーエラーにより、画像のアップロードができませんでした。"),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(); // ダイアログを閉じる
                           },
-                          child: Text('OK'),
+                          child: const Text('OK'),
                         ),
                       ],
                     );
@@ -980,14 +981,14 @@ class _CreatePageState extends State<CreatePage> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Great!"),
-                      content: Text("問題の投稿が完了しました！"),
+                      title: const Text("Great!"),
+                      content: const Text("問題の投稿が完了しました！"),
                       actions: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(); // ダイアログを閉じる
                           },
-                          child: Text('閉じる'),
+                          child: const Text('閉じる'),
                         ),
                       ],
                     );

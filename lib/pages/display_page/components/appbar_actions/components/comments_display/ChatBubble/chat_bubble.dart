@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// チャットのメッセージを表示するためのウィジェット
 class ChatBubble extends StatelessWidget {
@@ -51,7 +50,7 @@ class ChatBubble extends StatelessWidget {
                   children: [
                     Text(
                       commentData["user_name"],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 10,
                       ),
@@ -65,7 +64,7 @@ class ChatBubble extends StatelessWidget {
                         DateTime.parse(commentData["created_at"]), 
                         locale: 'ja'
                       ),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 10,
                       ),
                     ),
@@ -86,7 +85,7 @@ class ChatBubble extends StatelessWidget {
                   child: SelectionArea(
                     child: Text(
                       commentData["comments"],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                       softWrap: true,

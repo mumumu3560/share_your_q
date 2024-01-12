@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
 import 'dart:typed_data';
 import "package:share_your_q/pages/profile_page/profile_page.dart";
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
 
@@ -156,20 +154,20 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
         children: <Widget>[
 
           Container(
-            padding: EdgeInsets.all(8.0),
-            margin: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft,
             //decoration: BoxDecoration(border: Border.all(), ),
             child: Text(
-              "${widget.title}",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
+              widget.title,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
             ),
           ),
 
           Container(
             //alignment: Alignment.center,
-            padding: EdgeInsets.all(8.0),
-            margin: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             alignment: Alignment.centerLeft, 
             //decoration: BoxDecoration(border: Border.all(), color: Colors.black),
             child: Column(
@@ -200,11 +198,11 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                       ),
                     ),
 
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
 
                     Text(
                       "${widget.userName}",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16, 
                         fontWeight: FontWeight.bold, 
                         fontStyle: FontStyle.italic
@@ -213,13 +211,13 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   ],
                 ),
 
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
 
                 Row(
                   children: [
                     Text("難易度: ${widget.difficulty}"),
 
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
 
                     /*
                     GestureDetector(
@@ -257,16 +255,16 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   ],
                 ),
 
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
 
                 Row(
                   children: [
 
-                    Text("${widget.level}"),
+                    Text(widget.level),
 
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
 
-                    Text("${widget.subject}"),
+                    Text(widget.subject),
 
                 
 
@@ -275,7 +273,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 ),
                 
 
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
                 //タグを横並びにする
                 
                 Row(
@@ -289,24 +287,24 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   ],
                 ),
 
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
 
                 Row(
                   children: [
                     Text("閲覧数: ${widget.watched}"),
 
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
 
                     Text("高評価: ${widget.likes}"),
                   ],
                 ),
                 
 
-                SizedBox(height: 15,),
+                const SizedBox(height: 15,),
 
                 SelectableText(
                 "説明:\n${widget.explanation}",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
 
                 
@@ -316,7 +314,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             ),
           ),
 
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
 
           ElevatedButton(
             onPressed: () {
@@ -324,10 +322,10 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 showProblemImage = !showProblemImage;
               });
             },
-            child: Text("問題を表示する"),
+            child: const Text("問題を表示する"),
           ),
 
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
 
           
 
@@ -345,8 +343,8 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   //width: SizeConfig.blockSizeHorizontal! * 100,
                   //height: SizeConfig.blockSizeVertical! * 100,
                   
-                  padding: EdgeInsets.all(8.0),
-                  margin: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(8.0),
                   //decoration: BoxDecoration(border: Border.all(), color: Colors.black),
                   child: SizedBox(
                     //width: SizeConfig.safeBlockHorizontal! * 80,
@@ -397,7 +395,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                 onTap: () {
                                   Navigator.of(context).pop(); // ダイアログを閉じる
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.arrow_back,
                                   color: Colors.white,
                                   size: 24.0,
@@ -422,7 +420,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                 showExplanationImage = !showExplanationImage;
               });
             },
-            child: Text("解説を表示する"),
+            child: const Text("解説を表示する"),
           ),
           
 
@@ -436,8 +434,8 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                   width: SizeConfig.blockSizeHorizontal! * 100,
                   height: SizeConfig.blockSizeVertical! * 100,
               
-                  padding: EdgeInsets.all(8.0),
-                  margin: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(8.0),
                   //decoration: BoxDecoration(border: Border.all(), color: Colors.black),
                   child: SizedBox(
                     //width: SizeConfig.safeBlockHorizontal! * 80,
@@ -485,7 +483,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                                 onTap: () {
                                   Navigator.of(context).pop(); // ダイアログを閉じる
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.arrow_back,
                                   color: Colors.white,
                                   size: 24.0,

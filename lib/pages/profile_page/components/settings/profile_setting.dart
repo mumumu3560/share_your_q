@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
-import 'package:share_your_q/cloudflare_relations/server_request.dart';
-import 'package:share_your_q/image_operations/image_select.dart';
-import 'package:share_your_q/image_operations/image_upload.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import "package:share_your_q/image_operations/problem_view.dart";
 
 import "package:share_your_q/pages/profile_page/components/settings/icon_setting.dart";
 
@@ -35,16 +29,16 @@ class ProfileSettings extends StatefulWidget {
 
 class _ProfileSettingsState extends State<ProfileSettings> {
 
-  TextEditingController _explainController = TextEditingController();
+  final TextEditingController _explainController = TextEditingController();
 
   String? userName = "";
 
   List<int> years = List.generate(130, (index) => DateTime.now().year - index); // 130年前~現在までの年度ギネスだと122らしい
 
   //リンクの入力コントローラー
-  TextEditingController _linkController1 = TextEditingController();
-  TextEditingController _linkController2 = TextEditingController();
-  TextEditingController _linkController3 = TextEditingController();
+  final TextEditingController _linkController1 = TextEditingController();
+  final TextEditingController _linkController2 = TextEditingController();
+  final TextEditingController _linkController3 = TextEditingController();
 
 
   //説明文の入力コントローラー
@@ -158,220 +152,228 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       appBar: AppBar(
         title: const Text('プロフィール編集'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                
+                children: <Widget>[
+                  Column(
           
-          children: <Widget>[
-            Column(
-
-              children: [
-
-                Center(
-                  child: SizedBox(
-                    width: SizeConfig.blockSizeHorizontal! * 90,
-                    height: SizeConfig.blockSizeVertical! * 70,
-                    child: IconSettings(profileImage: widget.profileImage,),
-                  ),
-                ),
-
-                
-
-
-
-                Column(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
-                      alignment: Alignment.centerLeft,
-                      width: SizeConfig.blockSizeHorizontal! * 95,
-                      child: TextFormField(
-                        
-                        keyboardType: TextInputType.multiline,
-                        maxLines: 3,
-                        maxLength: 100,
-                        controller: _explainController,
-                        onChanged: (value) {
-                          setState(() {
-                            explainText = value;
-                          });
-                        },
-                    
-                        decoration: const InputDecoration(
-                          labelText: 'プロフィール説明文',
+                    children: [
+          
+                      Center(
+                        child: SizedBox(
+                          width: SizeConfig.blockSizeHorizontal! * 90,
+                          height: SizeConfig.blockSizeVertical! * 70,
+                          child: IconSettings(profileImage: widget.profileImage,),
                         ),
-                    
                       ),
-                    ),
-                  ],
-                ),
-                
-                Column(
-                  
-                  children: [
-
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          
+                      
+          
+          
+          
+                      Column(
                         children: [
-                    
                           Container(
-                            child: const Text("誕生年")
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 100,
-                            height: 50,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.green), // 枠線を追加
-                              borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
-                            ),
-                    
-                            child: DropdownButton<int>(
+                            margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
+                            alignment: Alignment.centerLeft,
+                            width: SizeConfig.blockSizeHorizontal! * 95,
+                            child: TextFormField(
                               
-                              value: selectedYear,
-                              onChanged: (int? newValue) {
-                                if (newValue != null) {
-                                  setState(() {
-                                    selectedYear = newValue;
-                                  });
-                                }
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 3,
+                              maxLength: 100,
+                              controller: _explainController,
+                              onChanged: (value) {
+                                setState(() {
+                                  explainText = value;
+                                });
                               },
-                              items: years.map<DropdownMenuItem<int>>((int value) {
-                                return DropdownMenuItem<int>(
-                                  value: value,
-                                  child: Text(value.toString()),
-                                );
-                              }).toList(),
+                          
+                              decoration: const InputDecoration(
+                                labelText: 'プロフィール説明文',
+                              ),
+                          
                             ),
                           ),
                         ],
                       ),
-                    ),
-
-                    SizedBox(height: SizeConfig.blockSizeVertical!*3,),
-
-                    
-                    
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      
+                      Column(
+                        
                         children: [
+          
                           Container(
-                            child: const Text("twitter(X)などのリンク(3つまで)")
+                            margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                          
+                                Container(
+                                  child: const Text("誕生年")
+                                ),
+                                const SizedBox(width: 10),
+                                Container(
+                                  width: 100,
+                                  height: 50,
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.green), // 枠線を追加
+                                    borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
+                                  ),
+                          
+                                  child: DropdownButton<int>(
+                                    
+                                    value: selectedYear,
+                                    onChanged: (int? newValue) {
+                                      if (newValue != null) {
+                                        setState(() {
+                                          selectedYear = newValue;
+                                        });
+                                      }
+                                    },
+                                    items: years.map<DropdownMenuItem<int>>((int value) {
+                                      return DropdownMenuItem<int>(
+                                        value: value,
+                                        child: Text(value.toString()),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          const SizedBox(width: 10),
-                          Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                width: 300,
+          
+                          SizedBox(height: SizeConfig.blockSizeVertical!*3,),
+          
                           
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.green), // 枠線を追加
-                                  borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
-                                ),
-                                child: TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 1,
-                                  controller: _linkController1,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      linkText1 = value;
-                                    });
-                                  },
-                                                  
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none
-                                  ),
-                                                        
-                                ),
-                              ),
-
-                              SizedBox(height: 10,),
-
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                width: 300,
                           
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.green), // 枠線を追加
-                                  borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
+                            alignment: Alignment.centerLeft,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: const Text("twitter(X)などのリンク(3つまで)")
                                 ),
-                                child: TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 1,
-                                  controller: _linkController2,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      linkText2 = value;
-                                    });
-                                  },
-                                                  
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none
-                                  ),
+                                const SizedBox(width: 10),
+                                Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      width: 300,
+                                
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.green), // 枠線を追加
+                                        borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
+                                      ),
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: 1,
+                                        controller: _linkController1,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            linkText1 = value;
+                                          });
+                                        },
                                                         
-                                ),
-                              ),
-
-                              SizedBox(height: 10,),
-
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10),
-                                width: 300,
-                          
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.green), // 枠線を追加
-                                  borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
-                                ),
-                                child: TextFormField(
-                                  keyboardType: TextInputType.multiline,
-                                  maxLines: 1,
-                                  controller: _linkController3,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      linkText3 = value;
-                                    });
-                                  },
-                                                  
-                                  decoration: InputDecoration(
-                                    border: InputBorder.none
-                                  ),
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none
+                                        ),
+                                                              
+                                      ),
+                                    ),
+          
+                                    const SizedBox(height: 10,),
+          
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      width: 300,
+                                
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.green), // 枠線を追加
+                                        borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
+                                      ),
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: 1,
+                                        controller: _linkController2,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            linkText2 = value;
+                                          });
+                                        },
                                                         
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none
+                                        ),
+                                                              
+                                      ),
+                                    ),
+          
+                                    const SizedBox(height: 10,),
+          
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      width: 300,
+                                
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.green), // 枠線を追加
+                                        borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
+                                      ),
+                                      child: TextFormField(
+                                        keyboardType: TextInputType.multiline,
+                                        maxLines: 1,
+                                        controller: _linkController3,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            linkText3 = value;
+                                          });
+                                        },
+                                                        
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none
+                                        ),
+                                                              
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
+          
                         ],
                       ),
-                    ),
-
-                  ],
-                ),
-
-
-
-                SizedBox(height: SizeConfig.blockSizeVertical! * 5),
-
-                ElevatedButton(
-                  onPressed: () async{
-                    await sendInfoToSupabase();
-                    Navigator.pop(context);
-                  },
-                  child: Text("更新"),
-                ),
-                SizedBox(height: 20),
-              ],
+          
+          
+          
+                      SizedBox(height: SizeConfig.blockSizeVertical! * 5),
+          
+                      ElevatedButton(
+                        onPressed: () async{
+                          await sendInfoToSupabase();
+                          Navigator.pop(context);
+                        },
+                        child: const Text("更新"),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+          
+                ],
+              ),
             ),
+          ),
 
-          ],
-        ),
+          BannerContainer(height: SizeConfig.blockSizeVertical! * 15,)
+        ],
       ),
     );
   }

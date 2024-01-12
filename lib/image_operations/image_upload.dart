@@ -36,7 +36,7 @@ Future<int> uploadImage(String uploadUrl, PlatformFile file) async {
 
     try{
       //ここで止まってしまう
-      response = await http.Response.fromStream(await request.send().timeout(Duration(seconds: 10)));
+      response = await http.Response.fromStream(await request.send().timeout(const Duration(seconds: 10)));
       print("aaaaa");
     }  catch (e){
       print("レスポンスの取得中にエラーが発生しました: $e");

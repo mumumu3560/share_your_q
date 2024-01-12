@@ -10,14 +10,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //OneSignal
-//import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
 
 //google_admob
-//import 'package:google_mobile_ads/google_mobile_ads.dart';
-//import "package:share_your_q/admob/ad_helper.dart";
-//import "package:share_your_q/admob/ad_mob.dart";
+/*
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import "package:share_your_q/admob/ad_helper.dart";
+import "package:share_your_q/admob/ad_mob.dart";
+ */
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,7 +40,11 @@ Future<void> main() async {
   );
 
   /*
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+  
+   */
+
+  //TODO ここはandroidビルドリリースの時のみ
+  //OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
   
 
@@ -47,8 +52,7 @@ Future<void> main() async {
   //push notification prompt. We recommend removing the following code and 
   //instead using an In-App Message to prompt for notification permission
   
-  OneSignal.Notifications.requestPermission(true);
-   */
+  //OneSignal.Notifications.requestPermission(true);
 
   //TODO ここはandroidビルドリリースの時のみ
   //OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));

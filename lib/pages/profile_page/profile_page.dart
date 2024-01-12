@@ -1,17 +1,9 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-import 'package:share_your_q/image_operations/image_request.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:share_your_q/image_operations/image_display.dart';
 
-import 'package:share_your_q/pages/display_page/display_page.dart';
 
-import 'package:share_your_q/graphs/radar_chart_test1.dart';
-import 'package:share_your_q/pages/profile_page/components/profile.dart';
 import 'package:share_your_q/pages/profile_page/components/settings/profile_setting.dart';
-import 'package:share_your_q/pages/profile_page/components/settings/icon_setting.dart';
 import 'dart:typed_data';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -119,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
           actions: [
             widget.userId == myUserId
             ? TextButton(
-              child: Text("プロフィール編集"),
+              child: const Text("プロフィール編集"),
               onPressed: () async {
                 //TODO ここにプロフィール編集機能を書く
                 Navigator.push(
@@ -129,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             )
             : TextButton(
-              child: Text("フォローする"),
+              child: const Text("フォローする"),
               onPressed: () async {
                 //TODO ここにフォロー機能を書く
               },  
@@ -143,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
             
                     Container(
                       width: SizeConfig.blockSizeHorizontal! * 90,
@@ -152,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         border: Border.all(color: Colors.green),
                       ),
             
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
             
                       child: ProfileHeader(
                         userName: userName, 
@@ -163,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
             
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
             
                     const TabBar(
             
@@ -175,9 +167,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       ]
                     ),
             
-                    SizedBox(height: 10,),
+                    const SizedBox(height: 10,),
                     
-                    Container(
+                    SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 90,
                       height: SizeConfig.blockSizeVertical! * 75,
             
@@ -189,9 +181,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             
                             child: Column(
                               children: [
-                                SizedBox(height: 10,),
+                                const SizedBox(height: 10,),
             
-                                Container(
+                                SizedBox(
                                   width: SizeConfig.blockSizeHorizontal! * 90,
                                   height: SizeConfig.blockSizeVertical! * 70,
                                   child: ImageListDisplay(
@@ -199,8 +191,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     level: "全て",
                                     method: "新着",
                                     subject: "全て",
-                                    tags: [],
-                                    title: "${userName}の投稿一覧",
+                                    tags: const [],
+                                    title: "$userNameの投稿一覧",
                                     showAppbar: false,
                                   ),
                                 ),
@@ -211,9 +203,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           Center(
                             child: Column(
                               children: [
-                                SizedBox(height: 10,),
+                                const SizedBox(height: 10,),
             
-                                Container(
+                                SizedBox(
                                   width: SizeConfig.blockSizeHorizontal! * 100,
                                   height: SizeConfig.blockSizeVertical! * 70,
                                   child: CreateTrend(
@@ -224,7 +216,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                             
-                          Center(
+                          const Center(
                             child: Text("It's sunny here"),
                           ),
                             
@@ -301,7 +293,7 @@ class ProfileHeader extends StatelessWidget {
     
     SizeConfig().init(context);
 
-    return Container(
+    return SizedBox(
       width: SizeConfig.blockSizeHorizontal! * 92,
       height: SizeConfig.blockSizeVertical! * 40,
       child: SingleChildScrollView(
@@ -322,11 +314,11 @@ class ProfileHeader extends StatelessWidget {
                     ),
                   ),
 
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
 
                 Text(
                   userName,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -334,7 +326,7 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
 
             Row(
               children: [
@@ -343,7 +335,7 @@ class ProfileHeader extends StatelessWidget {
                   child: Text(
                     age == 0
                       ? "誕生年:非公開"
-                      : "誕生年:${age}",
+                      : "誕生年:$age",
                     style: const TextStyle(
                       fontSize: 14,
                       //fontStyleは薄くしたい
@@ -354,7 +346,7 @@ class ProfileHeader extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
 
             Row(
               children: [
@@ -392,7 +384,7 @@ class ProfileHeader extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(height: 5,),
+                        const SizedBox(height: 5,),
                       ],
                     );
                   }).toList(),
@@ -412,7 +404,7 @@ class ProfileHeader extends StatelessWidget {
 
               child: Text(
                 explainText,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   //fontStyleは薄くしたい
                   fontStyle: FontStyle.italic,

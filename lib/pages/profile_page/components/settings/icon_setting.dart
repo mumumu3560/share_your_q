@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:share_your_q/image_operations/image_request.dart';
@@ -9,11 +8,7 @@ import 'package:share_your_q/image_operations/image_select.dart';
 import 'package:share_your_q/image_operations/image_upload.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import "package:share_your_q/image_operations/problem_view.dart";
-import 'package:share_your_q/cloudflare_relations/server_request.dart';
 import 'dart:typed_data';
-import 'package:share_your_q/utils/various.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 //問題を作るページ
@@ -75,7 +70,7 @@ class _IconSettingsState extends State<IconSettings> {
       },
 
     
-    ).sendRequest().timeout(Duration(seconds: 10));
+    ).sendRequest().timeout(const Duration(seconds: 10));
 
   } catch(e){
     response1 = 1;
@@ -145,7 +140,7 @@ class _IconSettingsState extends State<IconSettings> {
       final uploadUrl = directUploadUrl;
       int responseNum;
       try{
-        responseNum = await uploadImage(uploadUrl, selectedImage).timeout(Duration(seconds: 10));
+        responseNum = await uploadImage(uploadUrl, selectedImage).timeout(const Duration(seconds: 10));
       }catch(e){
         responseNum = 1;
       }
@@ -199,11 +194,11 @@ class _IconSettingsState extends State<IconSettings> {
                 child: Column(
                   children: [
         
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
         
-                    Text("現在のアイコン", style: TextStyle(fontSize: 20),),
+                    const Text("現在のアイコン", style: TextStyle(fontSize: 20),),
         
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
         
                     CircleAvatar(
                       backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
@@ -212,11 +207,11 @@ class _IconSettingsState extends State<IconSettings> {
                       radius: 30,
                     ),
         
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
         
-                    Text("新しいアイコン", style: TextStyle(fontSize: 20),),
+                    const Text("新しいアイコン", style: TextStyle(fontSize: 20),),
         
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
         
         
                     if (selectedImage1 == null)
@@ -242,7 +237,7 @@ class _IconSettingsState extends State<IconSettings> {
                             selectedImage1!.bytes!,
                             height: 150,
                           ),
-                          SizedBox(height: 10),
+                          const SizedBox(height: 10),
                           TextButton(
                             onPressed: () {
                               setState(() {
@@ -257,7 +252,7 @@ class _IconSettingsState extends State<IconSettings> {
                         ],
                       ),
         
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
         
                     ElevatedButton(
                       onPressed: () async {
@@ -275,7 +270,7 @@ class _IconSettingsState extends State<IconSettings> {
                 ),
               ),
         
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
         
         
             ],

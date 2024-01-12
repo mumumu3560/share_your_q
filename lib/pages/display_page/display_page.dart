@@ -3,7 +3,6 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/image_operations/problem_view.dart";
 import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
-import "package:share_your_q/image_operations/image_request.dart";
 
 //google_admob
 //TODO ビルドリリースの時のみ
@@ -177,88 +176,90 @@ class _DisplayPageState extends State<DisplayPage>{
 
       body: Column(
         children: [
-          SingleChildScrollView(
+          Expanded(
+            child: SingleChildScrollView(
+              
+              child: Column(
+                children: [
+                  Container(
+                    
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+          
+                    alignment: Alignment.center,
+                    height: SizeConfig.blockSizeVertical! * 75,
             
-            child: Column(
-              children: [
-                Container(
-                  
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(10),
+                    child: ListView(
+                      children: [
+                        ProblemViewWidget(
+                          title: widget.title,
+            
+                          tag1: widget.tag1,
+                          tag2: widget.tag2,
+                          tag3: widget.tag3,
+                          tag4: widget.tag4,
+                          tag5: widget.tag5,
+            
+                          //tags: tags,
+                          level: widget.level,
+                          subject: widget.subject,
+                          image1: null,
+                          image2: null,
+                          imageUrlPX: widget.imageUrlPX,
+                          imageUrlCX: widget.imageUrlCX,
+            
+                          explanation: widget.explanation,
+          
+                          isCreate: false,
+                          image_id: widget.image_id,
+          
+                          problem_id: widget.problem_id!,
+                          comment_id: widget.comment_id!,
+          
+                          watched: widget.watched,
+          
+                          likes: widget.likes,
+          
+                          userName: widget.userName,
+          
+                          image_own_user_id: widget.image_own_user_id!,
+          
+                          difficulty: widget.difficulty,
+          
+                          profileImage: widget.profileImage,
+            
+                        ),
+          
+                      ],
+                    )
+            
                   ),
-
-                  alignment: Alignment.center,
-                  height: SizeConfig.blockSizeVertical! * 75,
           
-                  child: ListView(
-                    children: [
-                      ProblemViewWidget(
-                        title: widget.title,
+                  SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
-                        tag1: widget.tag1,
-                        tag2: widget.tag2,
-                        tag3: widget.tag3,
-                        tag4: widget.tag4,
-                        tag5: widget.tag5,
+                  /*
+                  Container(
+                    height: SizeConfig.blockSizeVertical! * 10,
+                    width: double.infinity,
+                    color: Colors.white,
+                    //TODO ビルドリリースの時のみ
+                    //child: _adMob.getAdBanner(),
+                  ),
+                  */
           
-                        //tags: tags,
-                        level: widget.level,
-                        subject: widget.subject,
-                        image1: null,
-                        image2: null,
-                        imageUrlPX: widget.imageUrlPX,
-                        imageUrlCX: widget.imageUrlCX,
+                  BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           
-                        explanation: widget.explanation,
-
-                        isCreate: false,
-                        image_id: widget.image_id,
-
-                        problem_id: widget.problem_id!,
-                        comment_id: widget.comment_id!,
-
-                        watched: widget.watched,
-
-                        likes: widget.likes,
-
-                        userName: widget.userName,
-
-                        image_own_user_id: widget.image_own_user_id!,
-
-                        difficulty: widget.difficulty,
-
-                        profileImage: widget.profileImage,
+                  SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
-                      ),
-
-                    ],
-                  )
+                ],
+              ),
           
-                ),
-
-                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
-
-                /*
-                Container(
-                  height: SizeConfig.blockSizeVertical! * 10,
-                  width: double.infinity,
-                  color: Colors.white,
-                  //TODO ビルドリリースの時のみ
-                  //child: _adMob.getAdBanner(),
-                ),
-                */
-
-                BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
-
-                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
-
-              ],
+              
+          
+          
             ),
-
-            
-
-
           ),
         ],
       ),

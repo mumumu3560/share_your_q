@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:share_your_q/graphs/bar_chart.dart';
-import 'package:share_your_q/graphs/example_bar_chart.dart';
-import 'package:share_your_q/graphs/example_radar_chart.dart';
 
 import 'package:share_your_q/graphs/radar_chart_test1.dart';
 
@@ -17,8 +14,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-       home: const Home(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+       home: Home(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -37,7 +34,7 @@ class _HomeState extends State<Home> {
     SizeConfig().init(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("棒グラフデモ"),
+        title: const Text("棒グラフデモ"),
       ),
       body: content(),
     );
@@ -47,23 +44,23 @@ class _HomeState extends State<Home> {
   return Center(
     child: Padding(
       padding: const EdgeInsets.only(top: 25),
-      child: Container(
+      child: SizedBox(
         width: SizeConfig.blockSizeHorizontal! * 80,
         height: SizeConfig.blockSizeVertical! * 80,
 
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 width: SizeConfig.blockSizeHorizontal! * 80,
                 height: SizeConfig.blockSizeVertical! * 80,
-                child: RadarChartSample(),
+                child: const RadarChartSample(),
               ),
         
-              Container(
+              SizedBox(
                 width: SizeConfig.blockSizeHorizontal! * 80,
                 height: SizeConfig.blockSizeVertical! * 80,
-                child: RadarChartSample(),
+                child: const RadarChartSample(),
               ),
         
             ],

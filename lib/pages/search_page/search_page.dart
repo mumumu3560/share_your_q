@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/image_operations/image_display.dart'; // ImageDisplayScreenをインポート
+// ImageDisplayScreenをインポート
 import "package:share_your_q/utils/various.dart";
 
-import 'package:share_your_q/pages/display_page/display_page.dart';
 
-import "package:share_your_q/image_operations/test_override.dart";
 import "package:share_your_q/image_operations/image_list_display.dart";
 
 //TODO ビルドリリースの時のみ
 //import "package:share_your_q/admob/ad_mob.dart";
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -29,7 +29,7 @@ class _SearchPageState extends State<SearchPage> {
   List<String> tags = [];
 
   //tagの入力コントローラー
-  TextEditingController _tagController = TextEditingController();
+  final TextEditingController _tagController = TextEditingController();
 
   // タグの入力値
   String tagInput = '';
@@ -207,7 +207,7 @@ class _SearchPageState extends State<SearchPage> {
                 
                 ElevatedButton(
                   onPressed: addTag,
-                  child: Text("タグを追加"),
+                  child: const Text("タグを追加"),
                 ),
 
                 //SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
@@ -235,7 +235,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     );
                   },
-                  child: Text("検索"),
+                  child: const Text("検索"),
                 ),
             
           
@@ -248,10 +248,10 @@ class _SearchPageState extends State<SearchPage> {
           ),
 
 
+          BannerContainer(height: SizeConfig.blockSizeHorizontal! * 15),
 
-
-
-          Container(
+        /*
+        Container(
             height: SizeConfig.blockSizeVertical! * 15,
             //height: 100 ,
             width: double.infinity,
@@ -259,6 +259,7 @@ class _SearchPageState extends State<SearchPage> {
             //TODO ビルドリリースの時のみ
             //child: _adMob.getAdBanner(),
           ),
+         */
 
 
 

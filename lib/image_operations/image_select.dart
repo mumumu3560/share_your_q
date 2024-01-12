@@ -42,11 +42,11 @@ class _ImageSelectionWidgetState extends State<ImageSelectionWidget> {
         if (selectedImagePath != null)
           Text(
             selectedImagePath!,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ElevatedButton(
           onPressed: selectImage,
-          child: Text("画像を選択してくださいね"),
+          child: const Text("画像を選択してくださいね"),
         ),
       ],
     );

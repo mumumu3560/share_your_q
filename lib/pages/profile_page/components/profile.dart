@@ -1,13 +1,8 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:share_your_q/image_operations/image_display.dart';
 
-import 'package:share_your_q/pages/display_page/display_page.dart';
 
-import 'package:share_your_q/graphs/radar_chart_test1.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Profile extends StatefulWidget {

@@ -1,11 +1,7 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:share_your_q/image_operations/image_display.dart';
 
-import 'package:share_your_q/pages/display_page/display_page.dart';
 
 import 'package:share_your_q/graphs/radar_chart_test1.dart';
 
@@ -13,6 +9,8 @@ import 'package:share_your_q/graphs/radar_chart_test1.dart';
 //グラフなどで自分の問題の傾向を見れるようにする
 
 class NotificationPage extends StatefulWidget {
+  const NotificationPage({super.key});
+
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
@@ -56,18 +54,18 @@ class _NotificationPageState extends State<NotificationPage> {
                 child: Column(
                   children: [
                     
-                    Container(
+                    SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 90,
                       height: SizeConfig.blockSizeVertical! * 90,
-                      child: RadarChartSample(),
+                      child: const RadarChartSample(),
                     ),
                     
-                    SizedBox(height: 50,),
+                    const SizedBox(height: 50,),
                     
-                    Container(
+                    SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 80,
                       height: SizeConfig.blockSizeVertical! * 80,
-                      child: RadarChartSample(),
+                      child: const RadarChartSample(),
                     ),
                     
                   ]
@@ -75,11 +73,11 @@ class _NotificationPageState extends State<NotificationPage> {
               ),
             ),
               
-            Center(
+            const Center(
               child: Text("It's rainy here"),
             ),
               
-            Center(
+            const Center(
               child: Text("It's sunny here"),
             ),
               

@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 int eval_point = 0;
@@ -103,7 +102,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
       context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
 
 
@@ -116,15 +115,15 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Done"),
-            content: Text("送信が完了しました！"),
+            title: const Text("Done"),
+            content: const Text("送信が完了しました！"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
                   //Navigator.pop(context);
                   Navigator.of(context).pop(); // ダイアログを閉じる
                 },
-                child: Text('閉じる'),
+                child: const Text('閉じる'),
               ),
             ],
           );
@@ -191,7 +190,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
               children: [
                 myUserId == widget.image_own_user_id 
                   ? Container()
-                  : EvaluateWithRadio(),
+                  : const EvaluateWithRadio(),
                 
                 
     
@@ -241,7 +240,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
             
                               Text("参考$referenceNumber"),
             
-                              SizedBox(width: 5),
+                              const SizedBox(width: 5),
                               
                               InkWell(
                                 onTap: () async {
@@ -253,7 +252,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
                               ),
                             ],
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                         ],
                       );
                     }).toList(),
@@ -269,15 +268,15 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "説明",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
             
                   Text(
                     refExplain,
@@ -468,7 +467,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 },
               ),
 
-              Text("易しい"),
+              const Text("易しい"),
 
               Radio(
                 value: 1,
@@ -478,7 +477,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
                 },
               ),
 
-              Text("難しい"),
+              const Text("難しい"),
 
             ],
           ),
@@ -508,18 +507,18 @@ extension TextEx on Text {
 
     data!.splitMapJoin(
       _urlReg,
-      onMatch: (Match match) {
-        final _match = match[0] ?? '';
+      onMatch: (Match matchPre) {
+        final match = matchPre[0] ?? '';
         textSpans.add(
           TextSpan(
-            text: _match,
+            text: match,
             style: const TextStyle(
               color: Colors.blue,
               decoration: TextDecoration.underline,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () async => await launchUrl(
-                    Uri.parse(_match),
+                    Uri.parse(match),
                   ),
           ),
         );

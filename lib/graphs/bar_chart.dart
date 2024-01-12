@@ -40,18 +40,18 @@ class BarChartWidget extends StatelessWidget {
             titlesData: FlTitlesData(
               show: true,
               //右タイトル
-              rightTitles:AxisTitles(
+              rightTitles:const AxisTitles(
                   sideTitles: SideTitles(showTitles: false)
               ),
               //上タイトル
-              topTitles: AxisTitles(
+              topTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
               //下タイトル
               bottomTitles: AxisTitles(
                 axisNameWidget: Text('ブログ運営年月',style: _labelStyle,),
                 axisNameSize: 40,
-                sideTitles: SideTitles(
+                sideTitles: const SideTitles(
                   showTitles: true,
                 ),
               ),
@@ -61,7 +61,7 @@ class BarChartWidget extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     child: Text('記事数',style: _labelStyle,)),
                 axisNameSize: 25,
-                sideTitles: SideTitles(
+                sideTitles: const SideTitles(
                   showTitles: true,
                 ),
               ),

@@ -3,6 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 
 
 class RadarChartSample extends StatefulWidget {
+  const RadarChartSample({super.key});
+
   @override
   _RadarChartSampleState createState() => _RadarChartSampleState();
 }
@@ -40,7 +42,7 @@ class _RadarChartSampleState extends State<RadarChartSample> {
                     case 5: 
                       return RadarChartTitle(text: '基礎的', angle: angle);
                     default:
-                      return RadarChartTitle(text: '');
+                      return const RadarChartTitle(text: '');
                   }
                 },
                 titlePositionPercentageOffset: 0.2,
@@ -62,11 +64,11 @@ class _RadarChartSampleState extends State<RadarChartSample> {
 
       RadarDataSet(
         dataEntries: [
-          RadarEntry(value: 240),
-          RadarEntry(value: 220),
-          RadarEntry(value: 180),
-          RadarEntry(value: 190),
-          RadarEntry(value: 210),
+          const RadarEntry(value: 240),
+          const RadarEntry(value: 220),
+          const RadarEntry(value: 180),
+          const RadarEntry(value: 190),
+          const RadarEntry(value: 210),
         ],
         fillColor: Colors.purple.withOpacity(0.4),
         borderColor: Colors.purple,

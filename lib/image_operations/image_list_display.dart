@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:share_your_q/image_operations/image_display.dart';
 
 import 'package:share_your_q/pages/display_page/display_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,7 +10,6 @@ import 'package:timeago/timeago.dart';
 
 import 'package:http/http.dart' as http;
 
-import "package:share_your_q/image_operations/image_request.dart";
 
 import 'dart:typed_data';
 
@@ -100,7 +98,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
       
 
       for (var tag in widget.tags!) {
-        if(tag == "" || tag == null) continue;
+        if(tag == "") continue;
         tags.add(tag);
       }
 
@@ -111,7 +109,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
       //ここでtagを検索する
       for (var tag in tags) {
-        if(tag == "" || tag == null) continue;
+        if(tag == "") continue;
 
         //orはその中でどれかに当てはまればいい*はワイルドパターン%と同じ
         //https://supabase.com/docs/reference/dart/or
@@ -225,7 +223,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                   ),
                                    */
 
-                                  BannerContainer(height:64),
+                                  const BannerContainer(height:64),
 
                                   
                                   MyListItem(item: item),
@@ -356,7 +354,7 @@ class MyListItem extends StatelessWidget {
           builder: (context, profileImageSnapshot) {
             if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
               // データの読み込み中はローディングインジケータなどを表示する
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
               // エラーが発生した場合は代替のアイコンを表示する
               return GestureDetector(
@@ -386,7 +384,7 @@ class MyListItem extends StatelessWidget {
                       builder: (context, imageSnapshot) {
                         if (imageSnapshot.connectionState == ConnectionState.waiting) {
                           // データの読み込み中はローディングインジケータなどを表示する
-                          return CircularProgressIndicator();
+                          return const CircularProgressIndicator();
                         } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
                           print("ここかもしれないなぁ");
                           // エラーが発生した場合は代替のアイコンを表示する
@@ -451,7 +449,7 @@ class MyListItem extends StatelessWidget {
             item["title"] != null
               ? titleLines.length > 3
                 ?Text(
-                  titleLines[0] + "\n" + titleLines[1] + "\n" + titleLines[2] + "\n" + "……",
+                  "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -470,7 +468,7 @@ class MyListItem extends StatelessWidget {
             item["explain"] != null 
               ? explainLines.length > 3
                 ? Text(
-                  explainLines[0] + "\n" + explainLines[1] + "\n" + explainLines[2] + "\n" + "……",
+                  "${explainLines[0]}\n${explainLines[1]}\n${explainLines[2]}\n……",
                   style: const TextStyle(
                     fontSize: 16,
                   )
@@ -493,7 +491,7 @@ class MyListItem extends StatelessWidget {
                     )
                   : const Text("レベルなし"),
 
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
 
                 item["subject"] != null
                   ? Text(
@@ -501,15 +499,15 @@ class MyListItem extends StatelessWidget {
                     )
                   : const Text("教科なし"),
 
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
 
                 item["difficulty_point"] != null && item["eval_num"] != 0
                   ? Text(
-                      "難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1) + "点",
+                      "${"難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1)}点",
                     )
                   : const Text("難易度なし"),
 
-                SizedBox(width: 10,),
+                const SizedBox(width: 10,),
               ],
             ),
               

@@ -47,4 +47,5 @@ Future<Uint8List?> fetchImage(String? imageId) async {
     print('Error: $error');
     return null;
   }
+  return null;
 }

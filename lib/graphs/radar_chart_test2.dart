@@ -3,6 +3,8 @@ import 'package:fl_chart/fl_chart.dart';
 
 
 class RadarChartSample extends StatefulWidget {
+  const RadarChartSample({super.key});
+
   @override
   _RadarChartSampleState createState() => _RadarChartSampleState();
 }
@@ -12,7 +14,7 @@ class _RadarChartSampleState extends State<RadarChartSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Radar Chart Sample'),
+        title: const Text('Radar Chart Sample'),
       ),
       body: Center(
         child: Padding(
@@ -34,7 +36,7 @@ class _RadarChartSampleState extends State<RadarChartSample> {
                   case 4:
                     return RadarChartTitle(text: '国語', angle: angle);
                   default:
-                    return RadarChartTitle(text: '');
+                    return const RadarChartTitle(text: '');
                 }
               },
               titlePositionPercentageOffset: 0.2,
@@ -57,22 +59,22 @@ class _RadarChartSampleState extends State<RadarChartSample> {
     return [
       RadarDataSet(
         dataEntries: [
-          RadarEntry(value: 200),
-          RadarEntry(value: 150),
-          RadarEntry(value: 180),
-          RadarEntry(value: 220),
-          RadarEntry(value: 250),
+          const RadarEntry(value: 200),
+          const RadarEntry(value: 150),
+          const RadarEntry(value: 180),
+          const RadarEntry(value: 220),
+          const RadarEntry(value: 250),
         ],
         fillColor: Colors.blue.withOpacity(0.4),
         borderColor: Colors.blue,
       ),
       RadarDataSet(
         dataEntries: [
-          RadarEntry(value: 180),
-          RadarEntry(value: 220),
-          RadarEntry(value: 250),
-          RadarEntry(value: 200),
-          RadarEntry(value: 160),
+          const RadarEntry(value: 180),
+          const RadarEntry(value: 220),
+          const RadarEntry(value: 250),
+          const RadarEntry(value: 200),
+          const RadarEntry(value: 160),
         ],
         fillColor: Colors.green.withOpacity(0.4),
         borderColor: Colors.green,

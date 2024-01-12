@@ -1,13 +1,9 @@
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
-import 'package:timeago/timeago.dart';
 
 class CreateTrend extends StatefulWidget{
   
@@ -104,7 +100,7 @@ class _CreateTrendState extends State<CreateTrend>{
         child: Column(
           children: [
     
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
     
             const Text(
               "閲覧数の推移",
