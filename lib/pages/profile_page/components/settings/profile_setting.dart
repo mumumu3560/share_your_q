@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -222,10 +223,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
                                   width: 100,
                                   height: 50,
                                   padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  /*
                                   decoration: BoxDecoration(
                                     border: Border.all(color: Colors.green), // 枠線を追加
                                     borderRadius: BorderRadius.circular(8), // 枠線の角を丸める
                                   ),
+                                   */
                           
                                   child: DropdownButton<int>(
                                     
@@ -372,7 +375,11 @@ class _ProfileSettingsState extends State<ProfileSettings> {
             ),
           ),
 
-          BannerContainer(height: SizeConfig.blockSizeVertical! * 15,)
+          Container(
+            height: SizeConfig.blockSizeVertical! * 15,
+            color: Colors.white,
+            child: AdaptiveAdBanner(requestId: "UPDATE"),
+          ),
         ],
       ),
     );
