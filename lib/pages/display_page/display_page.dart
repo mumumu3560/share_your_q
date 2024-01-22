@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/admob/ad_test.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import "package:share_your_q/image_operations/problem_view.dart";
@@ -249,9 +251,8 @@ class _DisplayPageState extends State<DisplayPage>{
                   ),
                   */
           
-                  BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
+                  //
           
-                  SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
                 ],
               ),
@@ -261,6 +262,13 @@ class _DisplayPageState extends State<DisplayPage>{
           
             ),
           ),
+          Container(
+            height: SizeConfig.blockSizeVertical!* 15,
+            color: Colors.white,
+            child: AdaptiveAdBanner(requestId: "DISPLAY",)
+          ),
+          //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
+          //InlineAdaptiveExample(),
         ],
       ),
 
