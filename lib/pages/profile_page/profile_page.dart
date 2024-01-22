@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/admob/ad_test.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 
 import 'package:share_your_q/utils/various.dart';
 
@@ -228,8 +230,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
-
-            BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10,)
+            
+            Container(
+              height: SizeConfig.blockSizeVertical! * 10,
+              color: Colors.white,
+              child: AdaptiveAdBanner(requestId: "PROFILE"),
+            ),
+            //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10,)
+            //InlineAdaptiveExample(),
           ],
         ),
     
