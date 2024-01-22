@@ -8,6 +8,8 @@ import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 //import 'package:onesignal_flutter/onesignal_flutter.dart';
 
+import "package:share_your_q/admob/ad_test.dart";
+
 
 
 
@@ -124,6 +126,7 @@ class _HomePageState extends State<HomePage> {
     SizeConfig().init(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
 
       appBar: AppBar(
         //title: Text('ホーム'),
