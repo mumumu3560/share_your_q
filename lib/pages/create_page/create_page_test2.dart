@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_your_q/pages/create_page/components/reference.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -10,7 +12,29 @@ import 'package:share_your_q/utils/various.dart';
 
 import "package:share_your_q/image_operations/problem_view.dart";
 
+
+import "package:share_your_q/admob/ad_test.dart";
+import "package:share_your_q/admob/interstitial_x.dart";
+//import 'package:share_your_q/admob/interstitial_main.dart';
+
+// TODO ここはリリース時のみ Admob
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+import 'package:share_your_q/admob/interstitial_test.dart';
+
+
+
+import 'dart:async';
+import 'dart:io';
+
+//dotenv
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+
+
 //問題を作るページ
+
+
 
 //TODO textformfieldの長さの制限を考える。
 //Supabaseではtext型だがこれはvarchar(10)になおす。
@@ -24,6 +48,8 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
+
+  
 
   //現在作っている問題が何問目か(制限を考える)
   int problemNum = 1;
@@ -90,9 +116,63 @@ class _CreatePageState extends State<CreatePage> {
 
   List<Map<String,dynamic>> profileImageId = [];
 
+  String lang = "ja";
+
+  InterstitialAd? _interstitialAd;
+
+  //TODO ここは今test用のものなので後で変更する。
+  final String _adUnitId = Platform.isAndroid
+      ? "ca-app-pub-3940256099942544/1033173712"//dotenv.get("INTERSTITIAL_ID_CREATE")
+      : "ca-app-pub-3940256099942544/1033173712";//dotenv.get("INTERSTITIAL_ID_CREATE");
+
+  /// Loads an interstitial ad.
+  void _loadAd() {
+    InterstitialAd.load(
+        adUnitId: _adUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            ad.fullScreenContentCallback = FullScreenContentCallback(
+                onAdShowedFullScreenContent: (ad) {
+                  //print('$ad onAdShowedFullScreenContent.');
+                  context.showSuccessSnackBar(message: "onAdShowedFullScreenContent");
+                },
+                // Called when an impression occurs on the ad.
+                onAdImpression: (ad) {},
+                // Called when the ad failed to show full screen content.
+                onAdFailedToShowFullScreenContent: (ad, err) {
+                  ad.dispose();
+                },
+                // Called when the ad dismissed full screen content.
+                onAdDismissedFullScreenContent: (ad) {
+                  ad.dispose();
+                },
+                // Called when a click is recorded for an ad.
+                onAdClicked: (ad) {});
+
+            // Keep a reference to the ad so you can show it later.
+            _interstitialAd = ad;
+          },
+          // Called when an ad request failed.
+          onAdFailedToLoad: (LoadAdError error) {
+            // ignore: avoid_print
+            print('InterstitialAd failed to load: $error');
+            context.showErrorSnackBar(message: "InterstitialAd failed to load: $error");
+            
+            
+          },
+        ));
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd?.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
+    _loadAd();
     super.initState();
     fetchProfileImage();
   }
@@ -198,6 +278,7 @@ class _CreatePageState extends State<CreatePage> {
         //"likes": 100,
         "links": urls,
         "ref_explain": refText,
+        "lang": "ja",
       });
 
       //ここでは、ユーザーの問題の投稿数を増やす。
@@ -410,7 +491,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
 
-  // タグを追加する関数
+  // 参考文献を追加する関数
   void addUrl() {
 
     bool jad = false;
@@ -440,7 +521,7 @@ class _CreatePageState extends State<CreatePage> {
     print(urls);
   }
 
-  // タグを削除する関数
+  // 参考文献を削除する関数
   void removeUrl(String url) {
     setState(() {
       urls.remove(url);
@@ -456,6 +537,7 @@ class _CreatePageState extends State<CreatePage> {
     //SizeConfig().init(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('作成ページ'),
       ),
@@ -797,18 +879,13 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
 
-          /*
           Container(
             height: SizeConfig.blockSizeVertical! * 15,
-            //height: 100 ,
-            width: double.infinity,
             color: Colors.white,
-            //TODO ビルドリリースの時のみ
-            //child: _adMob.getAdBanner(),
+            child: AdaptiveAdBanner(requestId: "CREATE",)
           ),
-           */
-
-          BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
+          //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
+          //InlineAdaptiveExample(),
         ],
       ),
     );
@@ -816,9 +893,45 @@ class _CreatePageState extends State<CreatePage> {
 
   // 問題投稿の確認画面を表示する関数
   Widget buildConfirmationView() {
+    //TODO ここはAdmobのテスト広告を表示するためのもの。
+
+    void _showReferenceSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      //これがないと高さが変わらない
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: SizeConfig.blockSizeVertical! * 60,
+          child: ReferenceDisplay(linkText: urls, refExplain: refText)
+        );
+      },
+    );
+  }
+    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
+
+        //ここで問題の評価を見る
+        Row(
+          children: [
+            Text("参考文献はこんな感じに表示されます"),
+
+            SizedBox(width: SizeConfig.blockSizeHorizontal! * 5,),
+
+            IconButton(
+              icon: const Icon(Icons.bar_chart, color: Colors.blue,),
+              tooltip: "参考文献の確認",
+              onPressed: (){
+                _showReferenceSheet(context);
+              },
+            ),
+          ],
+        ),
+
+
         ProblemViewWidget(
           title: problemTitle!,
 
@@ -852,11 +965,107 @@ class _CreatePageState extends State<CreatePage> {
           difficulty: 0,
           profileImage: profileImageId[0]["profile_image_id"],
         ),
+
+        /*
+        SizedBox(
+          height: SizeConfig.blockSizeVertical! * 5,
+          child: InterstitialExample()
+        ),
+         */
+
+        
+        ElevatedButton(
+          onPressed: () async{
+
+            //showLoadingDialog(context,"処理中...");
+            if (_interstitialAd == null) {
+              return;
+            }
+            _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+              onAdShowedFullScreenContent: (InterstitialAd ad) =>
+                //print('$ad onAdShowedFullScreenContent.'),
+                context.showSuccessSnackBar(message: "aaa"),
+
+              onAdDismissedFullScreenContent: (InterstitialAd ad) {
+                print('$ad onAdDismissedFullScreenContent.');
+                context.showSuccessSnackBar(message: "bbb");
+                ad.dispose();
+                _loadAd();
+              },
+
+              onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+                print('$ad onAdFailedToShowFullScreenContent: $error');
+                context.showErrorSnackBar(message: "ccc");
+                ad.dispose();
+                _loadAd();
+                return;
+              },
+
+              onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+              onAdClicked: (InterstitialAd ad) => print('$ad clicked.'));
+
+              _interstitialAd!.show();
+              _interstitialAd = null;
+
+          },
+          child: const Text("広告を見る1"),
+        ),
+         
+
+        /*
+        ElevatedButton(
+          onPressed: () async{
+            
+
+            interstitialAdManager.showInterstitialAd();
+          },
+          child: const Text("広告を見る2"),
+        ),
+         */
         
         ElevatedButton(
           onPressed: () async {
 
             showLoadingDialog(context,"処理中...");
+
+
+            //TODO Admob
+
+            if (_interstitialAd == null) {
+              return;
+            }
+            _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+              onAdShowedFullScreenContent: (InterstitialAd ad) =>
+                //print('$ad onAdShowedFullScreenContent.'),
+                context.showSuccessSnackBar(message: "aaa"),
+
+              onAdDismissedFullScreenContent: (InterstitialAd ad) {
+                print('$ad onAdDismissedFullScreenContent.');
+                context.showSuccessSnackBar(message: "bbb");
+                ad.dispose();
+                _loadAd();
+                return;
+              },
+
+              onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+                print('$ad onAdFailedToShowFullScreenContent: $error');
+                context.showErrorSnackBar(message: "ccc");
+                ad.dispose();
+                _loadAd();
+                return;
+              },
+
+              onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+              onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
+            );
+
+            _interstitialAd!.show();
+            _interstitialAd = null;
+
+            //TODO Admob
+            
+
+            
 
             int checkGetUploadUrl1 = await getImageUploadUrls(true);
             int checkGetUploadUrl2 = await getImageUploadUrls(false);
