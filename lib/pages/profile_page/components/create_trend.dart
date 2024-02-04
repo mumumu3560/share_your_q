@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -18,7 +19,10 @@ class CreateTrend extends StatefulWidget{
   _CreateTrendState createState() => _CreateTrendState();
 }
 
-class _CreateTrendState extends State<CreateTrend>{
+class _CreateTrendState extends State<CreateTrend> with AutomaticKeepAliveClientMixin{
+
+  @override
+  bool get wantKeepAlive => true;
 
   late List<Map<String, dynamic>> _imageData = [];
   late List<Map<String, dynamic>> _likesData = [];
@@ -26,10 +30,12 @@ class _CreateTrendState extends State<CreateTrend>{
 
   int maxSize = 0;
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  bool nowDisplay = false;
+  Positioned? widgets;
+
+  Timer? timer;
+
+
 
   //List<Map<String, dynamic>>
   Future<void> fetchData() async {
@@ -86,15 +92,58 @@ class _CreateTrendState extends State<CreateTrend>{
   }
 
 
+
+  Positioned? logoPositioned;
+  Timer? _timer;
+
+
+  void hideLogo() {
+    // タイマーが終了したら FlutterLogo を非表示にする
+    logoPositioned = null;
+    setState(() {});
+  }
+
+  DateTime? now = DateTime.now();
+  int nowDate = 0;
+  String formattedDate = "";
+
+
+  void setHeatMap(DateTime? dateTime, int? count) {
+
+    setState(() {
+      now = dateTime;
+      
+      if(count == null){
+        nowDate = 0;
+      }
+      else{
+        nowDate = count;
+      }
+
+      formattedDate = "${dateTime?.year}/${dateTime?.month}/${dateTime?.day}";
+
+    });
+
+  }
+
+
   @override
   void initState(){
     super.initState();
     fetchData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _timer?.cancel();
+  }
+
 
   @override
   Widget build(BuildContext context){
+
+    super.build(context);
     return SingleChildScrollView(
       child: Container(
         child: Column(
@@ -112,25 +161,83 @@ class _CreateTrendState extends State<CreateTrend>{
     
             SizedBox(height: SizeConfig.blockSizeVertical!*5,),
 
+            formattedDate == "" ? const Text(""):
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "$formattedDate",
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.remove_red_eye),
+
+                        Text(
+                          "$nowDate",
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+
+
+            SizedBox(height: SizeConfig.blockSizeVertical!*5,),
+
 
             SingleChildScrollView(
               
               //scrollDirection: Axis.horizontal,
               child: Container(
-                child: HeatMap(
-                  //defaultColor: Colors.white,
-                  colorMode: ColorMode.opacity,
-                  datasets: _heatmapData!,
-                  scrollable: true,
-                  defaultColor: Colors.white.withOpacity(0.2),
-                  
-                  colorsets: {
-                    maxSize: const Color.fromARGB(255, 0, 255, 8),
-                  },
-                  
-                  onClick: (value) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.toString())));
-                  },
+
+                child: Column(
+
+                  children: [
+
+                    HeatMap(
+                      //defaultColor: Colors.white,
+                      colorMode: ColorMode.opacity,
+                      datasets: _heatmapData!,
+                      scrollable: true,
+                      defaultColor: Colors.white.withOpacity(0.2),
+                      
+                      colorsets: {
+                        maxSize: const Color.fromARGB(255, 0, 255, 8),
+                      },
+                      
+                      onClick: (value) {
+                        //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value.toString())));
+                        /*
+                        
+                         */
+
+                        if(_heatmapData!.containsKey(value)){
+                          setHeatMap(value, _heatmapData?[value] as int);
+                        }
+                        else{
+                          setHeatMap(value, 0);
+                        }
+                        
+                        /*
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "$value"
+                            ),
+                          ),
+                        );
+                         */
+                      },
+                    ),
+
+
+
+
+                  ],
                 ),
               ),
             ),
@@ -153,4 +260,3 @@ class _CreateTrendState extends State<CreateTrend>{
   }
 
 }
-
