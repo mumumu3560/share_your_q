@@ -9,13 +9,15 @@ import 'dart:typed_data';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //TODO ビルドリリースの時のみ
-import "package:share_your_q/admob/ad_mob.dart";
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
 final supabase = Supabase.instance.client;
 final myUserId = supabase.auth.currentUser!.id.toString();
+
+String userLang = "jp";
+
 //プリローダー
 const preloader = Center(child: CircularProgressIndicator(color: Colors.orange));
 
@@ -26,22 +28,22 @@ void showLoadingDialog(BuildContext context, String message) {
     barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
     builder: (BuildContext context) {
       return AlertDialog(
-        content: Column(
-          children: [
-            Row(
-              children: [
-                const CircularProgressIndicator(color: Colors.orange),
-                const SizedBox(width: 20),
-                Text(message), // ローディング中のメッセージ
-
-                
-              ],
-            ),
-
-            Container(
-              child: Text("画像を取得中です"),
-            ),
-          ],
+        content: SizedBox(
+          height: SizeConfig.blockSizeVertical! * 20,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const CircularProgressIndicator(color: Colors.orange),
+                  const SizedBox(width: 20),
+                  Text(message), // ローディング中のメッセージ                
+                ],
+              ),
+        
+              Text("画像を取得中です"),
+        
+            ],
+          ),
         ),
       );
     },
