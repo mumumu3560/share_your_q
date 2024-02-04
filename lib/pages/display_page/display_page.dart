@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/admob/ad_test.dart';
+//import 'package:share_your_q/admob/ad_test.dart';
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
-import "package:share_your_q/image_operations/problem_view.dart";
+import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
 
 //google_admob
@@ -52,6 +52,9 @@ class DisplayPage extends StatefulWidget {
   final double difficulty;
 
   final String profileImage;
+
+  final int? problemAdd;
+  final int? commentAdd;
   
 
 
@@ -91,6 +94,9 @@ class DisplayPage extends StatefulWidget {
     required this.difficulty,
 
     required this.profileImage,
+
+    required this.problemAdd,
+    required this.commentAdd,
 
   }) : super(key: key);
 
@@ -215,7 +221,7 @@ class _DisplayPageState extends State<DisplayPage>{
                           explanation: widget.explanation,
           
                           isCreate: false,
-                          image_id: widget.image_id,
+                          image_id: widget.image_id!,
           
                           problem_id: widget.problem_id!,
                           comment_id: widget.comment_id!,
@@ -231,6 +237,9 @@ class _DisplayPageState extends State<DisplayPage>{
                           difficulty: widget.difficulty,
           
                           profileImage: widget.profileImage,
+
+                          problemAdd: widget.problemAdd,
+                          commentAdd: widget.commentAdd,
             
                         ),
           
