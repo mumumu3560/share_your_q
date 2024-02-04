@@ -6,9 +6,9 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
 import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
-//import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import "package:share_your_q/admob/ad_test.dart";
+//import "package:share_your_q/admob/ad_test.dart";
 
 
 
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
     final String externalId = supabase.auth.currentUser!.id.toString();
     print(externalId);
     //TODO ここはandroidビルドリリースの時のみ
-    //OneSignal.login(External_id);
+    OneSignal.login(externalId);
   }
 
   /*
@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true,), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て",), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -200,12 +200,18 @@ class _HomePageState extends State<HomePage> {
 
       body: PageView(
         controller: _pageViewController,
+        // スワイプ無効
+        physics: const NeverScrollableScrollPhysics(),
+        
         children:  <Widget>[
-          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false,),
+          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て",),
           const SearchPage(),
-          ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
-          const TestPages(title: "D"),
+          //ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
+          //const TestPages(title: "D"),
         ],
+        
+        /*
+         */
         onPageChanged: (index) {
           setState(() {
             _selectedIndex = index;
@@ -216,7 +222,8 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          _pageViewController.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+          //_pageViewController.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+          _pageViewController.jumpToPage(index);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -235,6 +242,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.black,
           ),
 
+          /*
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
@@ -251,6 +259,7 @@ class _HomePageState extends State<HomePage> {
             tooltip: "This is a Settings Page",
             backgroundColor: Colors.black,
           ),
+          */
         ],
 
         //type: BottomNavigationBarType.shifting,
