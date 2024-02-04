@@ -5,11 +5,7 @@ import "package:share_your_q/utils/various.dart";
 
 
 import "package:share_your_q/image_operations/image_list_display.dart";
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
-import "package:share_your_q/admob/ad_test.dart";
 
-//TODO ビルドリリースの時のみ
-//import "package:share_your_q/admob/ad_mob.dart";
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -31,14 +27,13 @@ class _SearchPageState extends State<SearchPage> {
   //タグ
   List<String> tags = [];
 
+  String? lang = "全て";
   //tagの入力コントローラー
   final TextEditingController _tagController = TextEditingController();
 
   // タグの入力値
   String tagInput = '';
 
-  //TODO ビルドリリースの時のみ
-  //final AdMob _adMob = AdMob();
 
   // タグを追加する関数
   void addTag() {
@@ -91,16 +86,12 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    //TODO ビルドリリースの時のみ
-    //_adMob.load();
   }
 
   @override
   void dispose() {
     super.dispose();
     _tagController.dispose();
-    //TODO ビルドリリースの時のみ
-    //_adMob.dispose();
   }
 
 
@@ -128,47 +119,113 @@ class _SearchPageState extends State<SearchPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      DropdownButton<String>(
-                        value: level,
-                        onChanged: (value) {
-                          setState(() {
-                            level = value;
-                          });
-                        },
-                        items: <String>["全て", '小学校', '中学校', '高校', '大学', 'その他']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        //hint: const Text('レベル選択'),
+                      Column(
+                        children: [
+                          //const Text("レベル"),
+                          DropdownButton<String>(
+                            value: level,
+                            onChanged: (value) {
+                              setState(() {
+                                level = value;
+                              });
+                            },
+                            items: <String>["全て", '小学校', '中学校', '高校', '大学', 'その他']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            //hint: const Text('レベル選択'),
+                          ),
+                        ],
                       ),
             
             
-                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
+                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
               
                       
-                      DropdownButton<String>(
-                        value: subject,
-                        onChanged: (value) {
-                          setState(() {
-                            subject = value;
-                          });
-                        },
-                        items: <String>["全て", '数学', '物理', '化学', 'その他']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        //hint: const Text('ジャンル選択'),
+                      Column(
+                        children: [
+                          //const Text("ジャンル"),
+
+                          DropdownButton<String>(
+                            value: subject,
+                            onChanged: (value) {
+                              setState(() {
+                                subject = value;
+                              });
+                            },
+                            items: <String>["全て", '数学', '物理', '化学', 'その他']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            //hint: const Text('ジャンル選択'),
+                          ),
+                        ],
                       ),
             
-                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
+                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
+
+                      Column(
+                        children: [
+                          //const Text("並び順"),
+                          DropdownButton<String>(
+                            value: method,
+                            onChanged: (value) {
+                              setState(() {
+                                method = value;
+                              });
+                            },
+                            items: <String>['新着', '未発掘', "ランダム"]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            //hint: const Text('並び替え方法の選択'),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
+
+                      Column(
+                        children: [
+                          //const Text("言語"),
+                          DropdownButton<String>(
+                            value: lang,
+                            onChanged: (value) {
+                              setState(() {
+                                lang = value;
+                              });
+                            },
+                            items: <String>["全て", 'ja', 'en']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            //hint: const Text('並び替え方法の選択'),
+                          ),
+                        ],
+                      ),
               
               
+                      
+                    ],
+            
+                  ),
+
+                  /*
+                  Row(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       // 検索方法の選択
                       DropdownButton<String>(
                         value: method,
@@ -186,12 +243,33 @@ class _SearchPageState extends State<SearchPage> {
                         }).toList(),
                         //hint: const Text('並び替え方法の選択'),
                       ),
+
+                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
+
+                      DropdownButton<String>(
+                        value: lang,
+                        onChanged: (value) {
+                          setState(() {
+                            lang = value;
+                          });
+                        },
+                        items: <String>["全て", 'ja', 'en']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                        //hint: const Text('並び替え方法の選択'),
+                      )
+
                     ],
-            
                   ),
-              
-                  
-              
+                   */
+
+
+                  SizedBox(height: SizeConfig.blockSizeVertical!*3,),
+                            
               
                   
                   // タグの入力フォーム
@@ -235,7 +313,7 @@ class _SearchPageState extends State<SearchPage> {
                     onPressed:(){
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true,), // ImageDisplayに遷移
+                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true, lang: lang!,), // ImageDisplayに遷移
                         ),
                       );
                     },
@@ -252,12 +330,18 @@ class _SearchPageState extends State<SearchPage> {
 
           ),
 
+
+          SizedBox(
+            height: SizeConfig.blockSizeVertical! * 2,
+          ),
+
+
           Container(
-            height: SizeConfig.blockSizeVertical! * 20,
+            height: SizeConfig.blockSizeVertical! * 15,
             color: Colors.white,
             child: InlineAdaptiveAdBanner(
               requestId: "SEARCH", 
-              adHeight: SizeConfig.blockSizeVertical!.toInt() * 20,
+              adHeight: SizeConfig.blockSizeVertical!.toInt() * 15,
             ),
           ),
 
