@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
@@ -9,7 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart';
 
 import 'package:http/http.dart' as http;
-
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+//import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
 
@@ -29,6 +31,8 @@ class ImageListDisplay extends StatefulWidget {
   final String? searchUserId;
 
   final bool showAppbar;
+
+  final String lang;
   
 
   const ImageListDisplay({
@@ -40,6 +44,7 @@ class ImageListDisplay extends StatefulWidget {
     required this.title,
     required this.searchUserId,
     required this.showAppbar,
+    required this.lang,
   }) :super(key: key);
 
   @override
@@ -68,14 +73,12 @@ class ImageListDisplayState extends State<ImageListDisplay> {
     fetchData();
 
     //TODO ビルドリリースの時のみ
-    //_adMob.load();
   }
 
   @override
   void dispose() {
     super.dispose();
     //TODO ビルドリリースの時のみ
-    //_adMob.dispose();
   }
 
   
@@ -92,6 +95,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
       if(widget.subject != "全て" && widget.subject != null) query = query.eq("subject", widget.subject as String);
       if(widget.method == "未発掘") query = query.eq("watched", 0);
       if(widget.searchUserId != "" && widget.searchUserId != null) query = query.eq("user_id", widget.searchUserId as String);
+      if(widget.lang != "全て") query = query.eq("lang", widget.lang);
 
       List<String> tags = [];
 
@@ -202,41 +206,66 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
               else 
                 isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Expanded(
+                        child: const Center(
+                          child: CircularProgressIndicator()
+                        )
+                      )
                     : Expanded(
-                        child: ListView.builder(
-                          itemCount: imageData.length,
-                          itemBuilder: (context, index) {
-
-                            //6の倍数の時には広告を表示する。
-                            if(index%6 == 0){
-                              final item = imageData[index];
-                              return Column(
-                                children: [
-                                  /*
-                                  Container(
-                                    height: 64,
-                                    width: double.infinity,
-                                    color: Colors.white,
-                                    //TODO ビルドリリースの時のみ
-                                    //child: _adMob.getAdBanner(),
-                                  ),
-                                   */
-
-                                  const BannerContainer(height:64),
-
-                                  
-                                  MyListItem(item: item),
-                                ],
-                              );
-                            }
-                            else{
-                              final item = imageData[index];
-                              return MyListItem(item: item);
-                            }
-                            
-                            
+                      
+                      //RefreshIndicatorによってリロードできるようになる。
+                        child: RefreshIndicator(
+                          color: Colors.green,
+                          onRefresh: () async{ 
+                            reloadList();
                           },
+
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            //TODO ここでリストの保持を行う。
+                            addAutomaticKeepAlives: true,
+                            itemCount: imageData.length,
+                            //itemCount: 10,
+                            itemBuilder: (context, index) {
+                        
+                              //6の倍数の時には広告を表示する。
+                              if(index%6 == 0){
+                                final item = imageData[index];
+                                return Column(
+                                  children: [
+                                    /*
+                                    Container(
+                                      height: 64,
+                                      width: double.infinity,
+                                      color: Colors.white,
+                                      //TODO ビルドリリースの時のみ
+                                      //child: _adMob.getAdBanner(),
+                                    ),
+                                     */
+                        
+                                    SizedBox(
+                                      height: SizeConfig.blockSizeVertical! * 40,
+                                      //InlineAdaptiveAdBanner(requestId: "LIST",),
+                                      child: InlineAdaptiveAdBanner(
+                                        requestId: "LIST", 
+                                        adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
+                                      )//InlineAdaptiveExample(),
+                                    ),
+                                    //const ,
+                        
+                                    
+                                    MyListItem(item: item),
+                                  ],
+                                );
+                              }
+                              else{
+                                final item = imageData[index];
+                                return MyListItem(item: item);
+                              }
+                              
+                              
+                            },
+                          ),
                         ),
                       ),
               
@@ -258,7 +287,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
 
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
-class MyListItem extends StatelessWidget {
+class MyListItem extends StatefulWidget {
   final Map<String, dynamic> item;
 
 
@@ -269,8 +298,15 @@ class MyListItem extends StatelessWidget {
     
   }): super(key: key);
 
-  
+  @override
+  State<MyListItem> createState() => _MyListItemState();
+}
 
+class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMixin{
+
+  //TODO mylistitemが保持されているかどうか。
+  @override
+  bool get wantKeepAlive => true;
 
   Future<String> loadUserImage(String imageUrl) async {
     try {
@@ -291,15 +327,14 @@ class MyListItem extends StatelessWidget {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    super.build(context);
 
+    final String? imageUrlPX = widget.item["problem_id"];
+    final String? imageUrlCX = widget.item["comment_id"];
 
-    final String? imageUrlPX = item["problem_id"];
-    final String? imageUrlCX = item["comment_id"];
-
-    final String targetUserId = item["user_id"];
+    final String targetUserId = widget.item["user_id"];
 
     String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
 
@@ -340,8 +375,8 @@ class MyListItem extends StatelessWidget {
     }
 
    
-    final List<String> titleLines = item['title'].toString().split("\n");
-    final List<String> explainLines = item['explain'].toString().split("\n");
+    final List<String> titleLines = widget.item['title'].toString().split("\n");
+    final List<String> explainLines = widget.item['explain'].toString().split("\n");
 
     bool isLoadingImage = true;
 
@@ -421,7 +456,7 @@ class MyListItem extends StatelessWidget {
                   if (!isLoadingImage) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ProfilePage(userId: item["user_id"], userName: item["user_name"], profileImage: profileImageId,),
+                        builder: (context) => ProfilePage(userId: widget.item["user_id"], userName: widget.item["user_name"], profileImage: profileImageId,),
                       ),
                     );
                   } else {
@@ -438,15 +473,21 @@ class MyListItem extends StatelessWidget {
 
 
 
-        title: Text(item['user_name']),
+        title: Text(
+          widget.item['user_name'],
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
             //Supabaseのtimestamptz型をDateTime型に変換して表示
-            Text(format(DateTime.parse(item["created_at"]), locale: 'ja')),
+            Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
 
-            item["title"] != null
+            widget.item["title"] != null
               ? titleLines.length > 3
                 ?Text(
                   "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
@@ -456,56 +497,65 @@ class MyListItem extends StatelessWidget {
                   )
                 )
                 :Text(
-                  "[${item['title']}]",
+                  "[${widget.item['title']}]",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ), 
                 )
               : const Text("タイトルなし"),
+
+            SizedBox(height: SizeConfig.blockSizeVertical!*3,),
             
 
-            item["explain"] != null 
-              ? explainLines.length > 3
+            widget.item["explain"] != null 
+              ? explainLines.length > 5
                 ? Text(
-                  "${explainLines[0]}\n${explainLines[1]}\n${explainLines[2]}\n……",
+                  "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n${titleLines[3]}\n${titleLines[4]}\n……",
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                   )
                 )
                 : Text(
-                  item["explain"],
+                  widget.item["explain"],
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                   )
                 )
               
-              : const Text("説明文なし"),
+              : const Text("説明文なし", style: const TextStyle(fontSize: 16),),
+
+            SizedBox(height: SizeConfig.blockSizeVertical!*3,),
             
 
             Row(
               children: [
-                item["level"] != null
+                widget.item["level"] != null
                   ? Text(
-                      item['level'],
+                      widget.item['level'],
+                      style: const TextStyle(fontSize: 14),
                     )
-                  : const Text("レベルなし"),
+                  : const Text("レベルなし", style: const TextStyle(fontSize: 14),),
 
                 const SizedBox(width: 10,),
 
-                item["subject"] != null
+                widget.item["subject"] != null
                   ? Text(
-                      item['subject'],
+                      widget.item['subject'],
+                      style: const TextStyle(fontSize: 14),
                     )
-                  : const Text("教科なし"),
+                  : const Text("教科なし", style: const TextStyle(fontSize: 14),),
 
                 const SizedBox(width: 10,),
 
-                item["difficulty_point"] != null && item["eval_num"] != 0
+                widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
                   ? Text(
-                      "${"難易度: " + (item["difficulty_point"]/item["eval_num"]).toDouble().toStringAsFixed(1)}点",
+                      "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
                     )
-                  : const Text("難易度なし"),
+                  : const Text("難易度なし", style: const TextStyle(fontSize: 14),),
 
                 const SizedBox(width: 10,),
               ],
@@ -514,24 +564,47 @@ class MyListItem extends StatelessWidget {
             Row(
               children: [
 
-                if (item['tag1'] != null && item["tag1"] != "") Text("#"+item['tag1']),
-                if (item['tag2'] != null && item["tag2"] != "") Text("#"+item['tag2']),
-                if (item['tag3'] != null && item["tag3"] != "") Text("#"+item['tag3']),
-                if (item['tag4'] != null && item["tag4"] != "") Text("#"+item['tag4']),
-                if (item['tag5'] != null && item["tag5"] != "") Text("#"+item['tag5']),                
+                if (widget.item['tag1'] != null && widget.item["tag1"] != "") Text("#"+widget.item['tag1'], style: TextStyle(fontSize: 14),),
+                if (widget.item['tag2'] != null && widget.item["tag2"] != "") Text("#"+widget.item['tag2'], style: TextStyle(fontSize: 14),),
+                if (widget.item['tag3'] != null && widget.item["tag3"] != "") Text("#"+widget.item['tag3'], style: TextStyle(fontSize: 14),),
+                if (widget.item['tag4'] != null && widget.item["tag4"] != "") Text("#"+widget.item['tag4'], style: TextStyle(fontSize: 14),),
+                if (widget.item['tag5'] != null && widget.item["tag5"] != "") Text("#"+widget.item['tag5'], style: TextStyle(fontSize: 14),),                
             
             ]),
 
-            Row(
+            Column(
               children: [
-                const Icon(Icons.visibility,color: Colors.white,),
-                Text(item["watched"].toString()),
-                formSpacer,
-                const Icon(Icons.favorite, color: Colors.white,),
-                Text(item["likes"].toString()),
-                formSpacer,
-                const Icon(Icons.chat, color: Colors.white,),
-                Text(item["comments"].toString()),
+                Row(
+                  children: [
+                    const Icon(Icons.visibility,color: Colors.white,),
+                    Text(widget.item["watched"].toString()),
+                    formSpacer,
+
+                    const Icon(Icons.favorite, color: Colors.white,),
+                    Text(widget.item["likes"].toString()),
+                    formSpacer,
+
+                    const Icon(Icons.chat, color: Colors.white,),
+                    Text(widget.item["comments"].toString()),
+                    formSpacer,
+                    
+                  ],
+                ),
+
+                Row(
+                  children: [
+                    const Icon(Icons.thumb_up_alt),
+                    const Text("Q:"),
+                    Text(widget.item["pro_add"].toString()),
+                    formSpacer,
+
+                    const Icon(Icons.thumb_up_alt),
+                    const Text("A:"),
+                    Text(widget.item["com_add"].toString()),
+                  ],
+                ),
+
+                
               ],
             ),
 
@@ -543,42 +616,45 @@ class MyListItem extends StatelessWidget {
 
             MaterialPageRoute(
               builder: (context) => DisplayPage(
-                title: item['title'],
+                title: widget.item['title'],
 
-                image_id: item["image_data_id"],
-                image_own_user_id: item["user_id"],
-                tag1: item['tag1'],
-                tag2: item['tag2'],
-                tag3: item['tag3'],
-                tag4: item['tag4'],
-                tag5: item['tag5'],
+                image_id: widget.item["image_data_id"],
+                image_own_user_id: widget.item["user_id"],
+                tag1: widget.item['tag1'],
+                tag2: widget.item['tag2'],
+                tag3: widget.item['tag3'],
+                tag4: widget.item['tag4'],
+                tag5: widget.item['tag5'],
 
                 //tags: item['tags'],
-                level: item['level']!,
-                subject: item['subject']!,
+                level: widget.item['level']!,
+                subject: widget.item['subject']!,
                 image1: null,
                 image2: null,
                 imageUrlPX: imageUrlPX,
                 imageUrlCX: imageUrlCX,
 
-                num: item['num'],
+                num: widget.item['num'],
 
-                explanation: item['explain'],
+                explanation: widget.item['explain'],
 
-                problem_id: item["problem_id"],
-                comment_id: item["comment_id"],
+                problem_id: widget.item["problem_id"],
+                comment_id: widget.item["comment_id"],
 
-                watched: item["watched"],
+                watched: widget.item["watched"],
 
-                likes: item["likes"],
+                likes: widget.item["likes"],
 
-                userName: item["user_name"],
+                userName: widget.item["user_name"],
 
-                difficulty: item["eval_num"] != 0
-                  ? item["difficulty_point"]/item["eval_num"].toDouble()
+                difficulty: widget.item["eval_num"] != 0
+                  ? widget.item["difficulty_point"]/widget.item["eval_num"].toDouble()
                   : 0,
 
                 profileImage: profileImageId,
+
+                problemAdd: widget.item["pro_add"],
+                commentAdd: widget.item["com_add"],
 
 
               ),
