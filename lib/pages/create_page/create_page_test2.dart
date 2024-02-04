@@ -10,17 +10,13 @@ import 'package:share_your_q/image_operations/image_select.dart';
 import 'package:share_your_q/image_operations/image_upload.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import "package:share_your_q/image_operations/problem_view.dart";
+import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 
 
-import "package:share_your_q/admob/ad_test.dart";
-import "package:share_your_q/admob/interstitial_x.dart";
-//import 'package:share_your_q/admob/interstitial_main.dart';
 
 // TODO ここはリリース時のみ Admob
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
-import 'package:share_your_q/admob/interstitial_test.dart';
 
 
 
@@ -74,8 +70,11 @@ class _CreatePageState extends State<CreatePage> {
   final TextEditingController _titleController = TextEditingController();
   //教科、数学など
   String? subject;
+  
   //小学校、中学校などいつ習ったものか
   String? level;
+
+  String? lang;
 
   //タグ
   List<String> tags = [];
@@ -116,8 +115,7 @@ class _CreatePageState extends State<CreatePage> {
 
   List<Map<String,dynamic>> profileImageId = [];
 
-  String lang = "ja";
-
+  // TODO admob本番
   InterstitialAd? _interstitialAd;
 
   //TODO ここは今test用のものなので後で変更する。
@@ -126,6 +124,7 @@ class _CreatePageState extends State<CreatePage> {
       : "ca-app-pub-3940256099942544/1033173712";//dotenv.get("INTERSTITIAL_ID_CREATE");
 
   /// Loads an interstitial ad.
+  /// TODO admob本番
   void _loadAd() {
     InterstitialAd.load(
         adUnitId: _adUnitId,
@@ -166,12 +165,14 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   void dispose() {
+    // TODO admob本番
     _interstitialAd?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
+    // TODO admob本番
     _loadAd();
     super.initState();
     fetchProfileImage();
@@ -278,7 +279,7 @@ class _CreatePageState extends State<CreatePage> {
         //"likes": 100,
         "links": urls,
         "ref_explain": refText,
-        "lang": "ja",
+        "lang": lang,
       });
 
       //ここでは、ユーザーの問題の投稿数を増やす。
@@ -604,6 +605,23 @@ class _CreatePageState extends State<CreatePage> {
                             }).toList(),
                             hint: const Text('ジャンルを選択してください'),
                           ),
+
+                          DropdownButton<String>(
+                            value: lang,
+                            onChanged: (value) {
+                              setState(() {
+                                lang = value;
+                              });
+                            },
+                            items: <String>["ja", "en"]
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            hint: const Text('言語を選択してください'),
+                          ),
           
                           
           
@@ -847,6 +865,7 @@ class _CreatePageState extends State<CreatePage> {
                                   problemTitle == null ||
                                   subject == null ||
                                   level == null ||
+                                  lang == null ||
                                   tags.isEmpty) {
                                 // エラーがある場合の処理
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -915,21 +934,7 @@ class _CreatePageState extends State<CreatePage> {
       children: <Widget>[
 
         //ここで問題の評価を見る
-        Row(
-          children: [
-            Text("参考文献はこんな感じに表示されます"),
-
-            SizedBox(width: SizeConfig.blockSizeHorizontal! * 5,),
-
-            IconButton(
-              icon: const Icon(Icons.bar_chart, color: Colors.blue,),
-              tooltip: "参考文献の確認",
-              onPressed: (){
-                _showReferenceSheet(context);
-              },
-            ),
-          ],
-        ),
+        
 
 
         ProblemViewWidget(
@@ -964,6 +969,9 @@ class _CreatePageState extends State<CreatePage> {
           image_own_user_id: myUserId,
           difficulty: 0,
           profileImage: profileImageId[0]["profile_image_id"],
+
+          problemAdd: 0,
+          commentAdd: 0,
         ),
 
         /*
@@ -1004,11 +1012,27 @@ class _CreatePageState extends State<CreatePage> {
               onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
               onAdClicked: (InterstitialAd ad) => print('$ad clicked.'));
 
+              // TODO admob本番
               _interstitialAd!.show();
               _interstitialAd = null;
 
           },
           child: const Text("広告を見る1"),
+        ),
+
+        Row(
+          children: [
+            Text("参考文献はこんな感じに表示されます→"),
+
+
+            IconButton(
+              icon: const Icon(Icons.bar_chart, color: Colors.blue,),
+              tooltip: "参考文献の確認",
+              onPressed: (){
+                _showReferenceSheet(context);
+              },
+            ),
+          ],
         ),
          
 
@@ -1059,6 +1083,7 @@ class _CreatePageState extends State<CreatePage> {
               onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
             );
 
+            // TODO admob本番
             _interstitialAd!.show();
             _interstitialAd = null;
 
