@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
 import 'dart:typed_data';
 import "package:share_your_q/pages/profile_page/profile_page.dart";
 
 import 'package:share_your_q/image_operations/problem_view/pro_com_add.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 //ユーザーの問題を表示するヴィジェット
@@ -107,13 +110,377 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
   Uint8List? profileImageBytes = Uint8List(0);
 
+  bool isLiked = false;
+
+  //最初にページを開いたときとそうでないときでの処理の変更
+  bool isFirst = true;
+
+  int likes = 0;
+
+  bool _statusBarVisible = true;
+
+  void _toggleSystemBars(BuildContext context) {
+    setState(() {
+      _statusBarVisible = !_statusBarVisible;
+      /*
+      if (!_statusBarVisible) {
+        SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.manual, overlays: [SystemUiOverlay.top, /*SystemUiOverlay.bottom
+           */],
+        );
+      } else {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [/*SystemUiOverlay.bottom */]);
+      }
+      */
+    });
+  }
+
+  //ここで画像を拡大表示など
+  //https://qiita.com/ling350181/items/adfebd6f7c648084d1b5
+  void showPreviewImage(
+    BuildContext context, {
+    required Uint8List image,
+  }) {
+    showDialog(
+      //useSafeArea: false,
+      barrierDismissible: true,
+      barrierLabel: '閉じる',
+      context: context,
+      builder: (context) {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Container(
+                    color: Colors.black,
+                    child: InteractiveViewer(
+                      
+                      minScale: 0.1,
+                      maxScale: 5,
+                      child: Image.memory(
+                        image,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: _statusBarVisible? IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                      color: Colors.green,
+                    ),
+                  )
+                  : SizedBox(width: 0,),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+void showPreviewImage100(
+  BuildContext context, {
+  required Uint8List image,
+}) {
+  showDialog(
+    //useSafeArea: false,
+    barrierDismissible: true,
+    //barrierLabel: '閉じる',
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return GestureDetector(
+            onTap: () {
+              _toggleSystemBars100(setState); // タップ時にシステムバーを切り替える
+              print("tapped");
+              print(_statusBarVisible);
+            },
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Container(
+                  color: Colors.black,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: InteractiveViewer(
+                        minScale: 0.1,
+                        maxScale: 5,
+                        child: Image.memory(
+                          image,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: _statusBarVisible ? IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                        ),
+                      )
+                      : SizedBox(width: 0,),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+bool _statusBarVisible100 = false;
+
+void _toggleSystemBars100(Function(void Function()) setState) {
+  setState(() {
+    _statusBarVisible = !_statusBarVisible;
+    /*
+    if (!_statusBarVisible) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual, overlays: [SystemUiOverlay.top, /*SystemUiOverlay.bottom
+         */],
+      );
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [/*SystemUiOverlay.bottom */]);
+    }
+    */
+  });
+}
+
+
+
+
+
+  void showPreviewImage10(
+  BuildContext context, {
+  required Uint8List image,
+}) {
+  showDialog(
+    //useSafeArea: false,
+    barrierDismissible: true,
+    //barrierLabel: '閉じる',
+    context: context,
+    builder: (context) {
+      return GestureDetector(
+        onTap: () {
+          _toggleSystemBars(context); // タップ時にシステムバーを切り替える
+          print("tapped");
+          print(_statusBarVisible);
+        },
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Container(
+              color: Colors.black,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: InteractiveViewer(
+                    minScale: 0.1,
+                    maxScale: 5,
+                    child: Image.memory(
+                      image,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Material(
+                  color: Colors.transparent,
+                  child: _statusBarVisible ? IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                  )
+                  : SizedBox(width: 0,),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+  void showPreviewImage2(
+  BuildContext context, {
+  required Uint8List image,
+}) {
+  showDialog(
+    //useSafeArea: false,
+    barrierDismissible: true,
+    barrierLabel: '閉じる',
+    context: context,
+    builder: (context) {
+      return GestureDetector(
+        onTap: () {
+          _toggleSystemBars(context);
+        },
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Center(
+              child: InteractiveViewer(
+                minScale: 0.1,
+                maxScale: 5,
+                child: Image.memory(
+                  image,
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                SizedBox(
+                  height: SizeConfig.safeAreaTop!
+                ),
+                Row(
+                  children: [
+                    Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
+
+
+  Future<void> loadLikes() async{
+    try {
+      // `user_id`と`image_id`の組み合わせで既存のレコードを検索する
+      final existingRecord = await supabase
+          .from('likes')
+          .select<List<Map<String, dynamic>>>()
+          .eq('user_id', myUserId)
+          .eq('image_id', widget.image_id);
+
+      // レコードが存在する場合はアップデート、存在しない場合は挿入する
+      if (existingRecord.isNotEmpty) {
+        // レコードが存在する場合はアップデート
+        setState(() {
+          isLiked = existingRecord[0]["add"];
+        });
+
+        final response;
+
+        if(isFirst){
+          response = await supabase
+            .from('likes')
+            .update({ 'add': isLiked })
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.image_id);
+          isFirst = false;
+        }
+        else{
+          response = await supabase
+            .from('likes')
+            .update({ 'add': !isLiked })
+            .eq('user_id', myUserId)
+            .eq('image_id', widget.image_id);
+        }
+
+        //isLiked = !isLiked;
+        if (response != null) {
+          // エラーハンドリング
+          print('Error updating data: $response');
+        } else {
+          // 成功時の処理
+          print('Data updated successfully!');
+        }
+      } else {
+        // レコードが存在しない場合は挿入
+        final response = await supabase
+            .from('likes')
+            .insert({ 
+              'add': false,
+              'user_id': myUserId,
+              'problem_num' : 0,
+              "image_id" : widget.image_id,
+              "image_own_user_id" : widget.image_own_user_id,
+              });
+
+        if (response == null) {
+          // エラーハンドリング
+          print('Error inserting data: $response');
+        } else {
+          // 成功時の処理
+          print('Data inserted successfully!');
+        }
+      }
+    } catch (error) {
+      // 例外が発生した場合のエラーハンドリング
+      print('Error: $error');
+    }
+  }
+
 
   
 
   @override
   void initState() {
-
     super.initState();
+
+    setState(() {
+      likes = widget.likes;
+    });
+
+    if(!widget.isCreate){
+      loadLikes();
+    }
 
     fetchImage(widget.profileImage).then((bytes){
       setState(() {
@@ -145,10 +512,147 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
 
     }
+
+    //followProcess();
+
+    if(myUserId != widget.image_own_user_id){
+      isFollow();
+    }
+
+    
     
 
 
   }
+
+  bool? isFollowed = null;
+  String myUsername = "";
+
+  Future<void> isFollow() async{
+    try{
+
+      final response = await supabase
+        .from('follow')
+        .select<List<Map<String, dynamic>>>()
+        .eq('follower_id', myUserId)
+        .eq('followed_id', widget.image_own_user_id);
+
+      final res = await supabase 
+        .from("profiles")
+        .select<List<Map<String, dynamic>>>()
+        .eq("id", myUserId);
+
+      myUsername = res[0]["username"];
+      
+      if(response.isEmpty){
+
+        await supabase
+          .from("follow")
+          .insert([
+            {
+              "follower_id" : myUserId,
+              "followed_id" : widget.image_own_user_id,
+              "add": false,
+              "follower_name" : myUsername,
+            }
+          ]);
+
+        setState(() {
+          isFollowed = false;
+        });
+
+      }
+      else{
+        if(response[0]["add"] == true){
+          setState(() {
+            isFollowed = true;
+          });
+        }
+        else{
+          setState(() {
+            isFollowed = false;
+          });
+        }
+      }
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return null;
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return null;
+    }
+  } 
+
+
+
+  Future<void> followProcess() async{
+    try{
+
+      if(isFollowed == true){
+
+        print("kokohatrue");
+        await supabase
+          .from('follow')
+          .update({ "add": false })
+          .eq('follower_id', myUserId)
+          .eq('followed_id', widget.image_own_user_id);
+
+          /*
+          "follower_id" : myUserId,
+              "followed_id" : widget.image_own_user_id,
+              "add": false,
+              "follower_name" : myUsername,
+           */
+        
+        setState(() {
+          isFollowed = false;
+        });
+      }
+      else if(isFollowed == false){
+
+        print("kokohafalse");
+
+        await supabase
+          .from('follow')
+          .update({ "add": true })
+          .eq('follower_id', myUserId)
+          .eq('followed_id', widget.image_own_user_id);
+
+          /*
+          "follower_id" : myUserId,
+              "followed_id" : widget.image_own_user_id,
+              "add": false,
+              "follower_name" : myUsername,
+           */
+        
+        setState(() {
+          isFollowed = true;
+        });
+
+      }
+
+
+      
+      
+
+
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+  }
+
 
   
   
@@ -220,16 +724,45 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                         fontStyle: FontStyle.italic
                       ),
                     ),
+
+                    const SizedBox(width: 10,),
+
+                    
                   ],
                 ),
+
+                const SizedBox(height: 10,),
+                widget.image_own_user_id == myUserId || isFollowed == null
+                      ? const SizedBox(width: 10,)
+                      : ElevatedButton(
+
+                        style: ElevatedButton.styleFrom(
+                          //フォローしていないときは透明にしたい
+                          backgroundColor: isFollowed == false ? Colors.blue : Colors.red,
+                          //もうすこしまるみを持たせたい
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          
+                        ),
+                        onPressed: () async {
+                          //フォローする
+                          await followProcess();
+                        },
+                        child: isFollowed == false
+                          ? const Text("フォローする", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold))
+                          : const Text("フォロー解除", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
 
                 const SizedBox(height: 5,),
 
                 Row(
                   children: [
+                    /*
                     Text("難易度: ${widget.difficulty}"),
 
                     const SizedBox(width: 10,),
+                     */
 
                     /*
                     GestureDetector(
@@ -306,19 +839,31 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
                     const SizedBox(width: 10,),
 
+
+
                     //ここをappbaractionsのものにする。
                     IconButton(
                       onPressed: widget.isCreate ? null : () async {
                         //いいねをする
-                        await likeImage(widget.image_id, myUserId);
+                        await loadLikes();
+
                         setState(() {
-                          widget.likes += 1;
+                          isLiked = !isLiked;
+                          likes = isLiked ? likes + 1 : likes - 1;
                         });
                       },
-                      icon: Icon(Icons.favorite, color: Colors.red, size: 24,)
+
+                      icon: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border_outlined,
+                        color: isLiked ? Colors.red : Colors.white,
+                      ),
                     ),
+
+                    
+
+
                     //Text("いいね: ${widget.likes}"),
-                    Text("${widget.likes}"),
+                    Text("${likes}"),
                   ],
                 ),
                 
@@ -374,10 +919,12 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
               GestureDetector(
 
                 child: Container(
+                  /*
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.green),
                     borderRadius: BorderRadius.circular(10),
                   ),
+                   */
                   //width: SizeConfig.blockSizeHorizontal! * 100,
                   //height: SizeConfig.blockSizeVertical! * 100,
                   
@@ -408,6 +955,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
                 onTap:(){
                   //画像を拡大表示する
+                  /*
                   showDialog(
                     context: context,
                     builder: (_) {
@@ -444,6 +992,14 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                         ),
                       );
                     },
+                  );
+                   */
+
+                  showPreviewImage100(
+                    context,
+                    image: widget.isCreate
+                      ? widget.image1!.bytes!
+                      : image1Bytes!,
                   );
                  
                 }
@@ -485,8 +1041,8 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
             else
               GestureDetector(
                 child: Container(
-                  width: SizeConfig.blockSizeHorizontal! * 100,
-                  height: SizeConfig.blockSizeVertical! * 100,
+                  //width: SizeConfig.blockSizeHorizontal! * 100,
+                  //height: SizeConfig.blockSizeVertical! * 100,
               
                   padding: const EdgeInsets.all(8.0),
                   margin: const EdgeInsets.all(8.0),
@@ -512,6 +1068,7 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
                 onTap:(){
                   //画像を拡大表示する
+                  /*
                   showDialog(
                     useSafeArea: false,
                     context: context,
@@ -550,12 +1107,51 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
                       );
                     },
                   );
+                   */
+
+                  showPreviewImage100(
+                    context,
+                    image: widget.isCreate
+                      ? widget.image2!.bytes!
+                      : image2Bytes!,
+                  );
                  
                 }
               ),
 
+          /*
+          CommentList(
+            imageId: widget.image_id!, 
+            responseId: -1,
+          ),
+           */
+
 
           SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
+
+          /*
+          
+           */
+
+          /*
+          Container(
+            height: SizeConfig.blockSizeVertical! * 80,
+            //width: SizeConfig.blockSizeHorizontal! * 90,
+
+            child:CommentList(
+              imageId: widget.image_id!, 
+              responseId: -1,
+              canToPage: false,
+              resText: "コメント",
+              item: null,
+              title: "コメント"
+            ),
+          ),
+           */
+
+
+
+          
 
         ],
       ),
