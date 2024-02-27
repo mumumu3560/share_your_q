@@ -15,8 +15,10 @@ import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 
 
 // TODO ここはリリース時のみ Admob
+/*
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+ */
 
 
 
@@ -116,15 +118,18 @@ class _CreatePageState extends State<CreatePage> {
   List<Map<String,dynamic>> profileImageId = [];
 
   // TODO admob本番
-  InterstitialAd? _interstitialAd;
+  //InterstitialAd? _interstitialAd;
 
   //TODO ここは今test用のものなので後で変更する。
+  /*
   final String _adUnitId = Platform.isAndroid
       ? "ca-app-pub-3940256099942544/1033173712"//dotenv.get("INTERSTITIAL_ID_CREATE")
       : "ca-app-pub-3940256099942544/1033173712";//dotenv.get("INTERSTITIAL_ID_CREATE");
+   */
 
   /// Loads an interstitial ad.
   /// TODO admob本番
+  /*
   void _loadAd() {
     InterstitialAd.load(
         adUnitId: _adUnitId,
@@ -163,25 +168,92 @@ class _CreatePageState extends State<CreatePage> {
         ));
   }
 
+   */
+
+
   @override
   void dispose() {
     // TODO admob本番
-    _interstitialAd?.dispose();
+    //_interstitialAd?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     // TODO admob本番
-    _loadAd();
+    //_loadAd();
     super.initState();
     fetchProfileImage();
+    fetchImageSubject();
   }
 
   Future<void> fetchProfileImage() async{
     try{
       profileImageId = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
     } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+  }
+
+  int phys = 1;
+  int chem = 1;
+  int math = 1;
+  int other = 1;
+
+  Future<void> fetchImageSubject() async{
+    try{
+      final response = await supabase
+        .from("image_data")
+        .select<List<Map<String, dynamic>>>()
+        .eq("user_id", myUserId)
+        .order("created_at", ascending: false)
+        .limit(4);
+
+      for(int i = 0; i < response.length; i++){
+        //supabaseから取得したtimestamptz型のやつはutcで取得される。
+        DateTime date = DateTime.parse(response[i]["created_at"]).add(const Duration(hours: 9));
+        DateTime now = DateTime.now();
+
+
+
+        //context.showErrorSnackBar(message: "i=${i}  日付${date}  現在${now}");
+
+
+        if(date.year == now.year && date.month == now.month && date.day == now.day){
+          if(response[i]["subject"] == "数学"){
+            setState(() {
+              math--;
+            });
+          }
+          else if(response[i]["subject"] == "物理"){
+            setState(() {
+              phys--;
+            });
+          }
+          else if(response[i]["subject"] == "化学"){
+            setState(() {
+              chem--;
+            });
+          }
+          else{
+            setState(() {
+              other--;
+            });
+          }
+        }
+      }
+
+      
+      
+
+    }
+    on PostgrestException catch (error){
       if(context.mounted){
         context.showErrorSnackBar(message: error.message);
       }
@@ -529,6 +601,62 @@ class _CreatePageState extends State<CreatePage> {
     });
   }
 
+  void showRestriction(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+              content: Container(
+                //height: SizeConfig.blockSizeVertical! * 20,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text("残り回数", style: TextStyle(fontSize: 20),),
+
+                    ListTile(
+                      title: Text("数学: ${math}回"),
+                      onTap: () {
+
+                      },
+                    ),
+                    ListTile(
+                      title: Text('物理: ${phys}回'),
+                      onTap: () {
+                        // 画像探しページに遷移するコードを追加
+                      },
+                    ),
+                    ListTile(
+                      title: Text('化学: ${chem}回'),
+                      onTap: () {
+
+                      },
+                    ),
+                    ListTile(
+                      title: Text('その他: ${other}回'),
+                      onTap: () {
+
+                      },
+                    ),
+                  ],
+
+                ),
+                
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // ダイアログを閉じる
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+        },
+    );
+    
+  }
+
+
 
 
 
@@ -541,7 +669,67 @@ class _CreatePageState extends State<CreatePage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('作成ページ'),
+
+        actions: [
+          TextButton(
+            onPressed: showRestriction, 
+            child: const Text("投稿可能回数")
+          )
+
+        ],
+
+        
       ),
+
+
+      /*
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            SizedBox(
+              height: SizeConfig.blockSizeVertical! * 15,
+              child: const DrawerHeader(
+                child: Text("投稿残り回数"),
+              ),
+            ),
+
+            ListTile(
+              title: Text("数学: ${math}回"),
+              onTap: () {
+
+              },
+            ),
+
+            ListTile(
+              title: Text('物理: ${phys}回'),
+              onTap: () {
+                // 画像探しページに遷移するコードを追加
+              },
+            ),
+
+            ListTile(
+              title: Text('化学: ${chem}回'),
+              onTap: () {
+
+              },
+            ),
+
+            ListTile(
+              title: Text('その他: ${other}回'),
+              onTap: () {
+
+              },
+            ),
+
+          ],
+        ),
+
+      ),
+       */
+      
+      
+
+
       body: Column(
         children: [
           Expanded(
@@ -592,9 +780,27 @@ class _CreatePageState extends State<CreatePage> {
                           DropdownButton<String>(
                             value: subject,
                             onChanged: (value) {
+                              if(value == "数学" && math == 0){
+                                context.showErrorSnackBar(message: "今日はもう数学の問題を投稿しました。");
+                                return;
+                              }
+                              else if(value == "物理" && phys == 0){
+                                context.showErrorSnackBar(message: "今日はもう物理の問題を投稿しました。");
+                                return;
+                              }
+                              else if(value == "化学" && chem == 0){
+                                context.showErrorSnackBar(message: "今日はもう化学の問題を投稿しました。");
+                                return;
+                              }
+                              else if(value == "その他" && other == 0){
+                                context.showErrorSnackBar(message: "今日はもうその他の問題を投稿しました。");
+                                return;
+                              }
+
                               setState(() {
                                 subject = value;
                               });
+
                             },
                             items: <String>['数学', '物理', '化学', 'その他']
                                 .map<DropdownMenuItem<String>>((String value) {
@@ -898,10 +1104,14 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
 
+          SizedBox(height: SizeConfig.blockSizeVertical! * 3),
+          
+
+          //TODO Admob
           Container(
-            height: SizeConfig.blockSizeVertical! * 15,
-            color: Colors.white,
-            child: AdaptiveAdBanner(requestId: "CREATE",)
+            height: SizeConfig.blockSizeVertical! * 17,
+            //color: Colors.white,
+            //child: AdaptiveAdBanner(requestId: "CREATE",)
           ),
           //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           //InlineAdaptiveExample(),
@@ -982,28 +1192,32 @@ class _CreatePageState extends State<CreatePage> {
          */
 
         
+        /*
         ElevatedButton(
           onPressed: () async{
 
             //showLoadingDialog(context,"処理中...");
+
+            //TODO Admob
+            
             if (_interstitialAd == null) {
               return;
             }
             _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
               onAdShowedFullScreenContent: (InterstitialAd ad) =>
-                //print('$ad onAdShowedFullScreenContent.'),
-                context.showSuccessSnackBar(message: "aaa"),
+                print('$ad onAdShowedFullScreenContent.'),
+                //context.showSuccessSnackBar(message: "aaa"),
 
               onAdDismissedFullScreenContent: (InterstitialAd ad) {
                 print('$ad onAdDismissedFullScreenContent.');
-                context.showSuccessSnackBar(message: "bbb");
+                //context.showSuccessSnackBar(message: "bbb");
                 ad.dispose();
                 _loadAd();
               },
 
               onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
                 print('$ad onAdFailedToShowFullScreenContent: $error');
-                context.showErrorSnackBar(message: "ccc");
+                //context.showErrorSnackBar(message: "ccc");
                 ad.dispose();
                 _loadAd();
                 return;
@@ -1019,6 +1233,7 @@ class _CreatePageState extends State<CreatePage> {
           },
           child: const Text("広告を見る1"),
         ),
+         */
 
         Row(
           children: [
@@ -1055,17 +1270,18 @@ class _CreatePageState extends State<CreatePage> {
 
             //TODO Admob
 
+            /*
             if (_interstitialAd == null) {
               return;
             }
             _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
               onAdShowedFullScreenContent: (InterstitialAd ad) =>
-                //print('$ad onAdShowedFullScreenContent.'),
-                context.showSuccessSnackBar(message: "aaa"),
+                print('$ad onAdShowedFullScreenContent.'),
+                //context.showSuccessSnackBar(message: "aaa"),
 
               onAdDismissedFullScreenContent: (InterstitialAd ad) {
                 print('$ad onAdDismissedFullScreenContent.');
-                context.showSuccessSnackBar(message: "bbb");
+                //context.showSuccessSnackBar(message: "bbb");
                 ad.dispose();
                 _loadAd();
                 return;
@@ -1073,7 +1289,7 @@ class _CreatePageState extends State<CreatePage> {
 
               onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
                 print('$ad onAdFailedToShowFullScreenContent: $error');
-                context.showErrorSnackBar(message: "ccc");
+                //context.showErrorSnackBar(message: "ccc");
                 ad.dispose();
                 _loadAd();
                 return;
@@ -1086,6 +1302,7 @@ class _CreatePageState extends State<CreatePage> {
             // TODO admob本番
             _interstitialAd!.show();
             _interstitialAd = null;
+             */
 
             //TODO Admob
             
@@ -1211,6 +1428,7 @@ class _CreatePageState extends State<CreatePage> {
             }
 
             if(context.mounted){
+              subject == "数学" ? math-- : subject == "物理" ? phys-- : subject == "化学" ? chem-- : other--;              
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
