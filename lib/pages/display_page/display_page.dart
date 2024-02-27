@@ -5,6 +5,7 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 //google_admob
 //TODO ビルドリリースの時のみ
@@ -108,7 +109,7 @@ class _DisplayPageState extends State<DisplayPage>{
 
 
   final userId = supabase.auth.currentUser!.id;
-  //bool isLiked = false;
+  bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
   //final AdMob _adMob = AdMob();
@@ -119,6 +120,51 @@ class _DisplayPageState extends State<DisplayPage>{
 
    */
 
+  List<Map<String,dynamic>> likesData = [];
+
+
+
+/*
+
+  Future<void> loadLikes() async{
+    
+    try{
+      likesData = await supabase
+        .from('likes')
+        .select<List<Map<String, dynamic>>>()
+        .eq('image_id', widget.image_id)
+        .eq('user_id', myUserId);
+      
+      isLiked = likesData[0]['add'];
+
+      if(likesData.isNotEmpty){
+
+        await supabase
+          .from("likes")
+          .update({
+            'add': isLiked,
+          })
+          .eq('image_id', widget.image_id).eq('user_id', myUserId);
+
+        setState(() {
+          isLiked = isLiked;
+        });
+      }
+      else{
+
+      }
+
+    }
+    on PostgrestException catch (error){
+      context.showErrorSnackBar(message: error.message);
+    }
+
+    
+  }
+ */
+  
+  
+  
   @override
   void initState(){
     
@@ -160,7 +206,7 @@ class _DisplayPageState extends State<DisplayPage>{
   Widget build(BuildContext context){
 
      return Scaffold(
-      //resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         //title: const Text('画像一覧'),
 
@@ -185,97 +231,97 @@ class _DisplayPageState extends State<DisplayPage>{
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              
-              child: Column(
-                children: [
-                  Container(
-                    
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            child: Column(
+              children: [
+                Container(
+                  
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
           
-                    alignment: Alignment.center,
-                    height: SizeConfig.blockSizeVertical! * 75,
+                  alignment: Alignment.center,
+                  height: SizeConfig.blockSizeVertical! * 80,
             
-                    child: ListView(
-                      children: [
-                        ProblemViewWidget(
-                          title: widget.title,
+                  child: ListView(
+                    children: [
+                      ProblemViewWidget(
+                        title: widget.title,
             
-                          tag1: widget.tag1,
-                          tag2: widget.tag2,
-                          tag3: widget.tag3,
-                          tag4: widget.tag4,
-                          tag5: widget.tag5,
+                        tag1: widget.tag1,
+                        tag2: widget.tag2,
+                        tag3: widget.tag3,
+                        tag4: widget.tag4,
+                        tag5: widget.tag5,
             
-                          //tags: tags,
-                          level: widget.level,
-                          subject: widget.subject,
-                          image1: null,
-                          image2: null,
-                          imageUrlPX: widget.imageUrlPX,
-                          imageUrlCX: widget.imageUrlCX,
+                        //tags: tags,
+                        level: widget.level,
+                        subject: widget.subject,
+                        image1: null,
+                        image2: null,
+                        imageUrlPX: widget.imageUrlPX,
+                        imageUrlCX: widget.imageUrlCX,
             
-                          explanation: widget.explanation,
+                        explanation: widget.explanation,
           
-                          isCreate: false,
-                          image_id: widget.image_id!,
+                        isCreate: false,
+                        image_id: widget.image_id!,
           
-                          problem_id: widget.problem_id!,
-                          comment_id: widget.comment_id!,
+                        problem_id: widget.problem_id!,
+                        comment_id: widget.comment_id!,
           
-                          watched: widget.watched,
+                        watched: widget.watched,
           
-                          likes: widget.likes,
+                        likes: widget.likes,
           
-                          userName: widget.userName,
+                        userName: widget.userName,
           
-                          image_own_user_id: widget.image_own_user_id!,
+                        image_own_user_id: widget.image_own_user_id!,
           
-                          difficulty: widget.difficulty,
+                        difficulty: widget.difficulty,
           
-                          profileImage: widget.profileImage,
+                        profileImage: widget.profileImage,
 
-                          problemAdd: widget.problemAdd,
-                          commentAdd: widget.commentAdd,
+                        problemAdd: widget.problemAdd,
+                        commentAdd: widget.commentAdd,
             
-                        ),
+                      ),
+
+                      
           
-                      ],
-                    )
+                    ],
+                  )
             
-                  ),
+                ),
           
-                  SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
-                  /*
-                  Container(
-                    height: SizeConfig.blockSizeVertical! * 10,
-                    width: double.infinity,
-                    color: Colors.white,
-                    //TODO ビルドリリースの時のみ
-                    //child: _adMob.getAdBanner(),
-                  ),
-                  */
+                /*
+                Container(
+                  height: SizeConfig.blockSizeVertical! * 10,
+                  width: double.infinity,
+                  color: Colors.white,
+                  //TODO ビルドリリースの時のみ
+                  //child: _adMob.getAdBanner(),
+                ),
+                */
           
-                  //
-          
-          
-                ],
-              ),
-          
-              
+                //
           
           
+              ],
             ),
           ),
+
+          SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+          
+          /*
           Container(
-            height: SizeConfig.blockSizeVertical!* 15,
-            color: Colors.white,
+            height: SizeConfig.blockSizeVertical!* 13,
+            //color: Colors.white,
             child: AdaptiveAdBanner(requestId: "DISPLAY",)
           ),
+           */
           //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           //InlineAdaptiveExample(),
         ],
