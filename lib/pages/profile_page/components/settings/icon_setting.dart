@@ -18,7 +18,7 @@ import 'dart:typed_data';
 
 class IconSettings extends StatefulWidget {
 
-  final String? profileImage;
+  final Uint8List? profileImage;
 
   const IconSettings({
     Key? key,
@@ -45,11 +45,14 @@ class _IconSettingsState extends State<IconSettings> {
     print(widget.profileImage);
     // TODO: implement initState
     super.initState();
+    /*
     fetchImage(widget.profileImage).then((bytes){
       setState(() {
         profileImageBytes = bytes;
       });
     });
+     */
+
 
   }
 
@@ -202,7 +205,7 @@ class _IconSettingsState extends State<IconSettings> {
         
                     CircleAvatar(
                       backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                        ? MemoryImage(profileImageBytes!)
+                        ? MemoryImage(widget.profileImage!)
                         : null,//NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
                       radius: 30,
                     ),
