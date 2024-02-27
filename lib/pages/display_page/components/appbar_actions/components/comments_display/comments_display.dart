@@ -24,14 +24,42 @@ class _CommentListDisplayState extends State<CommentListDisplay>{
 
   late final TextEditingController _textController = TextEditingController();
 
+  List<String> profileImageList = [];
+
 
   Future<List<Map<String, dynamic>>> fetchData() async {
-    List<Map<String, dynamic>> data = await supabase
-            .from('comments')
-            .select<List<Map<String, dynamic>>>()
-            .eq('image_id', widget.image_id)
-            .order("created_at");
-    return data; 
+    try{
+      List<Map<String, dynamic>> data = await supabase
+        .from('comments')
+        .select<List<Map<String, dynamic>>>()
+        .eq('image_id', widget.image_id)
+        .order("created_at");
+
+      /*
+      for(int i = 0; i < data.length; i++){
+        //data[i]["created_at"] = timeago.format(data[i]["created_at"]);
+        List<Map<String, dynamic>> data2 = await supabase
+          .from('profiles')
+          .select<List<Map<String, dynamic>>>()
+          .eq('id', data[i]["user_id"]);
+
+        //data[i]["profileImage"] = data2[i]["profileImage"];
+        //profileImageList[i] = data2[i]["profileImage"];
+
+      }
+       */
+     return data;
+
+    }
+    on PostgrestException catch (error) {
+      // エラーが発生した場合はエラーメッセージを表示
+      context.showErrorSnackBar(message: error.message);
+      return [];
+    } catch (_) {
+      // 予期せぬエラーが起きた際は予期せぬエラー用のメッセージを表示
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return [];
+    }
   }
 
 
@@ -110,6 +138,12 @@ class _CommentListDisplayState extends State<CommentListDisplay>{
             
             Row(
               children: [
+
+                //このアイコンボタン(×)を押すと、下からのモーダルが閉じる
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
                 const Expanded(
                   child: Center(
                     child: Opacity(
@@ -190,7 +224,44 @@ class _CommentListDisplayState extends State<CommentListDisplay>{
         
                     TextButton(
                       onPressed: () {
-                        _submitMessage();
+                        //_submitMessage();
+                        showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // スクロール可能かどうか
+      builder: (context) {
+        return Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom, // キーボードが表示された際にウィジェットが上にスクロールするようにする
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  maxLength: 500,
+                  controller: _textController,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 5, // 複数行入力可能
+                  decoration: InputDecoration(
+                    hintText: 'コメントを入力',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    //_submitMessage();
+                    Navigator.of(context).pop(); // モーダルを閉じる
+                  },
+                  child: Text('送信'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
                       },
                       child: const Text('送信'),
                     ),
