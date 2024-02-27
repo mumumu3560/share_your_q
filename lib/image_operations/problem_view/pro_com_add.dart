@@ -143,7 +143,9 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
     // TODO: implement initState
     super.initState();
 
-    fetchData();
+    if(widget.imageId != null){
+      fetchData();
+    }
 
   }
 
@@ -154,7 +156,23 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
       children: [
         IconButton(
           onPressed: widget.imageId == null ? null : addLike,
-          icon: isLiked ? Icon(Icons.thumb_up_alt) : Icon(Icons.thumb_up_alt_outlined),
+
+          icon: isLiked 
+
+            ? widget.isProblem
+              ?  const Icon(
+                  Icons.thumb_up_alt, 
+                  color: Colors.green,
+                ) 
+              : const Icon(
+                  Icons.thumb_up_alt,
+                  color: Colors.blue,
+                )
+
+
+            : const Icon(
+                Icons.thumb_up_alt_outlined,
+              ),
         ),
 
         Text(
