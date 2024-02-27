@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 //import "package:google_fonts/google_fonts.dart";
 
 import 'package:share_your_q/pages/login_relatives/redirect.dart';
@@ -10,17 +11,26 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //OneSignal
+//TODO
+//import 'package:onesignal_flutter/onesignal_flutter.dart';
+
 
 import 'package:timeago/timeago.dart' as timeago;
 
 //google_admob
+//TODO
 /*
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import "package:share_your_q/admob/ad_helper.dart";
-import "package:share_your_q/admob/ad_mob.dart";
+OneSignal.Notifications.requestPermission(true);
+
+  //TODO ここはandroidビルドリリースの時のみ
+  OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
+
  */
+//import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,8 +39,25 @@ Future<void> main() async {
   //MobileAds.instance.initialize();
   
   await dotenv.load(fileName: '.env');
+  
 
   timeago.setLocaleMessages("ja", timeago.JaMessages());
+
+
+  /*
+  // *** ステータスバー/ナビゲーションバーを非表示
+  //https://www.memory-lovers.blog/entry/2024/02/06/152340
+  // スワイプで各バーを表示。画面端のスワイプは認識しない。Android4.4以上
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  
+  // スワイプで各バーを半透明で表示。画面端のスワイプは認識する。Android4.4以上
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  
+  // どこかをタップすると各バー表示。Android4.1以上
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+
+   */
+
 
 
   await Supabase.initialize(
@@ -51,11 +78,17 @@ Future<void> main() async {
   // The promptForPushNotificationsWithUserResponse function will show the iOS or Android 
   //push notification prompt. We recommend removing the following code and 
   //instead using an In-App Message to prompt for notification permission
+
   
-  //OneSignal.Notifications.requestPermission(true);
+  
+  /*
+  OneSignal.Notifications.requestPermission(true);
 
   //TODO ここはandroidビルドリリースの時のみ
-  //OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
+  OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
+  
+  
+  */
 
   
   
