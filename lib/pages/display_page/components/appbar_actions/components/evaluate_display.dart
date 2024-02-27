@@ -172,10 +172,12 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
   Widget build(BuildContext context){
     return SingleChildScrollView(
       child: Container(
+        /*
         decoration: BoxDecoration(
           border: Border.all(color: Colors.green),
           borderRadius: BorderRadius.circular(10),
         ),
+         */
     
         //height: SizeConfig.blockSizeVertical! * 80,
         //width: SizeConfig.blockSizeHorizontal! * 100,
@@ -185,6 +187,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
+            /*
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -211,6 +214,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
             ),
 
             SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
+            */
 
             Container(
               padding: const EdgeInsets.all(10),
