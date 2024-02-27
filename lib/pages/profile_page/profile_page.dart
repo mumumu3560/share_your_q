@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/pages/profile_page/components/iroiro_test/image_test.dart';
 //import 'package:share_your_q/admob/ad_test.dart';
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+import 'dart:math';
 
 import 'package:share_your_q/utils/various.dart';
 
@@ -16,6 +17,16 @@ import 'package:share_your_q/pages/profile_page/components/create_trend.dart';
 
 import 'package:flutter/gestures.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:share_your_q/pages/profile_page/components/follow_list/follow_list.dart';
+
+import 'package:share_your_q/pages/profile_page/components/likes/likes_list.dart';
+
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
+
+
+//TODO Admob
+//import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 
 //TODO ここにプロフィールページを作成する
 //グラフなどで自分の問題の傾向を見れるようにする
@@ -36,6 +47,7 @@ class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
+
 class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> imageData = [];
 
@@ -90,10 +102,152 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
 
+
+
+
+
+  late List<Map<String, dynamic>> _imageData = [];
+  Map<DateTime, int>? _heatmapData = {};
+  //Map<DateTime, int>? _heatmapData2 = {};
+
+  Map<DateTime, int>? _heatmapDataMath = {};
+  Map<DateTime, int>? _heatmapDataPhys = {};
+  Map<DateTime, int>? _heatmapDataChemi = {};
+  Map<DateTime, int>? _heatmapDataOther = {};
+
+  bool isLoading = true;
+
+
+  int maxSize = 0;
+
+  //List<Map<String, dynamic>>
+
+  List<Map<String,dynamic>> likesData = [];
+  Future<void> fetchData() async {
+    try{
+      _imageData = await supabase
+        .from('image_data')
+        .select<List<Map<String, dynamic>>>()
+        .eq('user_id', widget.userId);
+
+      final response = await supabase
+        .from("likes")
+        .select<List<Map<String,dynamic>>>("image_id")
+        .eq("user_id", widget.userId)
+        .eq("add", true)
+        .order("added_at", ascending: false);
+
+      print(response);
+
+      for(int i = 0; i < response.length; i++){
+        final response2 = await supabase
+          .from("image_data")
+          .select<List<Map<String,dynamic>>>()
+          .eq("image_data_id", response[i]["image_id"]);
+        
+        likesData.add(response2[0]);
+      }
+
+
+
+      print(likesData);
+
+
+      convertData("watched", _imageData);
+
+      setState(() {
+        _heatmapData = _heatmapData;
+        likesData = likesData;
+        isLoading = false;
+      });
+
+      
+
+      //convertDataSubject("subject", _imageData);
+
+
+    } on PostgrestException catch (error) {
+      context.showErrorSnackBar(message: error.message);
+      return ;
+    }
+    catch (_) {
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return ;
+    }
+  }
+
+
+  
+
+  Future<void> fetchLikes() async{
+
+    try{
+      
+    }
+    on PostgrestException catch (error){
+      context.showErrorSnackBar(message: error.message);
+    } catch(_){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+    }
+
+  }
+
+  //ここではheatmapで使えるデータ型に変更する。
+  //typeはwatchedかlikesのどちらか
+  //targetは_imageDataか_likesDataのどちらか
+  void convertData(String type, List<Map<String, dynamic>> target){
+
+    for(int i = 0; i < target.length; i++){
+
+      //utcを日本時間に変換
+      DateTime date = DateTime.parse(target[i]["created_at"]).add(const Duration(hours: 9));
+      DateTime truncatedDateTime = DateTime(date.year, date.month, date.day);
+
+      int watchedCount = target[i][type]! as int;
+      int watchedCount2 = 0;
+
+      if(_heatmapData![truncatedDateTime] != null){
+        watchedCount2 = _heatmapData![truncatedDateTime]!;
+      }
+      
+      int watchedCount3 = watchedCount + watchedCount2;
+
+      _heatmapData![truncatedDateTime] = watchedCount3;//_imageData[i]["watched"]! as int;
+      maxSize = max(maxSize, target[i][type]);
+
+
+
+
+      String createdSubject = target[i]["subject"]! as String;
+
+      if(createdSubject == "数学"){
+        _heatmapDataMath![truncatedDateTime] = 1;//watchedCount3;//_imageData[i]["watched"]! as int;
+      }
+      else if(createdSubject == "物理"){
+        _heatmapDataPhys![truncatedDateTime] = 1;//watchedCount3;//_imageData[i]["watched"]! as int;
+      }
+      else if(createdSubject == "化学"){
+        _heatmapDataChemi![truncatedDateTime] = 1;//watchedCount3;//_imageData[i]["watched"]! as int;
+      }
+      else{
+        _heatmapDataOther![truncatedDateTime] = 1;//watchedCount3;//_imageData[i]["watched"]! as int;
+      }
+
+    }
+
+    
+  }
+
+
   @override
   void initState() {
 
     getInfoFromSupabase();
+    fetchData();
+    //fetchLikes();
+
+
+
     super.initState();
   }
 
@@ -107,7 +261,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return DefaultTabController(
-      length: 3,
+      length: 4,
       initialIndex: 0,
 
       child: Scaffold(
@@ -122,20 +276,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 //TODO ここにプロフィール編集機能を書く
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfileSettings(profileImage: widget.profileImage,)),
+                  MaterialPageRoute(builder: (context) => ProfileSettings(profileImage: profileImageBytes/*widget.profileImage */,)),
                 );
               },
             )
-            : TextButton(
+            : const SizedBox(width: 10,),
+
+            /*
+            TextButton(
               child: const Text("フォローする"),
               onPressed: () async {
                 //TODO ここにフォロー機能を書く
               },  
             )
+             */
           ],
         ),
     
-        body: Column(
+        body: isLoading 
+        ? const Center(child: CircularProgressIndicator(),)
+        :Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -144,15 +304,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 10,),
             
                     Container(
-                      width: SizeConfig.blockSizeHorizontal! * 90,
+                      width: SizeConfig.blockSizeHorizontal! * 100,
+                      padding: const EdgeInsets.all(8.0),
+                      margin: const EdgeInsets.all(8.0),
                       /*
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.green),
                       ),
                       */
+      
             
-                      padding: const EdgeInsets.all(10),
+                      //padding: const EdgeInsets.all(10),
             
                       child: ProfileHeader(
                         userName: userName, 
@@ -160,31 +323,62 @@ class _ProfilePageState extends State<ProfilePage> {
                         age: selectedYear, 
                         linkText: linkText, 
                         profileImageBytes: profileImageBytes,
+                        userId: widget.userId,
+
                       ),
                     ),
             
                     const SizedBox(height: 10,),
             
                     const TabBar(
+                      //TabBarに下線をつけたい
+                      /*
+                      indicator: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.green,
+                            width: 3,
+                          ),
+                        ),
+                      ),
+                       */
+                      
             
                       tabs: <Widget>[
-                        Tab(text: "投稿", icon: Icon(Icons.star)),
-                        Tab(text: "傾向", icon: Icon(Icons.create)),
-                        Tab(text: "貢献度", icon: Icon(Icons.workspace_premium)),
+                        Tab(text: "投稿", /*icon: Icon(Icons.star) */),
+                        Tab(text: "傾向", /*icon: Icon(Icons.create) */),
+                        Tab(text: "いいね", ),
+                        //Tab(text: "貢献度", /*icon: Icon(Icons.workspace_premium) */),
                         
                       ]
                     ),
             
                     const SizedBox(height: 10,),
                     
-                    SizedBox(
+                    Container(
                       width: SizeConfig.blockSizeHorizontal! * 90,
-                      height: SizeConfig.blockSizeVertical! * 75,
+                      height: SizeConfig.blockSizeVertical! * 60,
+
+                      /*
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.green),
+                      ),
+                       */
+
+                      /*
+                      child: isLoading 
+                      ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                      :
+                       */
             
                       child: TabBarView(
                         
                         children: <Widget>[
-                            
+                          
+                          //ここに投稿一覧を表示する
                           Center(
                             
                             child: Column(
@@ -192,8 +386,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 const SizedBox(height: 10,),
             
                                 SizedBox(
-                                  width: SizeConfig.blockSizeHorizontal! * 90,
-                                  height: SizeConfig.blockSizeVertical! * 70,
+                                  //width: SizeConfig.blockSizeHorizontal! * 90,
+                                  height: SizeConfig.blockSizeVertical! * 55,
                                   child: ImageListDisplay(
                                     searchUserId: widget.userId,
                                     level: "全て",
@@ -202,13 +396,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                     tags: const [],
                                     title: "$userNameの投稿一覧",
                                     showAppbar: false,
-                                    lang: "全て"
+                                    lang: "全て",
+                                    canToPage: false,
+                                    add: false,
                                   ),
                                 ),
                               ]
                             ),
                           ),
-                            
+                          
+
+                          //ここに傾向を表示する(Heatmapなど)
                           Center(
                             child: Column(
                               children: [
@@ -216,18 +414,61 @@ class _ProfilePageState extends State<ProfilePage> {
             
                                 SizedBox(
                                   width: SizeConfig.blockSizeHorizontal! * 100,
-                                  height: SizeConfig.blockSizeVertical! * 70,
+                                  height: SizeConfig.blockSizeVertical! * 55,
+
                                   child: CreateTrend(
                                     image_own_user_id: widget.userId,
+                                    heatmapData: _heatmapData,
+                                    maxSize: maxSize,
+                                    heatmapDataMath: _heatmapDataMath,
+                                    heatmapDataPhys: _heatmapDataPhys,
+                                    heatmapDataChemi: _heatmapDataChemi,
+                                    heatmapDataOther: _heatmapDataOther,
                                   ),
                                 ),
                               ]
                             ),
                           ),
+                          
+                          //ここはいいね
+                          Center(
+                            /*
                             
-                          const Center(
-                            child: Text("It's sunny here"),
+                             */
+                            child: LikesList(
+                              likesData: likesData,
+                              userId: widget.userId,
+                            )
+
+                            //child: Text("aaaaaaa")
                           ),
+
+                          //ここはテスト
+                          /*
+                          Center(
+                            child: CommentList(
+                              imageId: 277, 
+                              responseId: -1,
+                              canToPage: false,
+                              resText: "",
+                              item: null,
+                              title: "コメント",
+                            ),
+
+                            
+                            /*
+                            
+                             */
+                            /*
+                            child: ImageTest(
+                              image: profileImageBytes!,
+                              
+                            )
+                             */
+
+                            
+                          ),
+                           */
                             
                         ],
                             
@@ -237,11 +478,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
             ),
+
+            SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
             
             Container(
               height: SizeConfig.blockSizeVertical! * 10,
               color: Colors.white,
-              child: AdaptiveAdBanner(requestId: "PROFILE"),
+              //TODO Admob
+              //child: AdaptiveAdBanner(requestId: "PROFILE"),
             ),
             //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10,)
             //InlineAdaptiveExample(),
@@ -268,7 +512,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
 
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends StatefulWidget {
 
   final String userName;
   final String explainText;
@@ -276,6 +520,7 @@ class ProfileHeader extends StatelessWidget {
   final Uint8List? profileImageBytes;
 
   final List<dynamic> linkText;
+  final String userId;
 
   const ProfileHeader({
     Key? key,
@@ -284,11 +529,207 @@ class ProfileHeader extends StatelessWidget {
     required this.age,
     required this.linkText,
     required this.profileImageBytes,
+    required this.userId,
   }): super(key: key);
 
+  @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
 
+class _ProfileHeaderState extends State<ProfileHeader> {
+
+  List<Map<String,dynamic>> followData = [];
+  List<Map<String,dynamic>> followerData = [];
+
+  int followNum = 0;
+  int followedNum = 0;
   
-  
+
+  Future<void> fetchFollow()async{
+
+    try{
+
+      //followed_idはフォローされている人のid
+      //follower_idはフォローしている人のid
+
+      followerData = await supabase
+        .from("follow")
+        .select<List<Map<String,dynamic>>>()
+        .eq("followed_id", widget.userId)
+        .eq("add", true);
+
+      followData = await supabase
+        .from("follow")
+        .select<List<Map<String,dynamic>>>()
+        .eq("follower_id", widget.userId)
+        .eq("add", true);
+
+      print("ここがフォローの関係のあれこれです");
+      print(followData);
+      print(followerData);
+
+      
+      setState(() {
+        followNum = followData.length;
+        followedNum = followerData.length;
+      });
+
+      
+
+    }
+    on PostgrestException catch (error){
+      context.showErrorSnackBar(message: error.message);
+      return ;
+    }
+    catch(_){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return ;
+    }
+      
+  }
+
+
+  bool? isFollowed = null;
+  String myUsername = "";
+
+  Future<void> isFollow() async{
+    try{
+
+      final response = await supabase
+        .from('follow')
+        .select<List<Map<String, dynamic>>>()
+        .eq('follower_id', myUserId)
+        .eq('followed_id', widget.userId);
+
+      final res = await supabase 
+        .from("profiles")
+        .select<List<Map<String, dynamic>>>()
+        .eq("id", myUserId);
+
+      myUsername = res[0]["username"];
+      
+      if(response.isEmpty){
+
+        await supabase
+          .from("follow")
+          .insert([
+            {
+              "follower_id" : myUserId,
+              "followed_id" : widget.userId,
+              "add": false,
+              "follower_name" : myUsername,
+            }
+          ]);
+
+        setState(() {
+          isFollowed = false;
+        });
+
+      }
+      else{
+        if(response[0]["add"] == true){
+          setState(() {
+            isFollowed = true;
+          });
+        }
+        else{
+          setState(() {
+            isFollowed = false;
+          });
+        }
+      }
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return null;
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return null;
+    }
+  } 
+
+
+
+  Future<void> followProcess() async{
+    try{
+
+      if(isFollowed == true){
+
+        print("kokohatrue");
+        await supabase
+          .from('follow')
+          .update({ "add": false })
+          .eq('follower_id', myUserId)
+          .eq('followed_id', widget.userId);
+
+          /*
+          "follower_id" : myUserId,
+              "followed_id" : widget.image_own_user_id,
+              "add": false,
+              "follower_name" : myUsername,
+           */
+        
+        setState(() {
+          isFollowed = false;
+        });
+      }
+      else if(isFollowed == false){
+
+        print("kokohafalse");
+
+        await supabase
+          .from('follow')
+          .update({ "add": true })
+          .eq('follower_id', myUserId)
+          .eq('followed_id', widget.userId);
+
+          /*
+          "follower_id" : myUserId,
+              "followed_id" : widget.image_own_user_id,
+              "add": false,
+              "follower_name" : myUsername,
+           */
+        
+        setState(() {
+          isFollowed = true;
+        });
+
+      }
+
+
+      
+      
+
+
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+    }
+  }
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchFollow();
+    if(myUserId != widget.userId){
+      isFollow();
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -308,127 +749,199 @@ class ProfileHeader extends StatelessWidget {
     
     SizeConfig().init(context);
 
-    return SizedBox(
-      width: SizeConfig.blockSizeHorizontal! * 92,
-      height: SizeConfig.blockSizeVertical! * 40,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
+    return Container(
+      //width: SizeConfig.blockSizeHorizontal! * 98,
+      //height: SizeConfig.blockSizeVertical! * 55,
+      //padding: const EdgeInsets.all(8.0),
+      //margin: const EdgeInsets.all(8.0),
+      
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
 
 
-            Row(
-              children: [
-                InkWell(
-                    onTap: () {
-                    },
-                    child: CircleAvatar(
-                      backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                        ? MemoryImage(profileImageBytes!)
-                        : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
-                      radius: 20,
-                    ),
-                  ),
-
-                const SizedBox(width: 10,),
-
-                Text(
-                  userName,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              InkWell(
+                  onTap: () {
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: widget.profileImageBytes != null && widget.profileImageBytes != Uint8List(0)
+                      ? MemoryImage(widget.profileImageBytes!)
+                      : NetworkImage(dotenv.get("CLOUDFLARE_IMAGE_URL")) as ImageProvider<Object>?,
+                    radius: 20,
                   ),
                 ),
-              ],
-            ),
 
-            const SizedBox(height: 10,),
+              const SizedBox(width: 10,),
 
-            Row(
-              children: [
-                Opacity(
-                  opacity: 0.5,
-                  child: Text(
-                    age == 0
-                      ? "誕生年:非公開"
-                      : "誕生年:$age",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      //fontStyleは薄くしたい
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 10,),
-
-            Row(
-              children: [
-                /*
-                const Opacity(
-                  opacity: 0.5,
-                  child: Text(
-                    "リンク:",
-                    style: TextStyle(
-                      fontSize: 14,
-                      //fontStyleは薄くしたい
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ),
-                 */
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: linkText.map((linkText) {
-                    return Column(
-                      children: [
-                        InkWell(
-                          onTap: () async{
-                            await _launchURL(linkText);
-                          },
-                          child: Text(
-                            linkText,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              // fontStyleは薄くしたい
-                              fontStyle: FontStyle.italic,
-                              color: Colors.blue, // リンクの色
-                              decoration: TextDecoration.underline, // 下線
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 5,),
-                      ],
-                    );
-                  }).toList(),
-                ),
-
-
-                
-                
-              ],
-            ),
-
-            
-            //ここには自己紹介などを書く
-
-            Container(
-              alignment: Alignment.centerLeft,
-
-              child: Text(
-                explainText,
+              Text(
+                widget.userName,
                 style: const TextStyle(
-                  fontSize: 14,
-                  //fontStyleは薄くしたい
-                  fontStyle: FontStyle.italic,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            ],
+          ),
+
+          const SizedBox(height: 10,),
+
+          widget.userId == myUserId || isFollowed == null
+            ? const SizedBox(width: 10,)
+            : ElevatedButton(
+
+              style: ElevatedButton.styleFrom(
+                //フォローしていないときは透明にしたい
+                backgroundColor: isFollowed == false ? Colors.blue : Colors.red,
+                //もうすこしまるみを持たせたい
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                
+              ),
+              onPressed: () async {
+                //フォローする
+                await followProcess();
+              },
+              child: isFollowed == false
+                ? const Text("フォローする", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold))
+                : const Text("フォロー解除", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
+
+          const SizedBox(height: 10,),
+
+          Row(
+            children: [
+              Opacity(
+                opacity: 0.5,
+                child: Text(
+                  widget.age == 0
+                    ? "誕生年:非公開"
+                    : "誕生年:${widget.age}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    //fontStyleは薄くしたい
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10,),
+
+          Row(
+            children: [
+              /*
+              const Opacity(
+                opacity: 0.5,
+                child: Text(
+                  "リンク:",
+                  style: TextStyle(
+                    fontSize: 14,
+                    //fontStyleは薄くしたい
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+               */
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: widget.linkText.map((linkText) {
+                  return Column(
+                    children: [
+                      InkWell(
+                        onTap: () async{
+                          await _launchURL(linkText);
+                        },
+                        child: Text(
+                          linkText,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            // fontStyleは薄くしたい
+                            fontStyle: FontStyle.italic,
+                            color: Colors.blue, // リンクの色
+                            decoration: TextDecoration.underline, // 下線
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 5,),
+                    ],
+                  );
+                }).toList(),
+              ),
+
+
+              
+              
+            ],
+          ),
+
+          
+          //ここには自己紹介などを書く
+
+          Container(
+            alignment: Alignment.centerLeft,
+
+            child: Text(
+              widget.explainText,
+              style: const TextStyle(
+                fontSize: 14,
+                //fontStyleは薄くしたい
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+
+          //フォロー、フォロワーの数を表示する
+
+          const SizedBox(height: 10,),
+
+          Container(
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    //TODO ここにプロフィール編集機能を書く
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FollowList(
+                        followData: followData,
+                        userId: widget.userId,
+                        //profileImage: widget.profileImageBytes,
+                        isFollow: true,
+                      )),
+                    );
+                  },
+                  child: Text("フォロー数: ${followNum}"),
+                ),
+
+                const SizedBox(width: 10,),
+                TextButton(
+                  onPressed: () async {
+                    //TODO ここにプロフィール編集機能を書く
+                    /*
+                    
+                     */
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FollowList(
+                        followData: followerData,
+                        userId: widget.userId,
+                        //profileImage: widget.profileImageBytes,
+                        isFollow: false,
+                      )),
+                    );
+                  },
+                  child: Text("フォロワー数: ${followedNum}")
+                ),
+              ],
+            ),
+          ),
       
-          ],
-        ),
+        ],
       )
     );
 
