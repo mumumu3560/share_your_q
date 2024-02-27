@@ -6,6 +6,8 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
 import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
+
+//TODO OneSignal
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 //import "package:share_your_q/admob/ad_test.dart";
@@ -101,7 +103,7 @@ class _HomePageState extends State<HomePage> {
     final String externalId = supabase.auth.currentUser!.id.toString();
     print(externalId);
     //TODO ここはandroidビルドリリースの時のみ
-    OneSignal.login(externalId);
+    //OneSignal.login(externalId);
   }
 
   /*
@@ -187,7 +189,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て",), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て", canToPage: true, add: false,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -204,7 +206,7 @@ class _HomePageState extends State<HomePage> {
         physics: const NeverScrollableScrollPhysics(),
         
         children:  <Widget>[
-          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て",),
+          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,),
           const SearchPage(),
           //ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           //const TestPages(title: "D"),
