@@ -9,7 +9,7 @@ import 'dart:typed_data';
 import "package:share_your_q/image_operations/image_request.dart";
 
 //TODO ビルドリリースの時のみ
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+//import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
@@ -261,6 +261,8 @@ class SizeConfig {
   static double? safeBlockHorizontal;
   static double? safeBlockVertical;
 
+  static double? safeAreaTop;
+
   void init(BuildContext context) {
     _mediaQueryData = MediaQuery.of(context);
     screenWidth = _mediaQueryData!.size.width;
@@ -273,6 +275,8 @@ class SizeConfig {
 
     _safeAreaVertical =
         _mediaQueryData!.padding.top + _mediaQueryData!.padding.bottom;
+
+    safeAreaTop = _mediaQueryData!.padding.top;
         
     safeBlockHorizontal = (screenWidth! - _safeAreaHorizontal!) / 100;
     safeBlockVertical = (screenHeight! - _safeAreaVertical!) / 100;
