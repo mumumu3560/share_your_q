@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display/comments_display.dart';
@@ -37,14 +38,13 @@ class _AppBarActionsState extends State<AppBarActions> {
 
     super.initState();
 
-    loadData();
+    //loadData();
     
   }
 
-  void loadData(){
+  void loadData()async {
 
-    print("setState前");
-    _insertTestSupabase();
+    await _insertTestSupabase();
   }
 
   /*
@@ -63,17 +63,10 @@ class _AppBarActionsState extends State<AppBarActions> {
       // レコードが存在する場合はアップデート、存在しない場合は挿入する
       if (existingRecord.isNotEmpty) {
         // レコードが存在する場合はアップデート
-        print("ここが問題手の");
-        
         setState(() {
           isLiked = existingRecord[0]["add"];
         });
-        print(existingRecord[0]["add"]);
 
-        
-        print("どこだよ");
-
-        //islikedが!isliked
         final response;
 
         if(isFirst){
@@ -101,8 +94,6 @@ class _AppBarActionsState extends State<AppBarActions> {
           print('Data updated successfully!');
         }
       } else {
-        print("ここが二つ目");
-        print("errorが発生しています");
         // レコードが存在しない場合は挿入
         final response = await supabase
             .from('likes')
@@ -113,9 +104,6 @@ class _AppBarActionsState extends State<AppBarActions> {
               "image_id" : widget.imageId,
               "image_own_user_id" : widget.image_own_user_id,
               });
-
-        print("here");
-        print(response);
 
         if (response == null) {
           // エラーハンドリング
@@ -131,7 +119,7 @@ class _AppBarActionsState extends State<AppBarActions> {
     }
   }
 
-  void _showCommentSheet(BuildContext context, int imageId) {
+  void _showCommentSheetTest(BuildContext context, int imageId) {
     showModalBottomSheet(
       context: context,
       //これがないと高さが変わらない
@@ -139,11 +127,44 @@ class _AppBarActionsState extends State<AppBarActions> {
       builder: (BuildContext context) {
         return SizedBox(
           height: SizeConfig.blockSizeVertical! * 70,
-          child: CommentListDisplay(image_id: imageId),
+          //child: CommentListDisplay(image_id: imageId),
+          child: CommentList(
+            imageId: imageId, 
+            responseId: -1, 
+            canToPage: false, 
+            resText: "テストtext", 
+            item: null, 
+            title: "返信"
+          )
         );
       },
     );
   }
+
+  void _showCommentSheet(BuildContext context, int imageId) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    isDismissible: false,
+    builder: (context) => Container(
+      child: Container(
+        height: SizeConfig.blockSizeVertical! * 70,
+        child: Navigator(
+          onGenerateRoute: (context) => MaterialPageRoute<CommentList>(
+            builder: (context) => CommentList(
+              imageId: imageId,
+              responseId: -1,
+              canToPage: false,
+              resText: "コメント",
+              item: null,
+              title: "コメント",
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 
   Future<void> reportRequestSupabase() async{
@@ -292,6 +313,8 @@ class _AppBarActionsState extends State<AppBarActions> {
     }
 
     if(context.mounted){
+      Navigator.of(context).pop();
+      /*
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -310,6 +333,7 @@ class _AppBarActionsState extends State<AppBarActions> {
           );
         },
       );
+       */
     }
   }
 
@@ -371,6 +395,7 @@ class _AppBarActionsState extends State<AppBarActions> {
 
   void _showEvaluateSheet(BuildContext context, int imageId) {
     showModalBottomSheet(
+      
       context: context,
       //これがないと高さが変わらない
       isScrollControlled: true,
@@ -399,6 +424,7 @@ class _AppBarActionsState extends State<AppBarActions> {
 
         SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
 
+        /*
         //いいね
         IconButton(
           icon: Icon(
@@ -410,7 +436,7 @@ class _AppBarActionsState extends State<AppBarActions> {
           onPressed: () async{
             
             
-            await _insertTestSupabase();
+            //await _insertTestSupabase();
 
             setState(() {            
               isLiked = !isLiked;
@@ -419,8 +445,9 @@ class _AppBarActionsState extends State<AppBarActions> {
 
           },
         ),
+        */
 
-        SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
+        //SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
 
         //ここで問題の評価を見る
         IconButton(
