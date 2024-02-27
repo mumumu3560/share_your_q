@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
@@ -10,7 +10,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timeago/timeago.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 //import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
@@ -18,8 +17,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import "package:share_your_q/admob/ad_mob.dart";
-
+//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class ImageListDisplay extends StatefulWidget {
 
@@ -33,6 +31,10 @@ class ImageListDisplay extends StatefulWidget {
   final bool showAppbar;
 
   final String lang;
+
+  final bool canToPage;
+
+  final bool add;
   
 
   const ImageListDisplay({
@@ -45,6 +47,9 @@ class ImageListDisplay extends StatefulWidget {
     required this.searchUserId,
     required this.showAppbar,
     required this.lang,
+    required this.canToPage,
+
+    required this.add,
   }) :super(key: key);
 
   @override
@@ -61,6 +66,8 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 
   List<Map<String, dynamic>> profileImage = [];
   String profileImageId = "";
+
+  ScrollController _scrollController = ScrollController();
   
 
   
@@ -80,6 +87,11 @@ class ImageListDisplayState extends State<ImageListDisplay> {
     super.dispose();
     //TODO ビルドリリースの時のみ
   }
+
+  
+
+
+  
 
   
 
@@ -220,16 +232,21 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                             reloadList();
                           },
 
+                          //リストビューを作成する
+                          //TODOスクロールバーの追加
                           child: ListView.builder(
+                            //https://stackoverflow.com/questions/68623174/why-cant-i-slide-the-listview-builder-on-flutter-web
                             physics: const AlwaysScrollableScrollPhysics(),
+                            
+                            
                             //TODO ここでリストの保持を行う。
                             addAutomaticKeepAlives: true,
                             itemCount: imageData.length,
                             //itemCount: 10,
                             itemBuilder: (context, index) {
-                        
+                                                
                               //6の倍数の時には広告を表示する。
-                              if(index%6 == 0){
+                              if(index%6 == 1){
                                 final item = imageData[index];
                                 return Column(
                                   children: [
@@ -242,25 +259,28 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                       //child: _adMob.getAdBanner(),
                                     ),
                                      */
-                        
+                                                
                                     SizedBox(
                                       height: SizeConfig.blockSizeVertical! * 40,
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
+                                      //TODO Admob
+                                      /*
                                       child: InlineAdaptiveAdBanner(
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
                                       )//InlineAdaptiveExample(),
+                                       */
                                     ),
                                     //const ,
-                        
+                                                
                                     
-                                    MyListItem(item: item),
+                                    MyListItem(item: item, canToPage: widget.canToPage,),
                                   ],
                                 );
                               }
                               else{
                                 final item = imageData[index];
-                                return MyListItem(item: item);
+                                return MyListItem(item: item, canToPage: widget.canToPage,);
                               }
                               
                               
@@ -289,12 +309,14 @@ class ImageListDisplayState extends State<ImageListDisplay> {
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
 class MyListItem extends StatefulWidget {
   final Map<String, dynamic> item;
+  final bool canToPage;
 
 
   const MyListItem({
 
     Key? key,
     required this.item,
+    required this.canToPage,
     
   }): super(key: key);
 
@@ -308,6 +330,7 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
   @override
   bool get wantKeepAlive => true;
 
+  /*
   Future<String> loadUserImage(String imageUrl) async {
     try {
       final response = await http.get(Uri.parse(imageUrl));
@@ -326,6 +349,7 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
       return '';
     }
   }
+   */
 
   @override
   Widget build(BuildContext context) {
@@ -338,6 +362,27 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
 
     String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
 
+    //ここで投稿日時の管理
+    String formatCreatedAt(String createdAtString) {
+      DateTime createdAt = DateTime.parse(createdAtString);
+      DateTime now = DateTime.now();
+      Duration difference = now.difference(createdAt);
+
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}分前';
+
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}時間前';
+
+      } else if (difference.inDays < 365) {
+        return '${createdAt.month}月${createdAt.day}日';
+
+      } else {
+        return '${createdAt.year}年${createdAt.month}月${createdAt.day}日';
+      }
+    }
+
+
     Future<String> fetchProfileImage(String target) async{
 
       try{
@@ -346,16 +391,23 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
         print(target);
 
         print(targetUserId);
-        List<Map<String,dynamic>> response = await supabase
+
+        final response = await supabase
           .from("profiles")
           .select<List<Map<String, dynamic>>>()
           .eq("id", target);
 
-        profileImageId = response[0]["profile_image_id"];
+        if(response[0]["profile_image_id"] == null){
+          return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        }
+        else{
+          profileImageId = response[0]["profile_image_id"];
+          return response[0]["profile_image_id"];
+        }
 
-        print(profileImageId);
+        //print(profileImageId);
 
-        return response[0]["profile_image_id"];
+        //return response[0]["profile_image_id"];
 
       } on PostgrestException catch (error){
         if(context.mounted){
@@ -454,11 +506,13 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
                 ),
                 onTap: () {
                   if (!isLoadingImage) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(userId: widget.item["user_id"], userName: widget.item["user_name"], profileImage: profileImageId,),
-                      ),
-                    );
+                    if(widget.canToPage){
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(userId: widget.item["user_id"], userName: widget.item["user_name"], profileImage: profileImageId,),
+                        ),
+                      );
+                    }
                   } else {
                     context.showErrorSnackBar(message: "現在読み込み中です...");
                   }
@@ -480,12 +534,18 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
             fontWeight: FontWeight.bold,
           ),
         ),
+
+        
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            
 
             //Supabaseのtimestamptz型をDateTime型に変換して表示
-            Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
+            //日本時間に変換。
+            //Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
+            Text(formatCreatedAt(widget.item["created_at"])),
+
 
             widget.item["title"] != null
               ? titleLines.length > 3
@@ -526,82 +586,95 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
               : const Text("説明文なし", style: const TextStyle(fontSize: 16),),
 
             SizedBox(height: SizeConfig.blockSizeVertical!*3,),
-            
-
-            Row(
-              children: [
-                widget.item["level"] != null
-                  ? Text(
-                      widget.item['level'],
-                      style: const TextStyle(fontSize: 14),
-                    )
-                  : const Text("レベルなし", style: const TextStyle(fontSize: 14),),
-
-                const SizedBox(width: 10,),
-
-                widget.item["subject"] != null
-                  ? Text(
-                      widget.item['subject'],
-                      style: const TextStyle(fontSize: 14),
-                    )
-                  : const Text("教科なし", style: const TextStyle(fontSize: 14),),
-
-                const SizedBox(width: 10,),
-
-                widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
-                  ? Text(
-                      "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                    )
-                  : const Text("難易度なし", style: const TextStyle(fontSize: 14),),
-
-                const SizedBox(width: 10,),
-              ],
-            ),
-              
-            Row(
-              children: [
-
-                if (widget.item['tag1'] != null && widget.item["tag1"] != "") Text("#"+widget.item['tag1'], style: TextStyle(fontSize: 14),),
-                if (widget.item['tag2'] != null && widget.item["tag2"] != "") Text("#"+widget.item['tag2'], style: TextStyle(fontSize: 14),),
-                if (widget.item['tag3'] != null && widget.item["tag3"] != "") Text("#"+widget.item['tag3'], style: TextStyle(fontSize: 14),),
-                if (widget.item['tag4'] != null && widget.item["tag4"] != "") Text("#"+widget.item['tag4'], style: TextStyle(fontSize: 14),),
-                if (widget.item['tag5'] != null && widget.item["tag5"] != "") Text("#"+widget.item['tag5'], style: TextStyle(fontSize: 14),),                
-            
-            ]),
 
             Column(
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.visibility,color: Colors.white,),
+                    const Icon(Icons.visibility,color: Colors.white, size: 16,),
                     Text(widget.item["watched"].toString()),
                     formSpacer,
 
-                    const Icon(Icons.favorite, color: Colors.white,),
+                    const Icon(Icons.favorite, color: Colors.white, size: 16,),
                     Text(widget.item["likes"].toString()),
                     formSpacer,
 
-                    const Icon(Icons.chat, color: Colors.white,),
+                    const Icon(Icons.chat, color: Colors.white, size: 16, ),
                     Text(widget.item["comments"].toString()),
                     formSpacer,
+
+                    const Icon(Icons.thumb_up_alt, color: Colors.green, size: 16),
+                    //const Text("Q:"),
+                    Text(widget.item["pro_add"].toString()),
+                    formSpacer,
+
+                    const Icon(Icons.thumb_up_alt, color: Colors.blue, size: 16,),
+                    //const Text("A:"),
+                    Text(widget.item["com_add"].toString()),
+                    
+                    /*
+                    formSpacer,
+
+                    
+                     */
                     
                   ],
                 ),
 
+                /*
                 Row(
                   children: [
-                    const Icon(Icons.thumb_up_alt),
-                    const Text("Q:"),
-                    Text(widget.item["pro_add"].toString()),
-                    formSpacer,
-
-                    const Icon(Icons.thumb_up_alt),
-                    const Text("A:"),
-                    Text(widget.item["com_add"].toString()),
+                    
+                    
                   ],
+                ),
+                 */
+
+                Row(
+                  children: [
+                    widget.item["level"] != null
+                      ? Text(
+                        widget.item['level'],
+                        style: const TextStyle(fontSize: 12),
+                      )
+                      : const Text("レベルなし", style: const TextStyle(fontSize: 12),),
+
+                      const SizedBox(width: 10,),
+
+                    widget.item["subject"] != null
+                      ? Text(
+                        widget.item['subject'],
+                        style: const TextStyle(fontSize: 12),
+                        )
+                      : const Text("教科なし", style: const TextStyle(fontSize: 14),),
+
+                    const SizedBox(width: 10,),
+
+                    /*
+                    widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
+                      ? Text(
+                          "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
+                          style: const TextStyle(
+                           fontSize: 12,
+                          ),
+                        )
+                      : const Text("難易度なし", style: const TextStyle(fontSize: 12),),
+
+                    const SizedBox(width: 10,),
+                    */
+                  ],
+                ),
+              
+                Row(
+                  children: [
+
+                    if (widget.item['tag1'] != null && widget.item["tag1"] != "") Text("#"+widget.item['tag1'], style: TextStyle(fontSize: 12),),
+                    if (widget.item['tag2'] != null && widget.item["tag2"] != "") Text("#"+widget.item['tag2'], style: TextStyle(fontSize: 12),),
+                    if (widget.item['tag3'] != null && widget.item["tag3"] != "") Text("#"+widget.item['tag3'], style: TextStyle(fontSize: 12),),
+                    if (widget.item['tag4'] != null && widget.item["tag4"] != "") Text("#"+widget.item['tag4'], style: TextStyle(fontSize: 12),),
+                    if (widget.item['tag5'] != null && widget.item["tag5"] != "") Text("#"+widget.item['tag5'], style: TextStyle(fontSize: 12),),                
+                
+                  ]
                 ),
 
                 
@@ -613,9 +686,10 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
         onTap: () async{
           
           Navigator.of(context).push(
-
             MaterialPageRoute(
+
               builder: (context) => DisplayPage(
+
                 title: widget.item['title'],
 
                 image_id: widget.item["image_data_id"],
@@ -658,9 +732,63 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
 
 
               ),
+            )
 
-            ),
 
+            /*
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => DisplayPage(
+
+                title: widget.item['title'],
+
+                image_id: widget.item["image_data_id"],
+                image_own_user_id: widget.item["user_id"],
+                tag1: widget.item['tag1'],
+                tag2: widget.item['tag2'],
+                tag3: widget.item['tag3'],
+                tag4: widget.item['tag4'],
+                tag5: widget.item['tag5'],
+
+                //tags: item['tags'],
+                level: widget.item['level']!,
+                subject: widget.item['subject']!,
+                image1: null,
+                image2: null,
+                imageUrlPX: imageUrlPX,
+                imageUrlCX: imageUrlCX,
+
+                num: widget.item['num'],
+
+                explanation: widget.item['explain'],
+
+                problem_id: widget.item["problem_id"],
+                comment_id: widget.item["comment_id"],
+
+                watched: widget.item["watched"],
+
+                likes: widget.item["likes"],
+
+                userName: widget.item["user_name"],
+
+                difficulty: widget.item["eval_num"] != 0
+                  ? widget.item["difficulty_point"]/widget.item["eval_num"].toDouble()
+                  : 0,
+
+                profileImage: profileImageId,
+
+                problemAdd: widget.item["pro_add"],
+                commentAdd: widget.item["com_add"],
+
+
+              ),
+              transitionsBuilder:(context, animation, secondaryAnimation, child) {
+                Offset _start = Offset(1.0, 0.0); //出てくる場所
+                Offset _end = Offset.zero; //最終地点
+                Animation<Offset> _offset = Tween(begin: _start, end: _end).animate(animation);
+                return SlideTransition(child: child, position: _offset);
+              },
+            )
+            */
 
           );
         },
