@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,7 +18,7 @@ import "package:share_your_q/pages/profile_page/components/settings/icon_setting
 class ProfileSettings extends StatefulWidget {
 
 
-  final String? profileImage;
+  final Uint8List? profileImage;
 
   const ProfileSettings({
     Key? key,
