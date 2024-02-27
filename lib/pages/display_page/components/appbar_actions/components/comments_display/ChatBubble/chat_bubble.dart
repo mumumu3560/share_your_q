@@ -49,7 +49,8 @@ class ChatBubble extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      commentData["user_name"],
+                      //commentData["user_name"],
+                      "user_name",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 10,
