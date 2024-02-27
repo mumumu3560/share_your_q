@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import "package:share_your_q/admob/inline_adaptive_banner.dart";
+
 // ImageDisplayScreenをインポート
 import "package:share_your_q/utils/various.dart";
 
 
 import "package:share_your_q/image_operations/image_list_display.dart";
 
+//TODO Admob
+//import "package:share_your_q/admob/inline_adaptive_banner.dart";
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -313,7 +315,7 @@ class _SearchPageState extends State<SearchPage> {
                     onPressed:(){
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true, lang: lang!,), // ImageDisplayに遷移
+                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true, lang: lang!,canToPage: true, add: false,), // ImageDisplayに遷移
                         ),
                       );
                     },
@@ -339,10 +341,13 @@ class _SearchPageState extends State<SearchPage> {
           Container(
             height: SizeConfig.blockSizeVertical! * 15,
             color: Colors.white,
+            //TODO Admob
+            /*
             child: InlineAdaptiveAdBanner(
               requestId: "SEARCH", 
               adHeight: SizeConfig.blockSizeVertical!.toInt() * 15,
             ),
+             */
           ),
 
 
