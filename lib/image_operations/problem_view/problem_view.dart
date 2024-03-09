@@ -664,11 +664,11 @@ void _toggleSystemBars100(Function(void Function()) setState) {
     SizeConfig().init(context);
 
     return SingleChildScrollView(
-
+    
       child: Column(
-
+    
         children: <Widget>[
-
+    
           Container(
             padding: const EdgeInsets.all(8.0),
             margin: const EdgeInsets.all(8.0),
@@ -679,7 +679,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
             ),
           ),
-
+    
           Container(
             //alignment: Alignment.center,
             padding: const EdgeInsets.all(8.0),
@@ -689,33 +689,35 @@ void _toggleSystemBars100(Function(void Function()) setState) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
+    
                 Row(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        if (widget.userName != null && widget.userName != ""){
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ProfilePage(
-                              userName: widget.userName!,
-                              userId: widget.image_own_user_id,
-                              profileImage: widget.profileImage,
-                            )),
-                          );
-                        }
-                        
-                      },
-                      child: CircleAvatar(
-                        backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
-                          ? MemoryImage(profileImageBytes!)
-                          : NetworkImage(dotenv.get("CLOUDFLARE_NO_IMAGE_URL")) as ImageProvider<Object>?,
-                        radius: 20,
+                    Material(
+                      child: InkWell(
+                        onTap: () {
+                          if (widget.userName != null && widget.userName != ""){
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ProfilePage(
+                                userName: widget.userName!,
+                                userId: widget.image_own_user_id,
+                                profileImage: widget.profileImage,
+                              )),
+                            );
+                          }
+                          
+                        },
+                        child: CircleAvatar(
+                          backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
+                            ? MemoryImage(profileImageBytes!)
+                            : NetworkImage(dotenv.get("CLOUDFLARE_NO_IMAGE_URL")) as ImageProvider<Object>?,
+                          radius: 20,
+                        ),
                       ),
                     ),
-
+    
                     const SizedBox(width: 10,),
-
+    
                     Text(
                       "${widget.userName}",
                       style: const TextStyle(
@@ -724,18 +726,18 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                         fontStyle: FontStyle.italic
                       ),
                     ),
-
+    
                     const SizedBox(width: 10,),
-
+    
                     
                   ],
                 ),
-
+    
                 const SizedBox(height: 10,),
                 widget.image_own_user_id == myUserId || isFollowed == null
                       ? const SizedBox(width: 10,)
                       : ElevatedButton(
-
+    
                         style: ElevatedButton.styleFrom(
                           //フォローしていないときは透明にしたい
                           backgroundColor: isFollowed == false ? Colors.blue : Colors.red,
@@ -753,17 +755,17 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                           ? const Text("フォローする", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold))
                           : const Text("フォロー解除", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
-
+    
                 const SizedBox(height: 5,),
-
+    
                 Row(
                   children: [
                     /*
                     Text("難易度: ${widget.difficulty}"),
-
+    
                     const SizedBox(width: 10,),
                      */
-
+    
                     /*
                     GestureDetector(
                       child: CircleAvatar(
@@ -779,9 +781,9 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                         radius: 15,
                       )
                     ),
-
+    
                     SizedBox(width: 10,),
-
+    
                     GestureDetector(
                       child: CircleAvatar(
                         backgroundColor: Colors.red,
@@ -799,27 +801,27 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                      */
                   ],
                 ),
-
+    
                 const SizedBox(height: 5,),
-
+    
                 Row(
                   children: [
-
+    
                     Text(widget.level),
-
+    
                     const SizedBox(width: 10,),
-
+    
                     Text(widget.subject),
                     
                   ],
                 ),
                 
-
+    
                 const SizedBox(height: 5,),
                 //タグを横並びにする
                 
                 Row(
-
+    
                   children: [
                     if (widget.tag1 != null && widget.tag1 != "") Text("タグ: #${widget.tag1}"),
                     if (widget.tag2 != null && widget.tag2 != "") Text("#${widget.tag2}"),
@@ -828,62 +830,62 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                     if (widget.tag5 != null && widget.tag5 != "") Text("#${widget.tag5}"),
                   ],
                 ),
-
+    
                 const SizedBox(height: 5,),
-
+    
                 Row(
                   children: [
                     Icon(Icons.remove_red_eye, color: Colors.green, size: 24,),
                     //Text("閲覧数: ${widget.watched}"),
                     Text("${widget.watched}"),
-
+    
                     const SizedBox(width: 10,),
-
-
-
+    
+    
+    
                     //ここをappbaractionsのものにする。
                     IconButton(
                       onPressed: widget.isCreate ? null : () async {
                         //いいねをする
                         await loadLikes();
-
+    
                         setState(() {
                           isLiked = !isLiked;
                           likes = isLiked ? likes + 1 : likes - 1;
                         });
                       },
-
+    
                       icon: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border_outlined,
                         color: isLiked ? Colors.red : Colors.white,
                       ),
                     ),
-
+    
                     
-
-
+    
+    
                     //Text("いいね: ${widget.likes}"),
                     Text("${likes}"),
                   ],
                 ),
                 
-
+    
                 const SizedBox(height: 15,),
-
+    
                 SelectableText(
                 "説明:\n${widget.explanation}",
                 style: const TextStyle(fontSize: 16,  fontStyle: FontStyle.italic),
                 ),
-
+    
                 
               ],
               
-
+    
             ),
           ),
-
+    
           const SizedBox(height: 10,),
-
+    
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -895,29 +897,29 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                 },
                 child: const Text("問題を表示する"),
               ),
-
+    
               const SizedBox(width: 10,),
-
+    
               ProblemOrCommentAdding(
                 userId: myUserId,
                 imageId: widget.image_id,
                 isProblem: true,
                 addNum: widget.problemAdd,
               ),
-
+    
             ],
           ),
-
+    
           const SizedBox(height: 10,),
-
+    
           
-
+    
           if (showProblemImage && (widget.image1 != null || image1Bytes != null))
             if (image1Bytes == Uint8List(0) || isLoadingImage1)
               preloader
             else
               GestureDetector(
-
+    
                 child: Container(
                   /*
                   decoration: BoxDecoration(
@@ -952,7 +954,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                   ),
               
                 ),
-
+    
                 onTap:(){
                   //画像を拡大表示する
                   /*
@@ -994,7 +996,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                     },
                   );
                    */
-
+    
                   showPreviewImage100(
                     context,
                     image: widget.isCreate
@@ -1003,13 +1005,13 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                   );
                  
                 }
-
-
+    
+    
               ),
-
+    
           SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
-
-
+    
+    
           Row(
             mainAxisAlignment: MainAxisAlignment.center, 
             children: [
@@ -1021,9 +1023,9 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                 },
                 child: const Text("解説を表示する"),
               ),
-
+    
               const SizedBox(width: 10,),
-
+    
               ProblemOrCommentAdding(
                 userId: myUserId,
                 imageId: widget.image_id,
@@ -1033,8 +1035,8 @@ void _toggleSystemBars100(Function(void Function()) setState) {
             ],
           ),
           
-
-
+    
+    
           if (showExplanationImage && (widget.image2 != null || image2Bytes != null))
             if (image2Bytes == Uint8List(0) || isLoadingImage2)
               preloader
@@ -1065,7 +1067,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                             : null,
                   ),
                 ),
-
+    
                 onTap:(){
                   //画像を拡大表示する
                   /*
@@ -1108,7 +1110,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                     },
                   );
                    */
-
+    
                   showPreviewImage100(
                     context,
                     image: widget.isCreate
@@ -1118,26 +1120,26 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                  
                 }
               ),
-
+    
           /*
           CommentList(
             imageId: widget.image_id!, 
             responseId: -1,
           ),
            */
-
-
+    
+    
           SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
-
+    
           /*
           
            */
-
+    
           /*
           Container(
             height: SizeConfig.blockSizeVertical! * 80,
             //width: SizeConfig.blockSizeHorizontal! * 90,
-
+    
             child:CommentList(
               imageId: widget.image_id!, 
               responseId: -1,
@@ -1148,11 +1150,11 @@ void _toggleSystemBars100(Function(void Function()) setState) {
             ),
           ),
            */
-
-
-
+    
+    
+    
           
-
+    
         ],
       ),
     );
