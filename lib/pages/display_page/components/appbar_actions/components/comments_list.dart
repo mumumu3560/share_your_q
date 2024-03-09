@@ -6,12 +6,9 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
 //import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
-
 
 //google_admob
 //TODO ビルドリリースの時のみ
@@ -20,7 +17,6 @@ import 'dart:typed_data';
 String textKeeper = "";
 
 class CommentList extends StatefulWidget {
-
   final int imageId;
 
   final int responseId;
@@ -33,26 +29,19 @@ class CommentList extends StatefulWidget {
 
   final String title;
 
-
-
   const CommentList({
     Key? key,
     required this.imageId,
     required this.responseId,
     required this.canToPage,
     required this.resText,
-
     required this.item,
-
     required this.title,
-
-  }) :super(key: key);
+  }) : super(key: key);
 
   @override
   CommentListState createState() => CommentListState();
-
 }
-
 
 class CommentListState extends State<CommentList> {
   bool isLoading = true;
@@ -64,11 +53,11 @@ class CommentListState extends State<CommentList> {
       final List<Map<String, dynamic>> response;
 
       response = await supabase
-        .from("comments")
-        .select<List<Map<String,dynamic>>>()
-        .eq("image_id", widget.imageId)
-        .eq("response_id", widget.responseId)
-        .order('created_at', ascending: false);
+          .from("comments")
+          .select<List<Map<String, dynamic>>>()
+          .eq("image_id", widget.imageId)
+          .eq("response_id", widget.responseId)
+          .order('created_at', ascending: false);
 
       setState(() {
         isLoading = false;
@@ -79,8 +68,6 @@ class CommentListState extends State<CommentList> {
     }
   }
 
-
-  
   @override
   void initState() {
     super.initState();
@@ -89,7 +76,6 @@ class CommentListState extends State<CommentList> {
     fetchData();
 
     isLoading = false;
-
 
     //TODO ビルドリリースの時のみ
   }
@@ -104,29 +90,32 @@ class CommentListState extends State<CommentList> {
     //TODO ビルドリリースの時のみ
   }
 
-  
-
-
   // リストをリロードするメソッド
-  Future<void> reloadList() async{
+  Future<void> reloadList() async {
     setState(() {
       isLoading = true;
     });
     await fetchData(); // リロード時にデータを再取得
   }
 
-   TextEditingController _textController = TextEditingController();
+  TextEditingController _textController = TextEditingController();
 
   void _showCommentSheet() {
     showModalBottomSheet(
+      constraints: BoxConstraints(
+        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+      ),
       context: context,
       isScrollControlled: true, // スクロール可能かどうか
       //isDismissible: false,
       builder: (context) {
         return Container(
-          height: SizeConfig.blockSizeVertical! * 35,
+          height: SizeConfig.blockSizeVertical! * 35 +
+              MediaQuery.of(context).viewInsets.bottom,
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom, // キーボードが表示された際にウィジェットが上にスクロールするようにする
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom, // キーボードが表示された際にウィジェットが上にスクロールするようにする
           ),
           child: Padding(
             padding: EdgeInsets.all(16.0),
@@ -142,7 +131,6 @@ class CommentListState extends State<CommentList> {
                     decoration: InputDecoration(
                       hintText: 'コメントを入力',
                       border: OutlineInputBorder(),
-                            
                     ),
                   ),
                 ),
@@ -162,71 +150,6 @@ class CommentListState extends State<CommentList> {
     );
   }
 
-
-  //https://qiita.com/hirothings/items/9601165efee48713cee8
-  void showCommentListTest2(){
-    showModalBottomSheet(
-      //大きさは画面の90%に設定
-
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Navigator(
-        onGenerateRoute: (context) => MaterialPageRoute<CommentList>(
-          builder: (context) => Container(
-            height: SizeConfig.blockSizeVertical! * 70,
-            child: CommentList(
-              imageId: widget.imageId,
-              responseId: widget.responseId,
-              canToPage: true,
-              resText: "テストtext",
-              item: null,
-              title: "返信",
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  void showCommentListTest(BuildContext context) {
-  showModalBottomSheet(
-    isDismissible: false,
-
-    context: context,
-    isScrollControlled: true,
-    builder: (context) => Container(
-      height: SizeConfig.blockSizeVertical! * 70,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-
-      /*
-      child: Navigator(
-        onGenerateRoute: (context) => MaterialPageRoute<CommentList>(
-          builder: (context) => CommentList(
-            imageId: widget.imageId,
-            responseId: widget.responseId,
-            canToPage: true,
-            resText: "テストtext",
-            item: null,
-            title: "返信",
-          ),
-        ),
-      ),
-       */
-    ),
-  );
-}
-
-
-
-
-
   /// メッセージを送信する
   void _submitMessage() async {
     final comment = _textController.text;
@@ -244,7 +167,7 @@ class CommentListState extends State<CommentList> {
         "response_id": widget.responseId,
       });
 
-
+      await reloadList();
     } on PostgrestException catch (error) {
       // エラーが発生した場合はエラーメッセージを表示
       context.showErrorSnackBar(message: error.message);
@@ -260,42 +183,33 @@ class CommentListState extends State<CommentList> {
       });
     });
      */
-    
   }
 
-
   bool commentShow = true;
-
-  
 
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
     return Scaffold(
-      /*
+        //resizeToAvoidBottomInset: true,
+        /*
       
        */
 
-      appBar: AppBar(
-        automaticallyImplyLeading: widget.canToPage,
+        appBar: AppBar(
+          automaticallyImplyLeading: widget.canToPage,
 
-        leading: widget.responseId == -1 
-          ? IconButton(
-            // 閉じるときはネストしているModal内のRouteではなく、root側のNavigatorを指定する必要がある
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            icon: Icon(Icons.close)
-          )
-            //ひとつ前に戻る
-          : IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.arrow_back)
-            ),
-        title: Text(widget.title), // アプリバーに表示するタイトル
+          leading: widget.responseId == -1
+              ? null
+              //ひとつ前に戻る
+              : IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.arrow_back)),
+          title: Text(widget.title), // アプリバーに表示するタイトル
 
-        
-        actions: [
-          /*
+          actions: [
+            /*
           if(widget.responseId == -1 ) ElevatedButton(
             onPressed: () {
               setState(() {
@@ -306,83 +220,106 @@ class CommentListState extends State<CommentList> {
             child: const Text("コメント表示")
           ),
            */
+            /*
           IconButton(
             onPressed: reloadList,
             icon: commentShow ? Icon(Icons.refresh) : Container(), // リロードアイコン
           ),
-        ],
-         
+           */
 
-      ),
+            IconButton(
+                // 閉じるときはネストしているModal内のRouteではなく、root側のNavigatorを指定する必要がある
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                icon: Icon(Icons.close))
 
-      body: commentShow ? Center(
-        child: SizedBox(
-          height: SizeConfig.blockSizeVertical! * 70,
-          child: Column(
-            children: [
-              widget.responseId != -1 ? Container(
-                child: CommentItem(item: widget.item!, isRes: true,),
-              )
-              : Container(),
-              
-              
-              Expanded(
-                /*
-                height: SizeConfig.blockSizeVertical! * 65,
-                //中央寄り
-                alignment: Alignment.center,
-                 */
-                
-                child: Column(
-                  children: [
-              
-                    if(commentList.isEmpty && !isLoading)
-                      Container(
-                        //padding: EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 10),
-                        child: const Text(
-                          "コメントはありません",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      )
-              
-                    else 
-                      isLoading
-                          ? const Expanded(
-                              child: Center(
-                                child: CircularProgressIndicator()
-                              )
-                            )
-                          : Expanded(
-                            
-                            //RefreshIndicatorによってリロードできるようになる。
-                              child: RefreshIndicator(
-                                color: Colors.green,
-                                onRefresh: () async{ 
-                                  await reloadList();
-                                },
-              
-                                //リストビューを作成する
-                                //TODOスクロールバーの追加
-                                child: ListView.builder(
-                                  addAutomaticKeepAlives: true,
-                                  //https://stackoverflow.com/questions/68623174/why-cant-i-slide-the-listview-builder-on-flutter-web
-                                  physics: const AlwaysScrollableScrollPhysics(),
-                                  
-                                  
-                                  //TODO ここでリストの保持を行う。
-                                  itemCount: commentList.length,
-                                  //itemCount: 10,
-                                  itemBuilder: (context, index) {
-                                                      
-                                    //6の倍数の時には広告を表示する。
-                                    if(index%6 == 1){
-                                      final item = commentList[index];
-                                      return Column(
-                                        children: [
-                                          /*
+            /*
+          例外が発生しました
+          _AssertionError (
+            'package:flutter/src/widgets/navigator.dart': 
+            Failed assertion: line 5277 pos 12: '!_debugLocked': is not true.
+          )
+           */
+          ],
+        ),
+        body: commentShow
+            ? Center(
+                child: SizedBox(
+                  //height: SizeConfig.blockSizeVertical! * 70,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            if (commentList.isEmpty && !isLoading)
+                              Container(
+                                  child: Column(
+                                children: [
+                                  widget.responseId == -1
+                                      ? Container()
+                                      : CommentItem(
+                                          item: widget.item!, isRes: true),
+                                  const Text(
+                                    "返信はありません",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ))
+                            else
+                              isLoading
+                                  ? const Expanded(
+                                      child: Center(
+                                          child: CircularProgressIndicator()))
+                                  : Expanded(
+                                      //RefreshIndicatorによってリロードできるようになる。
+                                      child: RefreshIndicator(
+                                        color: Colors.green,
+                                        onRefresh: () async {
+                                          await reloadList();
+                                        },
+
+                                        //リストビューを作成する
+                                        //TODOスクロールバーの追加
+                                        child: ListView.builder(
+                                          addAutomaticKeepAlives: true,
+                                          //https://stackoverflow.com/questions/68623174/why-cant-i-slide-the-listview-builder-on-flutter-web
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(),
+
+                                          //TODO ここでリストの保持を行う。
+                                          itemCount: widget.responseId != -1
+                                              ? commentList.length
+                                              : commentList.length,
+
+                                          //itemCount: 10,
+                                          itemBuilder: (context, index) {
+                                            //
+
+                                            if (index == 0 &&
+                                                widget.responseId != -1) {
+                                              return Column(
+                                                children: [
+                                                  CommentItem(
+                                                    item: widget.item!,
+                                                    isRes: true,
+                                                  ),
+                                                  CommentItem(
+                                                    item: commentList[index],
+                                                    isRes: false,
+                                                  ),
+                                                ],
+                                              );
+                                            }
+
+                                            //6の倍数の時には広告を表示する。
+                                            if (index % 6 == 1) {
+                                              final item = commentList[index];
+                                              return Column(
+                                                children: [
+                                                  /*
                                           Container(
                                             height: 64,
                                             width: double.infinity,
@@ -391,7 +328,8 @@ class CommentListState extends State<CommentList> {
                                             //child: _adMob.getAdBanner(),
                                           ),
                                            */
-                                                      
+
+                                                  /*
                                           SizedBox(
                                             height: SizeConfig.blockSizeVertical! * 40,
                                             //InlineAdaptiveAdBanner(requestId: "LIST",),
@@ -403,39 +341,38 @@ class CommentListState extends State<CommentList> {
                                             )//InlineAdaptiveExample(),
                                              */
                                           ),
-                                          //const ,
-                                                      
-                                          
-                                          CommentItem(item: item, isRes: false,) ,
-                                        ],
-                                      );
-                                    }
-                                    else{
-                                      final item = commentList[index];
-                                      return CommentItem(item: item, isRes: false,); 
-                                    }
-                                    
-                                    
-                                  },
-                                ),
-                              ),
-                            ),
-              
-                    
-                    
-                  ],
-                ),
-              ),
-            
-              Material(
-                //color: Colors.black12,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          /*
+                                           */
+                                                  //const ,
+
+                                                  CommentItem(
+                                                    item: item,
+                                                    isRes: false,
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              final item = commentList[index];
+                                              return CommentItem(
+                                                item: item,
+                                                isRes: false,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                          ],
+                        ),
+                      ),
+                      Material(
+                          //color: Colors.black12,
+                          child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                  /*
                           keyboardType: TextInputType.multiline,
                           maxLines: 3, // 複数行入力可能。3行まで表示。
                           controller: _textController,
@@ -446,18 +383,14 @@ class CommentListState extends State<CommentList> {
                             contentPadding: EdgeInsets.all(8),
                           ),
                             */
-                
-                          child: Text("コメントを入力"),
-                
-                          onPressed: () {
-                            _showCommentSheet();
-                          }
-                        
-                        
-                        ),
-                      ),
-                        
-                      /*
+
+                                  child: Text("コメントを入力"),
+                                  onPressed: () {
+                                    _showCommentSheet();
+                                  }),
+                            ),
+
+                            /*
                       TextButton(
                         onPressed: () {
                           //_submitMessage();
@@ -466,129 +399,131 @@ class CommentListState extends State<CommentList> {
                         child: const Text('送信'),
                       ),
                         */
+                          ],
+                        ),
+                      )),
                     ],
                   ),
-                )
-              ),
-            
-            ],
-          ),
-        ),
-      )
-      : null
-    );
+                ),
+              )
+            : null);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
 class CommentItem extends StatefulWidget {
   final Map<String, dynamic> item;
   final bool isRes;
   const CommentItem({
-
     Key? key,
     required this.item,
-
     required this.isRes,
-    
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   State<CommentItem> createState() => _CommentItemState();
 }
 
-class _CommentItemState extends State<CommentItem> with AutomaticKeepAliveClientMixin {
-
+class _CommentItemState extends State<CommentItem>
+    with AutomaticKeepAliveClientMixin {
   //TODO mylistitemが保持されているかどうか。
   @override
   bool get wantKeepAlive => true;
-
 
   String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
   String userName = "";
 
   String targetUserId = "";
 
-  Future<void> fetchUserProfile(String target) async{
-    try{
+  /*
+  例外が発生しました
+FlutterError (This widget has been unmounted, so the State no longer has a context (and should be considered defunct).
+Consider canceling any active work during "dispose" or using the "mounted" getter to determine if the State is still active.)
+   */
+
+  Future<void> fetchUserProfile(String target) async {
+    try {
       final response = await supabase
-        .from("profiles")
-        .select<List<Map<String,dynamic>>>()
-        .eq("id", target);
-      
+          .from("profiles")
+          .select<List<Map<String, dynamic>>>()
+          .eq("id", target);
+
       setState(() {
         userName = response[0]["username"];
       });
-    } on PostgrestException catch (error){
+    } on PostgrestException catch (error) {
       context.showErrorSnackBar(message: error.message);
-    } catch(_){
+    } catch (_) {
       context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
   }
 
-  Future<String> fetchProfileImage(String target) async{
+  late Future<Uint8List?> imageData;
 
-    try{
-
+  Future<Uint8List?> fetchProfileImage(String target) async {
+    try {
       final response = await supabase
-        .from("profiles")
-        .select<List<Map<String, dynamic>>>()
-        .eq("id", target);
+          .from("profiles")
+          .select<List<Map<String, dynamic>>>()
+          .eq("id", target);
 
-      if(response[0]["profile_image_id"] == null){
-
-        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
-      }
-      else{
+      if (response[0]["profile_image_id"] == null) {
+        profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        //return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      } else {
         profileImageId = response[0]["profile_image_id"];
-        return response[0]["profile_image_id"];
+        //return response[0]["profile_image_id"];
       }
+
+      final response2 = await fetchImageWithCache(profileImageId);
+      isLoadingImage = false;
+
+      return response2;
 
       //print(profileImageId);
 
       //return response[0]["profile_image_id"];
-
-    } on PostgrestException catch (error){
-      if(context.mounted){
+    } on PostgrestException catch (error) {
+      if (context.mounted) {
         context.showErrorSnackBar(message: error.message);
-        
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
-    } catch(_){
-      if(context.mounted){
+      final response2 = await fetchImageWithCache(profileImageId);
+      isLoadingImage = false;
+
+      return response2;
+    } catch (_) {
+      if (context.mounted) {
         context.showErrorSnackBar(message: unexpectedErrorMessage);
-        
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      final response2 = await fetchImageWithCache(profileImageId);
+      isLoadingImage = false;
+
+      return response2;
     }
-
-
   }
 
-  Future<void> onPressedThumbsButton(bool isGood)async{
+  /*
+  PostgrestException 
+  (
+    PostgrestException(message: Column 'good' of relation 'comments_like' does not exist, 
+    code: PGRST204, details: Bad Request, hint: null)
+  )
+   */
+
+  Future<void> onPressedThumbsButton(bool isGood) async {
+    /*
     final response = await supabase
       .from("comments_like")
       .upsert({
         isGood ? "good" : "bad": widget.item[isGood ? "good" : "bad"] + 1,
       })
       .eq("comment_id", widget.item["id"]);
+     */
   }
 
-  Future<void> showCommentForm() async{
+  Future<void> showCommentForm() async {
     print("コメントフォームが表示されました");
   }
-
 
   //ここで投稿日時の管理
   String formatCreatedAt(String createdAtString) {
@@ -598,13 +533,10 @@ class _CommentItemState extends State<CommentItem> with AutomaticKeepAliveClient
 
     if (difference.inMinutes < 60) {
       return '${difference.inMinutes}分前';
-
     } else if (difference.inHours < 24) {
       return '${difference.inHours}時間前';
-
     } else if (difference.inDays < 365) {
       return '${createdAt.month}月${createdAt.day}日';
-
     } else {
       return '${createdAt.year}年${createdAt.month}月${createdAt.day}日';
     }
@@ -619,245 +551,531 @@ class _CommentItemState extends State<CommentItem> with AutomaticKeepAliveClient
 
     targetUserId = widget.item["user_id"];
 
-
     //fetchProfileImage(targetUserId);
 
     fetchUserProfile(targetUserId);
 
+    imageData = fetchProfileImage(targetUserId) as Future<Uint8List?>;
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    return Card(
-      color: widget.isRes ? Colors.black12 : null,
-      child: ListTile(
-        dense: true,
+    //color: widget.isRes ? Colors.black12 : null,
+    return ListTile(
+      tileColor: widget.isRes ? Color.fromARGB(255, 73, 72, 72) : null,
+      dense: true,
+      //selectedColor: widget.isRes ? Colors.white : Colors.black12,
 
-
-        
-
-        leading: FutureBuilder(
-          future: fetchProfileImage(targetUserId),
-          builder: (context, profileImageSnapshot) {
-            if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
-              // データの読み込み中はローディングインジケータなどを表示する
-              return const CircularProgressIndicator();
-            } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
-              // エラーが発生した場合は代替のアイコンを表示する
-              return GestureDetector(
-                child: const CircleAvatar(
-                  radius: 20,
-                  child: Icon(
-                    Icons.error_outline,
-                    color: Colors.blue,
-                    size: 40,
+      /* 
+      leading: FutureBuilder(
+        future: fetchProfileImage(targetUserId),
+        builder: (context, profileImageSnapshot) {
+          if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
+            // データの読み込み中はローディングインジケータなどを表示する
+            return SizedBox(
+              width: 28,
+              height: 28,
+              child: const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+              ),
+            );
+          } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
+            // エラーが発生した場合は代替のアイコンを表示する
+            return GestureDetector(
+              child: const CircleAvatar(
+                radius: 14,
+                child: Icon(
+                  Icons.error_outline,
+                  color: Colors.blue,
+                  size: 40,
+                ),
+              ),
+              onTap: () {
+                print('エラーが発生しました。onTap アクションをここで処理してください。');
+                context.showErrorSnackBar(message: "プロフィールに遷移できません");
+              },
+            );
+          } else {
+            print(targetUserId);
+            isLoadingImage = false;
+            // データが正常に読み込まれた場合に画像を表示する
+            return GestureDetector(
+              child: CircleAvatar(
+                radius: 14,
+                child: ClipOval(
+                  child: FutureBuilder(
+                    future: fetchImageWithCache(profileImageSnapshot.data as String),
+                    builder: (context, imageSnapshot) {
+                      if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                        // データの読み込み中はローディングインジケータなどを表示する
+                        return const CircularProgressIndicator();
+                      } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
+                        print("ここかもしれないなぁ");
+                        // エラーが発生した場合は代替のアイコンを表示する
+                        return const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 40,
+                        );
+                      } else {
+                        // データが正常に読み込まれた場合に画像を表示する
+                        print("ここは最後の砦です");
+                        print(profileImageSnapshot.data);
+                        return Image.memory(
+                          imageSnapshot.data as Uint8List,
+                          fit: BoxFit.cover,
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (context, error, stackTrace) {
+                            print("ここは最後のエラーとアンって");
+                            // エラーが発生した場合の代替イメージを表示する
+                            return const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 40,
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
                 ),
-                onTap: () {
-                  print('エラーが発生しました。onTap アクションをここで処理してください。');
-                  context.showErrorSnackBar(message: "プロフィールに遷移できません");
-                },
-              );
-            } else {
-              print(targetUserId);
-              isLoadingImage = false;
-              // データが正常に読み込まれた場合に画像を表示する
-              return GestureDetector(
-                child: CircleAvatar(
-                  radius: 20,
-                  child: ClipOval(
-                    child: FutureBuilder(
-                      future: fetchImageWithCache(profileImageSnapshot.data as String),
-                      builder: (context, imageSnapshot) {
-                        if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                          // データの読み込み中はローディングインジケータなどを表示する
-                          return const CircularProgressIndicator();
-                        } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                          print("ここかもしれないなぁ");
-                          // エラーが発生した場合は代替のアイコンを表示する
+              ),
+              onTap: () {
+                if (!isLoadingImage) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProfilePage(
+                        userId: targetUserId, 
+                        userName: userName, 
+                        profileImage: profileImageId,
+                      ),
+                    ),
+                  );
+                } else {
+                  context.showErrorSnackBar(message: "現在読み込み中です...");
+                }
+              },
+            );
+          }
+        },
+      ),
+      */
+
+      /*
+      title: Padding(
+        padding: const EdgeInsets.all(1.0),
+        child: Text(
+          userName,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+      ),
+      
+      
+       */
+      title: Row(
+        //rowは上にそろえる
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            child: CircleAvatar(
+              radius: 14,
+              child: ClipOval(
+                child: FutureBuilder(
+                  future: imageData,
+                  builder: (context, imageSnapshot) {
+                    if (imageSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      // データの読み込み中はローディングインジケータなどを表示する
+                      return const CircularProgressIndicator();
+                    } else if (imageSnapshot.hasError ||
+                        imageSnapshot.data == null) {
+                      print("ここかもしれないなぁ");
+                      // エラーが発生した場合は代替のアイコンを表示する
+                      return const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 40,
+                      );
+                    } else {
+                      // データが正常に読み込まれた場合に画像を表示する
+                      print("ここは最後の砦です");
+                      return Image.memory(
+                        imageSnapshot.data as Uint8List,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                        errorBuilder: (context, error, stackTrace) {
+                          print("ここは最後のエラーとアンって");
+                          // エラーが発生した場合の代替イメージを表示する
                           return const Icon(
                             Icons.error_outline,
                             color: Colors.red,
                             size: 40,
                           );
-                        } else {
-                          // データが正常に読み込まれた場合に画像を表示する
-                          print("ここは最後の砦です");
-                          print(profileImageSnapshot.data);
-                          return Image.memory(
-                            imageSnapshot.data as Uint8List,
-                            fit: BoxFit.cover,
-                            width: 40,
-                            height: 40,
-                            errorBuilder: (context, error, stackTrace) {
-                              print("ここは最後のエラーとアンって");
-                              // エラーが発生した場合の代替イメージを表示する
-                              return const Icon(
-                                Icons.error_outline,
-                                color: Colors.red,
-                                size: 40,
-                              );
-                            },
-                          );
-                        }
-                      },
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+            onTap: () {
+              if (!isLoadingImage) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(
+                      userId: targetUserId,
+                      userName: userName,
+                      profileImage: profileImageId,
                     ),
                   ),
-                ),
-                onTap: () {
-                  if (!isLoadingImage) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProfilePage(
-                          userId: targetUserId, 
-                          userName: userName, 
-                          profileImage: profileImageId,
+                );
+              } else {
+                context.showErrorSnackBar(message: "現在読み込み中です...");
+              }
+            },
+          ),
+
+          /*
+              FutureBuilder(
+                future: fetchProfileImage(targetUserId),
+                builder: (context, profileImageSnapshot) {
+                  if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
+                    // データの読み込み中はローディングインジケータなどを表示する
+                    return SizedBox(
+                      width: 28,
+                      height: 28,
+                      /*
+                      child: const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      ),
+                      */
+                    );
+                  } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
+                    // エラーが発生した場合は代替のアイコンを表示する
+                    return GestureDetector(
+                      child: const CircleAvatar(
+                        radius: 14,
+                        child: Icon(
+                          Icons.error_outline,
+                          color: Colors.blue,
+                          size: 40,
                         ),
                       ),
+                      onTap: () {
+                        print('エラーが発生しました。onTap アクションをここで処理してください。');
+                        context.showErrorSnackBar(message: "プロフィールに遷移できません");
+                      },
                     );
                   } else {
-                    context.showErrorSnackBar(message: "現在読み込み中です...");
+                    print(targetUserId);
+                    isLoadingImage = false;
+                    // データが正常に読み込まれた場合に画像を表示する
+                    return GestureDetector(
+                      child: CircleAvatar(
+                        radius: 14,
+                        child: ClipOval(
+                          child: FutureBuilder(
+                            future: fetchImageWithCache(profileImageSnapshot.data as String),
+                            builder: (context, imageSnapshot) {
+                              if (imageSnapshot.connectionState == ConnectionState.waiting) {
+                                // データの読み込み中はローディングインジケータなどを表示する
+                                return const CircularProgressIndicator();
+                              } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
+                                print("ここかもしれないなぁ");
+                                // エラーが発生した場合は代替のアイコンを表示する
+                                return const Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red,
+                                  size: 40,
+                                );
+                              } else {
+                                // データが正常に読み込まれた場合に画像を表示する
+                                print("ここは最後の砦です");
+                                print(profileImageSnapshot.data);
+                                return Image.memory(
+                                  imageSnapshot.data as Uint8List,
+                                  fit: BoxFit.cover,
+                                  width: 40,
+                                  height: 40,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    print("ここは最後のエラーとアンって");
+                                    // エラーが発生した場合の代替イメージを表示する
+                                    return const Icon(
+                                      Icons.error_outline,
+                                      color: Colors.red,
+                                      size: 40,
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                      onTap: () {
+                        if (!isLoadingImage) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                userId: targetUserId, 
+                                userName: userName, 
+                                profileImage: profileImageId,
+                              ),
+                            ),
+                          );
+                        } else {
+                          context.showErrorSnackBar(message: "現在読み込み中です...");
+                        }
+                      },
+                    );
                   }
                 },
-              );
-            }
-          },
-        ),
+              ),
+               */
 
+          SizedBox(
+            width: SizeConfig.blockSizeHorizontal! * 2,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            //mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    userName,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(formatCreatedAt(widget.item["created_at"])),
+                ],
+              ),
+              SizedBox(
+                height: SizeConfig.blockSizeVertical! * 1,
+              ),
+              SizedBox(
+                //width: SizeConfig.blockSizeHorizontal! * 75,
+                child: Text(
+                  widget.item["comments"] as String,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(
+                height: SizeConfig.blockSizeVertical! * 1,
+              ),
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.start,
+                //crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  //ここはグッドボタン
+                  IconButton(
+                    onPressed: () => onPressedThumbsButton(true),
+                    icon: Icon(
+                      Icons.thumb_up_alt_outlined,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
 
+                  //SizedBox(width: 10,),
 
+                  Text(widget.item["good"].toString()),
 
+                  SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 1,
+                  ),
 
+                  //ここはバッドボタン
+                  IconButton(
+                    onPressed: () => onPressedThumbsButton(false),
+                    icon: Icon(
+                      Icons.thumb_down_alt_outlined,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
 
-        title: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: Text(
-            userName,
+                  //SizedBox(width: 10,),
+
+                  Text(widget.item["bad"].toString()),
+
+                  SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 1,
+                  ),
+
+                  //ここはコメントボタン
+                  IconButton(
+                    onPressed: () => showCommentForm(),
+                    icon: Icon(
+                      Icons.comment,
+                      color: Colors.green,
+                      size: 16,
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
+
+                  //SizedBox(width: 10,),
+
+                  Text(widget.item["response_num"].toString()),
+                ],
+              ),
+
+              /*
+                  Row(
+                    children: [
+                      Text("返信"),
+                      Text(widget.item["response_num"].toString()),
+                    ],
+                  ),
+                  */
+            ],
+          ),
+        ],
+      ),
+
+      /*
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        //mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+      
+          Row(
+            children: [
+              Text(
+                userName,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+    
+              const SizedBox(width: 10,),
+              
+              Text(formatCreatedAt(widget.item["created_at"])),
+            ],
+          ),
+      
+          SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
+      
+          Text(
+            widget.item["comments"] as String,
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.bold
+              
             ),
           ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          //mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-        
-            Text(formatCreatedAt(widget.item["created_at"])),
-        
-            SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
-        
-            Text(
-              widget.item["comments"] as String,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold
+    
+          SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
+      
+      
+          Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+      
+              //ここはグッドボタン
+              IconButton(
+                onPressed: () => onPressedThumbsButton(true),
+                icon: Icon(
+                  Icons.thumb_up_alt_outlined,
+                  color: Colors.white,
+                  size: 16,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
+              ),
+      
+              //SizedBox(width: 10,),
+      
+              Text(widget.item["good"].toString()),
+      
+              SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
+      
+      
+              //ここはバッドボタン
+              IconButton(
+                onPressed: () => onPressedThumbsButton(false),
+                icon: Icon(
+                  Icons.thumb_down_alt_outlined,
+                  color: Colors.white,
+                  size: 16,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
                 
               ),
-            ),
-
-            SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
-        
-        
-            Row(
-              //mainAxisAlignment: MainAxisAlignment.start,
-              //crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-        
-                //ここはグッドボタン
-                IconButton(
-                  onPressed: () => onPressedThumbsButton(true),
-                  icon: Icon(
-                    Icons.thumb_up_alt_outlined,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
+      
+              //SizedBox(width: 10,),
+      
+              Text(widget.item["bad"].toString()),
+      
+              SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
+      
+              //ここはコメントボタン
+              IconButton(
+                onPressed: () => showCommentForm(),
+                icon: Icon(
+                  Icons.comment,
+                  color: Colors.green,
+                  size: 16,
                 ),
-        
-                //SizedBox(width: 10,),
-        
-                Text(widget.item["good"].toString()),
-        
-                SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
-        
-        
-                //ここはバッドボタン
-                IconButton(
-                  onPressed: () => onPressedThumbsButton(false),
-                  icon: Icon(
-                    Icons.thumb_down_alt_outlined,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  
-                ),
-        
-                //SizedBox(width: 10,),
-        
-                Text(widget.item["bad"].toString()),
-        
-                SizedBox(width: SizeConfig.blockSizeHorizontal! * 1,),
-        
-                //ここはコメントボタン
-                IconButton(
-                  onPressed: () => showCommentForm(),
-                  icon: Icon(
-                    Icons.comment,
-                    color: Colors.green,
-                    size: 16,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                ),
-        
-                //SizedBox(width: 10,),
-        
-                Text(widget.item["response_num"].toString()),
-        
-                
-        
-              ],
-            ),
-        
-            /*
-            Row(
-              children: [
-                Text("返信"),
-                Text(widget.item["response_num"].toString()),
-              ],
-            ),
-             */
-        
-          ],
-        ),
-        onTap: () async{
-
-          widget.isRes ? null
-
-          :Navigator.of(context).push(
-            MaterialPageRoute(
-
-              builder: (context) => CommentList(
-                imageId: widget.item["image_id"] as int,
-                responseId: widget.item["id"] as int,
-                canToPage: true,
-                resText: widget.item["comments"] as String,
-                item: widget.item,
-                title: "返信"
+                padding: EdgeInsets.zero,
+                constraints: BoxConstraints(),
               ),
-            )
-
-          );
-           
-        },
+      
+              //SizedBox(width: 10,),
+      
+              Text(widget.item["response_num"].toString()),
+      
+              
+      
+            ],
+          ),
+      
+          /*
+          Row(
+            children: [
+              Text("返信"),
+              Text(widget.item["response_num"].toString()),
+            ],
+          ),
+           */
+      
+        ],
       ),
+       */
+      onTap: () async {
+        widget.isRes
+            ? null
+            : Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => CommentList(
+                    imageId: widget.item["image_id"] as int,
+                    responseId: widget.item["id"] as int,
+                    canToPage: true,
+                    resText: widget.item["comments"] as String,
+                    item: widget.item,
+                    title: "返信"),
+              ));
+      },
     );
   }
 }
