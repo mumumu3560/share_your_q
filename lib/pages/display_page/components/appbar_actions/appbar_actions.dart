@@ -33,6 +33,8 @@ class _AppBarActionsState extends State<AppBarActions> {
   bool isLiked = false;
   bool isFirst = true;
 
+  bool showingComment = false;
+
   @override
   void initState(){
 
@@ -119,6 +121,7 @@ class _AppBarActionsState extends State<AppBarActions> {
     }
   }
 
+  /*
   void _showCommentSheetTest(BuildContext context, int imageId) {
     showModalBottomSheet(
       context: context,
@@ -140,28 +143,62 @@ class _AppBarActionsState extends State<AppBarActions> {
       },
     );
   }
+   */
 
   void _showCommentSheet(BuildContext context, int imageId) {
+    setState(() {
+      showingComment = true;
+    });
+
+    /*
+    final page = CommentList(
+      imageId: imageId,
+      responseId: -1,
+      canToPage: false,
+      resText: "コメント",
+      item: null,
+      title: "コメント",
+    );
+     */
+    
   showModalBottomSheet(
     context: context,
+    constraints: BoxConstraints(
+        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+      ),
     isScrollControlled: true,
-    isDismissible: false,
+
+    
+    //isDismissible: false,
+    //https://zenn.dev/yu1ro/articles/6d7db85990bb82
     builder: (context) => Container(
-      child: Container(
-        height: SizeConfig.blockSizeVertical! * 70,
-        child: Navigator(
-          onGenerateRoute: (context) => MaterialPageRoute<CommentList>(
-            builder: (context) => CommentList(
-              imageId: imageId,
-              responseId: -1,
-              canToPage: false,
-              resText: "コメント",
-              item: null,
-              title: "コメント",
-            ),
+      height: SizeConfig.blockSizeVertical! * 70,
+
+      
+
+      child: CommentList(
+            imageId: imageId,
+            responseId: -1,
+            canToPage: false,
+            resText: "コメント",
+            item: null,
+            title: "コメント",
+          ),
+      /*
+      child: Navigator(
+        
+        onGenerateRoute: (context) => MaterialPageRoute<CommentList>(
+          builder: (context) => CommentList(
+            imageId: imageId,
+            responseId: -1,
+            canToPage: false,
+            resText: "コメント",
+            item: null,
+            title: "コメント",
           ),
         ),
       ),
+       */
     ),
   );
 }
@@ -256,8 +293,6 @@ class _AppBarActionsState extends State<AppBarActions> {
     });
     
 
-      print("これは削除申請");
-
     } on PostgrestException catch (error){
 
       if(context.mounted){
@@ -275,12 +310,15 @@ class _AppBarActionsState extends State<AppBarActions> {
 
     //TODO ここから変わる
 
+    //TODO ここで終わりでよくない？
+
     if(context.mounted){
       Navigator.of(context).pop(); // ダイアログを閉じる
     }
 
 
 
+    /*
     showLoadingDialog(context, "削除中...");
     print(widget.imageId!);
 
@@ -335,12 +373,16 @@ class _AppBarActionsState extends State<AppBarActions> {
       );
        */
     }
+     */
   }
 
   Future<void> _showSettingSheet(BuildContext context) async{
     
     showModalBottomSheet(
       context: context,
+      constraints: BoxConstraints(
+        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+      ),
       //これがないと高さが変わらない
       isScrollControlled: true,
       builder: (BuildContext context) {
@@ -397,11 +439,16 @@ class _AppBarActionsState extends State<AppBarActions> {
     showModalBottomSheet(
       
       context: context,
+
+      constraints: BoxConstraints(
+        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+      ),
       //これがないと高さが変わらない
       isScrollControlled: true,
       builder: (BuildContext context) {
         return SizedBox(
           height: SizeConfig.blockSizeVertical! * 60,
+          width: SizeConfig.blockSizeHorizontal! * 100,
           child: EvaluateDisplay(image_id: imageId, image_own_user_id: widget.image_own_user_id,),
         );
       },
