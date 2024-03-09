@@ -65,6 +65,8 @@ class _IconSettingsState extends State<IconSettings> {
     //ここではknownUserInfoとonServerResponseReceived(関数)が必要なのでそれを渡す。
     response1 = await ImageSelectionAndRequest(
       knownUserInfo: myUserId,
+      isProblem: isOne,
+      type: "setting",
       onServerResponseReceived: (customId, directUploadUrl) {
         setState(() {
           newProfileImageId = customId;
@@ -112,10 +114,13 @@ class _IconSettingsState extends State<IconSettings> {
 
     try{
 
-      await supabase.from("profiles").update({
-        //"username": userName,
-        "profile_image_id": newProfileImageId,
-      }).eq("id", myUserId);
+      await supabase
+        .from("profiles")
+        .update({
+          //"username": userName,
+          "profile_image_id": newProfileImageId,
+        })
+        .eq("id", myUserId);
 
       return ;
 
@@ -163,6 +168,7 @@ class _IconSettingsState extends State<IconSettings> {
   }
 
   Future<void> doUploadSeries() async{
+
 
     int response1 = await getImageUploadUrls(true);
 
