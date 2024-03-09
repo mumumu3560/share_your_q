@@ -115,102 +115,105 @@ class TrendHeatmapState extends State<TrendHeatmap>{
 
         SizedBox(height: SizeConfig.blockSizeVertical!*2,),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            
-            ElevatedButton(
-              onPressed: () => setSubject("数学"), 
-              child: Text("数学"),
-              style: ElevatedButton.styleFrom(
-                //フォローしていないときは透明にしたい
-                backgroundColor: selectedSubject == "数学" ? Colors.blue : Colors.transparent,
-                elevation: 0,
-
-                //枠線をつけたい
-                side: const BorderSide(
-                  color: Colors.grey,
-                  width: 1,
-                ),
-                //もうすこしまるみを持たせたい
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-
-            SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
-
-            ElevatedButton(
-              onPressed: () => setSubject("物理"), 
-              child: Text("物理"),
-              style: ElevatedButton.styleFrom(
-                //フォローしていないときは透明にしたい
-                backgroundColor: selectedSubject == "物理" ? Colors.red : Colors.transparent,
-                //もうすこしまるみを持たせたい
-                elevation: 0,
-
-                //枠線をつけたい
-                side: const BorderSide(
-                  color: Colors.grey,
-                  width: 1,
-                ),
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              
+              ElevatedButton(
+                onPressed: () => setSubject("数学"), 
+                child: Text("数学"),
+                style: ElevatedButton.styleFrom(
+                  //フォローしていないときは透明にしたい
+                  backgroundColor: selectedSubject == "数学" ? Colors.blue : Colors.transparent,
+                  elevation: 0,
+          
+                  //枠線をつけたい
+                  side: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+                  //もうすこしまるみを持たせたい
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-            ),
-
-            SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
-
-            ElevatedButton(
-              onPressed: () => setSubject("化学"), 
-              child: Text("化学"),
-              style: ElevatedButton.styleFrom(
-                //フォローしていないときは透明にしたい
-                backgroundColor: selectedSubject == "化学" ? Colors.green : Colors.transparent,
-                //もうすこしまるみを持たせたい
-
-                elevation: 0,
-
-                //枠線をつけたい
-                side: const BorderSide(
-                  color: Colors.grey,
-                  width: 1,
-                ),
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-
-            SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
-            
-            ElevatedButton(
-              onPressed: () => setSubject("その他"), 
-              child: Text("その他"),
-              style: ElevatedButton.styleFrom(
-                //フォローしていないときは透明にしたい
-                backgroundColor: selectedSubject == "その他" ? Colors.purple : Colors.transparent,
-                //もうすこしまるみを持たせたい
-
-                elevation: 0,
-
-                //枠線をつけたい
-                side: const BorderSide(
-                  color: Colors.grey,
-                  width: 1,
-                ),
-
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          
+              SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
+          
+              ElevatedButton(
+                onPressed: () => setSubject("物理"), 
+                child: Text("物理"),
+                style: ElevatedButton.styleFrom(
+                  //フォローしていないときは透明にしたい
+                  backgroundColor: selectedSubject == "物理" ? Colors.red : Colors.transparent,
+                  //もうすこしまるみを持たせたい
+                  elevation: 0,
+          
+                  //枠線をつけたい
+                  side: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+          
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
-            ),
-
-          ],
+          
+              SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
+          
+              ElevatedButton(
+                onPressed: () => setSubject("化学"), 
+                child: Text("化学"),
+                style: ElevatedButton.styleFrom(
+                  //フォローしていないときは透明にしたい
+                  backgroundColor: selectedSubject == "化学" ? Colors.green : Colors.transparent,
+                  //もうすこしまるみを持たせたい
+          
+                  elevation: 0,
+          
+                  //枠線をつけたい
+                  side: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+          
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+          
+              SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),
+              
+              ElevatedButton(
+                onPressed: () => setSubject("その他"), 
+                child: Text("その他"),
+                style: ElevatedButton.styleFrom(
+                  //フォローしていないときは透明にしたい
+                  backgroundColor: selectedSubject == "その他" ? Colors.purple : Colors.transparent,
+                  //もうすこしまるみを持たせたい
+          
+                  elevation: 0,
+          
+                  //枠線をつけたい
+                  side: const BorderSide(
+                    color: Colors.grey,
+                    width: 1,
+                  ),
+          
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+          
+            ],
+          ),
         ),
 
         SizedBox(height: SizeConfig.blockSizeVertical!*2,),
