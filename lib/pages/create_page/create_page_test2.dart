@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_your_q/pages/create_page/components/confirmation_page.dart';
 import 'package:share_your_q/pages/create_page/components/reference.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -69,7 +70,6 @@ class _CreatePageState extends State<CreatePage> {
 
   //supabaseに送るもの。
   String? problemTitle = '';
-  final TextEditingController _titleController = TextEditingController();
   //教科、数学など
   String? subject;
   
@@ -107,11 +107,11 @@ class _CreatePageState extends State<CreatePage> {
   String urlInput = '';
 
   //cloudflare imagesのURLにつかうdirectUploadUrl
-  String? directUploadUrl1;
-  String? directUploadUrl2;
+  //String? directUploadUrl1;
+  //String? directUploadUrl2;
 
   // 確認画面を表示するかどうか
-  bool isConfirmationMode = false;
+  //bool isConfirmationMode = false;
 
   String? userName = "";
 
@@ -189,7 +189,10 @@ class _CreatePageState extends State<CreatePage> {
 
   Future<void> fetchProfileImage() async{
     try{
-      profileImageId = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+      final response = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+      setState(() {
+        profileImageId = response;
+      });
     } on PostgrestException catch (error){
       if(context.mounted){
         context.showErrorSnackBar(message: error.message);
@@ -264,6 +267,7 @@ class _CreatePageState extends State<CreatePage> {
     }
   }
 
+ /*
   // サーバーレスポンスからcustomIdとdirectUploadUrlを受け取る関数
   void onServerResponseReceived(String customId, String directUploadUrl, bool isProblem) {
     setState(() {
@@ -307,28 +311,9 @@ class _CreatePageState extends State<CreatePage> {
   Future<int> sendInfoToSupabase() async {
     // TODO: Supabaseに情報を送信するロジックを実装
 
-    if(directUploadUrl1 == null || directUploadUrl2 == null){
-      return 10;
-    }
-
     //numとusernameはsupabase側で行えばよい
     try{
 
-      print("supabaseに情報をここで渡すのだが、どれがnull火がわからない");
-      print("customId1: $customId1");
-      print("customId2: $customId2");
-
-      print(problemTitle);
-      print(subject);
-      print(level);
-      print(tags);
-      print(explainText);
-
-
-      
-
-      //ここでは、問題の情報をsupabaseに送る。
-      //P_I_CountとC_I_Countは、問題文の画像と解説の画像の数を表す。今は1にしておく。
       await supabase.from("image_data").insert({
         //"num": problemNum,
         "title": problemTitle,
@@ -346,8 +331,8 @@ class _CreatePageState extends State<CreatePage> {
         "c_num": 1,
         //"user_name" : userName,
         "explain": explainText,
-        "problem_id": customId1,
-        "comment_id": customId2,
+        "problem_id": null,
+        "comment_id": null,
         //"likes": 100,
         "links": urls,
         "ref_explain": refText,
@@ -355,6 +340,130 @@ class _CreatePageState extends State<CreatePage> {
       });
 
       //ここでは、ユーザーの問題の投稿数を増やす。
+
+      //TODO ここを消す。supabaseで処理
+      
+      /*
+      await supabase.from("profiles").update({
+        "problem_num": problemNum,
+      }).eq("id", userId);
+
+       */
+
+      return 0;
+
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return 1;
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return 2;
+    }
+
+
+
+  }
+
+  /*
+  //ここで受け取ったURLを保存
+  Future<int> updateInfoToSupabase() async {
+    // TODO: Supabaseに情報を送信するロジックを実装
+
+    //numとusernameはsupabase側で行えばよい
+    try{
+
+      final response = await supabase
+      .from('image_data')
+      .select('image_data_id')
+      .eq('user_id', userId)
+      .order('created_at', ascending: false)
+      .limit(1);
+
+      if (response.isEmpty) {
+        print('Error fetching latest image_data record: ${response.error!.message}');
+        return 1;
+      }
+
+      int newImageId = response[0]['image_data_id'];
+
+      await supabase
+        .from("image_data")
+        .update({
+          "problem_id": customId1,
+          "comment_id": customId2,
+        })
+        .eq("image_data_id", newImageId);
+
+      //ここでは、ユーザーの問題の投稿数を増やす。
+
+      //TODO ここを消す。supabaseで処理
+      
+      /*
+      await supabase.from("profiles").update({
+        "problem_num": problemNum,
+      }).eq("id", userId);
+
+       */
+
+      return 0;
+
+
+    } on PostgrestException catch (error){
+      if(context.mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return 1;
+    } catch(_){
+      if(context.mounted){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return 2;
+    }
+
+
+
+  }
+   */
+
+  //もしSupabaseに問題を送信する際にエラーが発生した場合、
+  // Supabaseに情報を送信する関数
+  Future<int> deleteInfoFromSupabase() async {
+    // TODO: Supabaseに情報を送信するロジックを実装
+
+    //numとusernameはsupabase側で行えばよい
+    try{
+
+      final response = await supabase
+        .from('image_data')
+        .select<List<Map<String,dynamic>>>()
+        .eq('user_id', myUserId)
+        .is_('problem_id', null)
+        .is_('comment_id', null)
+        .order('created_at', ascending: false) // 降順で並べ替え
+        .limit(1); // 最新の1件のみ取得
+
+      if (response.isNotEmpty) {
+        // 特定されたレコードのIDを取得
+        final recordId = response[0]['image_data_id'];
+
+        // 取得したIDを使用してレコードを削除
+        await supabase
+          .from('image_data')
+          .delete()
+          .eq('image_data_id', recordId);
+      }
+      else{
+        return 1;
+      }
+
+      //ここで自分Supabaseにある最新のデータを削除する。
+
+
 
       //TODO ここを消す。supabaseで処理
       
@@ -399,6 +508,8 @@ class _CreatePageState extends State<CreatePage> {
       response1 = await ImageSelectionAndRequest(
         //knownUserInfo: '${userId}XproblemXnum${problemNum.toString()}XPnum${problemIcount.toString()}XCnum${commentIcount.toString()}',
         knownUserInfo: userId,
+        isProblem: isOne,
+        type: "create",
         //1回目ならisOne=true、2回目ならisOne=false
         onServerResponseReceived: (customId, directUploadUrl) {
           onServerResponseReceived(customId, directUploadUrl, isOne);
@@ -521,6 +632,7 @@ class _CreatePageState extends State<CreatePage> {
   }
 
 
+  */
   //getImageUpload→sendInfotoSupabase右imageUploadWithUrls
   // タグを追加する関数
   void addTag() {
@@ -739,7 +851,7 @@ class _CreatePageState extends State<CreatePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    if (!isConfirmationMode)
+                    //if (!isConfirmationMode)
                       Column(
           
                         children: [
@@ -1084,10 +1196,73 @@ class _CreatePageState extends State<CreatePage> {
                                 print("ここは？");
                                 //print(selectedImage1!.bytes!);
                                 //fetchProblemNum();
+                                /*
+                                
+                                 */
                                 setState(() {
                                   
-                                  isConfirmationMode = true;
+                                  //isConfirmationMode = true;
                                 });
+
+                                /**
+                                 * problemTitle: problemTitle!, 
+                                        selectedImage1: selectedImage1, 
+                                        selectedImage2: selectedImage2, 
+                                        subject: subject!, 
+                                        level: level!, 
+                                        lang: lang!, 
+                                        explainText: explainText!, 
+                                        refText: refText!, 
+                                        urls: urls, 
+                                        tags: tags, 
+                                        userName: userName!
+                                 * 
+                                 */
+
+                                //上のやつ全部プリント
+                                print(problemTitle);
+                                //print(selectedImage1);
+                                //print(selectedImage2);
+                                print(subject);
+
+                                print(level);
+
+                                print(lang);
+
+                                print(explainText);
+
+                                print(refText);
+
+                                print(urls);
+                                print(tags);
+                                print(userName);
+
+
+                                /*
+                                
+                                 */
+
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => 
+                                      ConfirmPage(
+                                        problemTitle: problemTitle!, 
+                                        selectedImage1: selectedImage1, 
+                                        selectedImage2: selectedImage2, 
+                                        subject: subject!, 
+                                        level: level!, 
+                                        lang: lang!, 
+                                        explainText: explainText!, 
+                                        refText: refText!, 
+                                        urls: urls, 
+                                        tags: tags, 
+                                        userName: userName!,
+                                        profileImageId: profileImageId[0]["profile_image_id"],
+                                      )
+                                  )
+                                );
+
+                                //Navigator.of(context).push(MaterialPageRoute(builder: (context) => ConfirmDisplay(confirmWidget: bi)));
                               }
                             },
                             child: const Text("問題のプレビュー"),
@@ -1095,8 +1270,8 @@ class _CreatePageState extends State<CreatePage> {
                           const SizedBox(height: 20),
                         ],
                       ),
-                    if (isConfirmationMode)
-                      buildConfirmationView(),
+                    //if (isConfirmationMode)
+                      //buildConfirmationView(),
           
                   ],
                 ),
@@ -1120,12 +1295,23 @@ class _CreatePageState extends State<CreatePage> {
     );
   }
 
+  // stateless widgetを作る。名前はConfirmDisplay
+
+  
+
+
+
+
+  /*
   // 問題投稿の確認画面を表示する関数
   Widget buildConfirmationView() {
     //TODO ここはAdmobのテスト広告を表示するためのもの。
 
     void _showReferenceSheet(BuildContext context) {
     showModalBottomSheet(
+      constraints: BoxConstraints(
+        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+      ),
       context: context,
       //これがないと高さが変わらない
       isScrollControlled: true,
@@ -1308,47 +1494,17 @@ class _CreatePageState extends State<CreatePage> {
             
 
             
-
-            int checkGetUploadUrl1 = await getImageUploadUrls(true);
-            int checkGetUploadUrl2 = await getImageUploadUrls(false);
             
 
-            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
-              if(context.mounted){
-                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
-                Navigator.of(context).pop();
-              }
 
-              if(context.mounted){
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                          title: const Text("エラー"),
-                          content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // ダイアログを閉じる
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        );
-                    },
-                );
 
-              }
-              
-              
 
-              return;
-            }
-
+            //ここからSupabase
             int checkSupabase = await sendInfoToSupabase();
 
             if(checkSupabase != 0){
               if(context.mounted){
+                //deleteInfoFromSupabase();
                 //context.showErrorSnackBar(message: "サーバーエラーにより、問題の投稿ができませんでした。");
                 Navigator.of(context).pop();
               }
@@ -1379,6 +1535,88 @@ class _CreatePageState extends State<CreatePage> {
               
               return;
             }
+
+            //3秒待つ
+            await Future.delayed(const Duration(seconds: 5));
+
+            //ここから画像のアップロードURL取得。
+            int checkGetUploadUrl1 = await getImageUploadUrls(true);
+            int checkGetUploadUrl2 = await getImageUploadUrls(false);
+            
+
+            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
+              if(context.mounted){
+                deleteInfoFromSupabase();
+                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                Navigator.of(context).pop();
+              }
+
+              if(context.mounted){
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                          title: const Text("エラー"),
+                          content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // ダイアログを閉じる
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                    },
+                );
+
+              }
+              
+              
+
+              return;
+            }
+
+
+
+
+            //supabaseにURLを送信
+            /*
+            int checkUpdateInfo = await updateInfoToSupabase();
+
+            if(checkUpdateInfo != 0){
+              if(context.mounted){
+                deleteInfoFromSupabase();
+                //context.showErrorSnackBar(message: "サーバーエラーにより、URLの送信ができませんでした。");
+                Navigator.of(context).pop();
+              }
+
+              if(context.mounted){
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                          title: const Text("エラー"),
+                          content: const Text("サーバーエラーにより、URLの送信ができませんでした。"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // ダイアログを閉じる
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                    },
+                );
+
+              }
+              
+              
+
+              return;
+            }
+             */
 
             print("Supabaseはおｋ");
 
@@ -1470,4 +1708,14 @@ class _CreatePageState extends State<CreatePage> {
       ],
     );
   }
+   */
 }
+
+
+
+
+
+
+
+
+
