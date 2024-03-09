@@ -1,6 +1,9 @@
 //import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
+import 'package:share_your_q/pages/home_page/notification_page.dart';
+import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
+//import 'package:share_your_q/pages/notification_page.dart';
 import 'package:share_your_q/pages/search_page/search_page.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
@@ -11,6 +14,7 @@ import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 //import "package:share_your_q/admob/ad_test.dart";
+
 
 
 
@@ -208,6 +212,8 @@ class _HomePageState extends State<HomePage> {
         children:  <Widget>[
           const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,),
           const SearchPage(),
+          NotificationList(userId: myUserId, ),
+          SettingPage(),
           //ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           //const TestPages(title: "D"),
         ],
@@ -243,6 +249,26 @@ class _HomePageState extends State<HomePage> {
             tooltip: "Search",
             backgroundColor: Colors.black,
           ),
+
+          //通知欄
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_outlined),
+            activeIcon: Icon(Icons.notifications),
+            label: 'notification',
+            tooltip: "notification",
+            backgroundColor: Colors.black,
+          ),
+
+          //設定
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
+            label: 'setting',
+            tooltip: "setting",
+            backgroundColor: Colors.black,
+          ),
+
+          
 
           /*
           BottomNavigationBarItem(
