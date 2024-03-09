@@ -82,4 +82,7 @@ flutter {
     source '../..'
 }
 
+//これいる？
+//def kotlin_version = "1.8.22"
+
 dependencies {}
