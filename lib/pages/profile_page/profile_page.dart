@@ -123,6 +123,8 @@ class _ProfilePageState extends State<ProfilePage> {
   //List<Map<String, dynamic>>
 
   List<Map<String,dynamic>> likesData = [];
+
+  
   Future<void> fetchData() async {
     try{
       _imageData = await supabase
@@ -729,23 +731,25 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     }
   }
 
+  Future<void> _launchURL(String target) async {
+    try {
+      final targetUrl = target;
+      if (await canLaunchUrl(Uri.parse(targetUrl))) {
+        await launchUrl(Uri.parse(targetUrl));
+      } else {
+        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+      }
+    } catch(_){
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      return ;
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
-    Future<void> _launchURL(String target) async {
-      try {
-        final targetUrl = target;
-        if (await canLaunchUrl(Uri.parse(targetUrl))) {
-          await launchUrl(Uri.parse(targetUrl));
-        } else {
-          context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
-        }
-      } catch(_){
-        context.showErrorSnackBar(message: unexpectedErrorMessage);
-        return ;
-      }
-    }
+    
     
     SizeConfig().init(context);
 

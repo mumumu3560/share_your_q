@@ -18,6 +18,8 @@ final myUserId = supabase.auth.currentUser!.id.toString();
 
 String userLang = "jp";
 
+int now = 0;
+
 //プリローダー
 const preloader = Center(child: CircularProgressIndicator(color: Colors.orange));
 

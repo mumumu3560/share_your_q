@@ -42,10 +42,12 @@ class _ReferenceDisplayState extends State<ReferenceDisplay>{
   Widget build(BuildContext context){
     return SingleChildScrollView(
       child: Container(
+        /*
         decoration: BoxDecoration(
           border: Border.all(color: Colors.green),
           borderRadius: BorderRadius.circular(10),
         ),
+         */
     
         child: Column(
           

@@ -293,6 +293,8 @@ class _SearchPageState extends State<SearchPage> {
                     onPressed: addTag,
                     child: const Text("タグを追加"),
                   ),
+
+                  SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
             
                   //SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
               
@@ -309,7 +311,7 @@ class _SearchPageState extends State<SearchPage> {
                   .toList(),
                   ),
             
-                  //SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+                  SizedBox(height: SizeConfig.blockSizeVertical! * 1,),
               
                   ElevatedButton(
                     onPressed:(){
