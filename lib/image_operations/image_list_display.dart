@@ -14,13 +14,11 @@ import 'package:http/http.dart' as http;
 
 import 'dart:typed_data';
 
-
 //google_admob
 //TODO ビルドリリースの時のみ
 //import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class ImageListDisplay extends StatefulWidget {
-
   final String? subject;
   final String? level;
   final String? method;
@@ -35,7 +33,6 @@ class ImageListDisplay extends StatefulWidget {
   final bool canToPage;
 
   final bool add;
-  
 
   const ImageListDisplay({
     Key? key,
@@ -48,15 +45,12 @@ class ImageListDisplay extends StatefulWidget {
     required this.showAppbar,
     required this.lang,
     required this.canToPage,
-
     required this.add,
-  }) :super(key: key);
+  }) : super(key: key);
 
   @override
   ImageListDisplayState createState() => ImageListDisplayState();
-
 }
-
 
 class ImageListDisplayState extends State<ImageListDisplay> {
   List<Map<String, dynamic>> imageData = [];
@@ -68,9 +62,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
   String profileImageId = "";
 
   ScrollController _scrollController = ScrollController();
-  
 
-  
   //TODO ビルドリリースの時のみ
   //final AdMob _adMob = AdMob();
 
@@ -88,75 +80,63 @@ class ImageListDisplayState extends State<ImageListDisplay> {
     //TODO ビルドリリースの時のみ
   }
 
-  
-
-
-  
-
-  
-
-
   Future<void> fetchData() async {
     try {
       final List<Map<String, dynamic>> response;
 
       //Conditional Chaining
       //https://supabase.com/docs/reference/dart/using-filters
-      var query = supabase.from("image_data").select<List<Map<String, dynamic>>>();
-      if(widget.level != "全て" && widget.level != null) query = query.eq("level", widget.level as String);
-      if(widget.subject != "全て" && widget.subject != null) query = query.eq("subject", widget.subject as String);
-      if(widget.method == "未発掘") query = query.eq("watched", 0);
-      if(widget.searchUserId != "" && widget.searchUserId != null) query = query.eq("user_id", widget.searchUserId as String);
-      if(widget.lang != "全て") query = query.eq("lang", widget.lang);
+      var query =
+          supabase.from("image_data").select<List<Map<String, dynamic>>>();
+      if (widget.level != "全て" && widget.level != null)
+        query = query.eq("level", widget.level as String);
+      if (widget.subject != "全て" && widget.subject != null)
+        query = query.eq("subject", widget.subject as String);
+      if (widget.method == "未発掘") query = query.eq("watched", 0);
+      if (widget.searchUserId != "" && widget.searchUserId != null)
+        query = query.eq("user_id", widget.searchUserId as String);
+      if (widget.lang != "全て") query = query.eq("lang", widget.lang);
 
       List<String> tags = [];
 
-      
-
       for (var tag in widget.tags!) {
-        if(tag == "") continue;
+        if (tag == "") continue;
         tags.add(tag);
       }
 
-      for (var tag in tags){
+      for (var tag in tags) {
         print(tag);
       }
 
-
       //ここでtagを検索する
       for (var tag in tags) {
-        if(tag == "") continue;
+        if (tag == "") continue;
 
         //orはその中でどれかに当てはまればいい*はワイルドパターン%と同じ
         //https://supabase.com/docs/reference/dart/or
         //https://postgrest.org/en/stable/references/api/tables_views.html#horizontal-filtering-rows
 
-        query = query.or(
-          "tag1.like.*$tag*,"
-          "tag2.like.*$tag*,"
-          "tag3.like.*$tag*,"
-          "tag4.like.*$tag*,"
-          "tag5.like.*$tag*");
+        query = query.or("tag1.like.*$tag*,"
+            "tag2.like.*$tag*,"
+            "tag3.like.*$tag*,"
+            "tag4.like.*$tag*,"
+            "tag5.like.*$tag*");
         print(tag);
         //query = query.eq("tag1", tag);
       }
       print("ここまでtag");
       //query = query.eq("tag1", tags[0]);
 
-      if(widget.method == "新着"){
+      if (widget.method == "新着") {
         response = await query.order("created_at", ascending: false);
-      }
-      else if(widget.method == "いいね順"){
+      } else if (widget.method == "いいね順") {
         response = await query.order("likes", ascending: false);
-      }
-      else if(widget.method == "ランダム"){
+      } else if (widget.method == "ランダム") {
         response = await query.order("created_at", ascending: false);
         response.shuffle();
-      }
-      else{
+      } else {
         response = await query.order("created_at", ascending: false);
       }
-
 
       setState(() {
         isLoading = false;
@@ -174,8 +154,6 @@ class ImageListDisplayState extends State<ImageListDisplay> {
     });
     fetchData(); // リロード時にデータを再取得
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -198,37 +176,31 @@ class ImageListDisplayState extends State<ImageListDisplay> {
           alignment: Alignment.center,
           //width: SizeConfig.blockSizeHorizontal! * 90,
           //height: SizeConfig.blockSizeVertical! * 90,
-          
+
           child: Column(
             children: [
-
-              if(imageData.isEmpty && !isLoading)
+              if (imageData.isEmpty && !isLoading)
                 //const Padding(padding: EdgeInsets.all(8.0),),
                 //const Center(child: Text("データがありません。"))
                 Container(
-                  padding: EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 10),
-                  child: const Text(
-                    "data is empty",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                )
-
-              else 
+                    padding:
+                        EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 10),
+                    child: const Text(
+                      "data is empty",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ))
+              else
                 isLoading
                     ? Expanded(
-                        child: const Center(
-                          child: CircularProgressIndicator()
-                        )
-                      )
+                        child: const Center(child: CircularProgressIndicator()))
                     : Expanded(
-                      
-                      //RefreshIndicatorによってリロードできるようになる。
+                        //RefreshIndicatorによってリロードできるようになる。
                         child: RefreshIndicator(
                           color: Colors.green,
-                          onRefresh: () async{ 
+                          onRefresh: () async {
                             reloadList();
                           },
 
@@ -237,16 +209,14 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                           child: ListView.builder(
                             //https://stackoverflow.com/questions/68623174/why-cant-i-slide-the-listview-builder-on-flutter-web
                             physics: const AlwaysScrollableScrollPhysics(),
-                            
-                            
+
                             //TODO ここでリストの保持を行う。
                             addAutomaticKeepAlives: true,
                             itemCount: imageData.length,
                             //itemCount: 10,
                             itemBuilder: (context, index) {
-                                                
                               //6の倍数の時には広告を表示する。
-                              if(index%6 == 1){
+                              if (index % 6 == 1) {
                                 final item = imageData[index];
                                 return Column(
                                   children: [
@@ -259,9 +229,10 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                       //child: _adMob.getAdBanner(),
                                     ),
                                      */
-                                                
+
                                     SizedBox(
-                                      height: SizeConfig.blockSizeVertical! * 40,
+                                      height:
+                                          SizeConfig.blockSizeVertical! * 40,
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                                       //TODO Admob
                                       /*
@@ -272,23 +243,24 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                        */
                                     ),
                                     //const ,
-                                                
-                                    
-                                    MyListItem(item: item, canToPage: widget.canToPage,),
+
+                                    MyListItem(
+                                      item: item,
+                                      canToPage: widget.canToPage,
+                                    ),
                                   ],
                                 );
-                              }
-                              else{
+                              } else {
                                 final item = imageData[index];
-                                return MyListItem(item: item, canToPage: widget.canToPage,);
+                                return MyListItem(
+                                  item: item,
+                                  canToPage: widget.canToPage,
+                                );
                               }
-                              
-                              
                             },
                           ),
                         ),
                       ),
-              
             ],
           ),
         ),
@@ -297,35 +269,23 @@ class ImageListDisplayState extends State<ImageListDisplay> {
   }
 }
 
-
-
-
-
-
-
-
-
-
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
 class MyListItem extends StatefulWidget {
   final Map<String, dynamic> item;
   final bool canToPage;
 
-
   const MyListItem({
-
     Key? key,
     required this.item,
     required this.canToPage,
-    
-  }): super(key: key);
+  }) : super(key: key);
 
   @override
   State<MyListItem> createState() => _MyListItemState();
 }
 
-class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMixin{
-
+class _MyListItemState extends State<MyListItem>
+    with AutomaticKeepAliveClientMixin {
   //TODO mylistitemが保持されているかどうか。
   @override
   bool get wantKeepAlive => true;
@@ -370,37 +330,30 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
 
       if (difference.inMinutes < 60) {
         return '${difference.inMinutes}分前';
-
       } else if (difference.inHours < 24) {
         return '${difference.inHours}時間前';
-
       } else if (difference.inDays < 365) {
         return '${createdAt.month}月${createdAt.day}日';
-
       } else {
         return '${createdAt.year}年${createdAt.month}月${createdAt.day}日';
       }
     }
 
-
-    Future<String> fetchProfileImage(String target) async{
-
-      try{
-
+    Future<String> fetchProfileImage(String target) async {
+      try {
         print("これからlistの確認を行います");
         print(target);
 
         print(targetUserId);
 
         final response = await supabase
-          .from("profiles")
-          .select<List<Map<String, dynamic>>>()
-          .eq("id", target);
+            .from("profiles")
+            .select<List<Map<String, dynamic>>>()
+            .eq("id", target);
 
-        if(response[0]["profile_image_id"] == null){
+        if (response[0]["profile_image_id"] == null) {
           return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
-        }
-        else{
+        } else {
           profileImageId = response[0]["profile_image_id"];
           return response[0]["profile_image_id"];
         }
@@ -408,220 +361,236 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
         //print(profileImageId);
 
         //return response[0]["profile_image_id"];
-
-      } on PostgrestException catch (error){
-        if(context.mounted){
+      } on PostgrestException catch (error) {
+        if (context.mounted) {
           context.showErrorSnackBar(message: error.message);
-          
         }
         return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
-      } catch(_){
-        if(context.mounted){
+      } catch (_) {
+        if (context.mounted) {
           context.showErrorSnackBar(message: unexpectedErrorMessage);
-          
         }
         return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
       }
-
-
     }
 
-   
     final List<String> titleLines = widget.item['title'].toString().split("\n");
-    final List<String> explainLines = widget.item['explain'].toString().split("\n");
+    final List<String> explainLines =
+        widget.item['explain'].toString().split("\n");
 
     bool isLoadingImage = true;
 
     return Card(
       child: ListTile(
         dense: true,
-
-        leading: FutureBuilder(
-          future: fetchProfileImage(targetUserId),
-          builder: (context, profileImageSnapshot) {
-            if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
-              // データの読み込み中はローディングインジケータなどを表示する
-              return const CircularProgressIndicator();
-            } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
-              // エラーが発生した場合は代替のアイコンを表示する
-              return GestureDetector(
-                child: const CircleAvatar(
-                  radius: 20,
-                  child: Icon(
-                    Icons.error_outline,
-                    color: Colors.blue,
-                    size: 40,
-                  ),
-                ),
-                onTap: () {
-                  print('エラーが発生しました。onTap アクションをここで処理してください。');
-                  context.showErrorSnackBar(message: "プロフィールに遷移できません");
-                },
-              );
-            } else {
-              print(targetUserId);
-              isLoadingImage = false;
-              // データが正常に読み込まれた場合に画像を表示する
-              return GestureDetector(
-                child: CircleAvatar(
-                  radius: 20,
-                  child: ClipOval(
-                    child: FutureBuilder(
-                      future: fetchImageWithCache(profileImageSnapshot.data as String),
-                      builder: (context, imageSnapshot) {
-                        if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                          // データの読み込み中はローディングインジケータなどを表示する
-                          return const CircularProgressIndicator();
-                        } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                          print("ここかもしれないなぁ");
-                          // エラーが発生した場合は代替のアイコンを表示する
-                          return const Icon(
-                            Icons.error_outline,
-                            color: Colors.red,
-                            size: 40,
-                          );
-                        } else {
-                          // データが正常に読み込まれた場合に画像を表示する
-                          print("ここは最後の砦です");
-                          print(profileImageSnapshot.data);
-                          return Image.memory(
-                            imageSnapshot.data as Uint8List,
-                            fit: BoxFit.cover,
-                            width: 40,
-                            height: 40,
-                            errorBuilder: (context, error, stackTrace) {
-                              print("ここは最後のエラーとアンって");
-                              // エラーが発生した場合の代替イメージを表示する
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder(
+              future: fetchProfileImage(targetUserId),
+              builder: (context, profileImageSnapshot) {
+                if (profileImageSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  // データの読み込み中はローディングインジケータなどを表示する
+                  return const CircularProgressIndicator();
+                } else if (profileImageSnapshot.hasError ||
+                    profileImageSnapshot.data == "") {
+                  // エラーが発生した場合は代替のアイコンを表示する
+                  return GestureDetector(
+                    child: const CircleAvatar(
+                      radius: 14,
+                      child: Icon(
+                        Icons.error_outline,
+                        color: Colors.blue,
+                        size: 40,
+                      ),
+                    ),
+                    onTap: () {
+                      print('エラーが発生しました。onTap アクションをここで処理してください。');
+                      context.showErrorSnackBar(message: "プロフィールに遷移できません");
+                    },
+                  );
+                } else {
+                  print(targetUserId);
+                  isLoadingImage = false;
+                  // データが正常に読み込まれた場合に画像を表示する
+                  return GestureDetector(
+                    child: CircleAvatar(
+                      radius: 20,
+                      child: ClipOval(
+                        child: FutureBuilder(
+                          future: fetchImageWithCache(
+                              profileImageSnapshot.data as String),
+                          builder: (context, imageSnapshot) {
+                            if (imageSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // データの読み込み中はローディングインジケータなどを表示する
+                              return const CircularProgressIndicator();
+                            } else if (imageSnapshot.hasError ||
+                                imageSnapshot.data == null) {
+                              print("ここかもしれないなぁ");
+                              // エラーが発生した場合は代替のアイコンを表示する
                               return const Icon(
                                 Icons.error_outline,
                                 color: Colors.red,
                                 size: 40,
                               );
-                            },
+                            } else {
+                              // データが正常に読み込まれた場合に画像を表示する
+                              print("ここは最後の砦です");
+                              print(profileImageSnapshot.data);
+                              return Image.memory(
+                                imageSnapshot.data as Uint8List,
+                                fit: BoxFit.cover,
+                                width: 40,
+                                height: 40,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print("ここは最後のエラーとアンって");
+                                  // エラーが発生した場合の代替イメージを表示する
+                                  return const Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 40,
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      if (!isLoadingImage) {
+                        if (widget.canToPage) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                userId: widget.item["user_id"],
+                                userName: widget.item["user_name"],
+                                profileImage: profileImageId,
+                              ),
+                            ),
                           );
                         }
-                      },
-                    ),
+                      } else {
+                        context.showErrorSnackBar(message: "現在読み込み中です...");
+                      }
+                    },
+                  );
+                }
+              },
+            ),
+            SizedBox(
+              width: SizeConfig.blockSizeHorizontal! * 2,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.item['user_name'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                onTap: () {
-                  if (!isLoadingImage) {
-                    if(widget.canToPage){
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ProfilePage(userId: widget.item["user_id"], userName: widget.item["user_name"], profileImage: profileImageId,),
-                        ),
-                      );
-                    }
-                  } else {
-                    context.showErrorSnackBar(message: "現在読み込み中です...");
-                  }
-                },
-              );
-            }
-          },
-        ),
 
+                //Supabaseのtimestamptz型をDateTime型に変換して表示
+                //日本時間に変換。
+                //Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
+                Text(formatCreatedAt(widget.item["created_at"])),
 
+                widget.item["title"] != null
+                    ? titleLines.length > 3
+                        ? Text(
+                            "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ))
+                        : Text(
+                            "[${widget.item['title']}]",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                    : const Text("タイトルなし"),
 
+                SizedBox(
+                  height: SizeConfig.blockSizeVertical! * 3,
+                ),
 
+                widget.item["explain"] != null
+                    ? explainLines.length > 5
+                        ? Text(
+                            "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n${titleLines[3]}\n${titleLines[4]}\n……",
+                            style: const TextStyle(
+                              fontSize: 15,
+                            ))
+                        : Text(widget.item["explain"],
+                            style: const TextStyle(
+                              fontSize: 15,
+                            ))
+                    : const Text(
+                        "説明文なし",
+                        style: const TextStyle(fontSize: 16),
+                      ),
 
+                SizedBox(
+                  height: SizeConfig.blockSizeVertical! * 3,
+                ),
 
-        title: Text(
-          widget.item['user_name'],
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            
-
-            //Supabaseのtimestamptz型をDateTime型に変換して表示
-            //日本時間に変換。
-            //Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
-            Text(formatCreatedAt(widget.item["created_at"])),
-
-
-            widget.item["title"] != null
-              ? titleLines.length > 3
-                ?Text(
-                  "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  )
-                )
-                :Text(
-                  "[${widget.item['title']}]",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ), 
-                )
-              : const Text("タイトルなし"),
-
-            SizedBox(height: SizeConfig.blockSizeVertical!*3,),
-            
-
-            widget.item["explain"] != null 
-              ? explainLines.length > 5
-                ? Text(
-                  "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n${titleLines[3]}\n${titleLines[4]}\n……",
-                  style: const TextStyle(
-                    fontSize: 15,
-                  )
-                )
-                : Text(
-                  widget.item["explain"],
-                  style: const TextStyle(
-                    fontSize: 15,
-                  )
-                )
-              
-              : const Text("説明文なし", style: const TextStyle(fontSize: 16),),
-
-            SizedBox(height: SizeConfig.blockSizeVertical!*3,),
-
-            Column(
-              children: [
-                Row(
+                Column(
                   children: [
-                    const Icon(Icons.visibility,color: Colors.white, size: 16,),
-                    Text(widget.item["watched"].toString()),
-                    formSpacer,
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.visibility,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        Text(widget.item["watched"].toString()),
+                        formSpacer,
 
-                    const Icon(Icons.favorite, color: Colors.white, size: 16,),
-                    Text(widget.item["likes"].toString()),
-                    formSpacer,
+                        const Icon(
+                          Icons.favorite,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        Text(widget.item["likes"].toString()),
+                        formSpacer,
 
-                    const Icon(Icons.chat, color: Colors.white, size: 16, ),
-                    Text(widget.item["comments"].toString()),
-                    formSpacer,
+                        const Icon(
+                          Icons.chat,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        Text(widget.item["comments"].toString()),
+                        formSpacer,
 
-                    const Icon(Icons.thumb_up_alt, color: Colors.green, size: 16),
-                    //const Text("Q:"),
-                    Text(widget.item["pro_add"].toString()),
-                    formSpacer,
+                        const Icon(Icons.thumb_up_alt,
+                            color: Colors.green, size: 16),
+                        //const Text("Q:"),
+                        Text(widget.item["pro_add"].toString()),
+                        formSpacer,
 
-                    const Icon(Icons.thumb_up_alt, color: Colors.blue, size: 16,),
-                    //const Text("A:"),
-                    Text(widget.item["com_add"].toString()),
-                    
-                    /*
+                        const Icon(
+                          Icons.thumb_up_alt,
+                          color: Colors.blue,
+                          size: 16,
+                        ),
+                        //const Text("A:"),
+                        Text(widget.item["com_add"].toString()),
+
+                        /*
                     formSpacer,
 
                     
                      */
-                    
-                  ],
-                ),
+                      ],
+                    ),
 
-                /*
+                    /*
                 Row(
                   children: [
                     
@@ -630,27 +599,34 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
                 ),
                  */
 
-                Row(
-                  children: [
-                    widget.item["level"] != null
-                      ? Text(
-                        widget.item['level'],
-                        style: const TextStyle(fontSize: 12),
-                      )
-                      : const Text("レベルなし", style: const TextStyle(fontSize: 12),),
+                    Row(
+                      children: [
+                        widget.item["level"] != null
+                            ? Text(
+                                widget.item['level'],
+                                style: const TextStyle(fontSize: 12),
+                              )
+                            : const Text(
+                                "レベルなし",
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        widget.item["subject"] != null
+                            ? Text(
+                                widget.item['subject'],
+                                style: const TextStyle(fontSize: 12),
+                              )
+                            : const Text(
+                                "教科なし",
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                        const SizedBox(
+                          width: 10,
+                        ),
 
-                      const SizedBox(width: 10,),
-
-                    widget.item["subject"] != null
-                      ? Text(
-                        widget.item['subject'],
-                        style: const TextStyle(fontSize: 12),
-                        )
-                      : const Text("教科なし", style: const TextStyle(fontSize: 14),),
-
-                    const SizedBox(width: 10,),
-
-                    /*
+                        /*
                     widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
                       ? Text(
                           "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
@@ -662,80 +638,93 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
 
                     const SizedBox(width: 10,),
                     */
+                      ],
+                    ),
+                    Row(children: [
+                      if (widget.item['tag1'] != null &&
+                          widget.item["tag1"] != "")
+                        Text(
+                          "#" + widget.item['tag1'],
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      if (widget.item['tag2'] != null &&
+                          widget.item["tag2"] != "")
+                        Text(
+                          "#" + widget.item['tag2'],
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      if (widget.item['tag3'] != null &&
+                          widget.item["tag3"] != "")
+                        Text(
+                          "#" + widget.item['tag3'],
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      if (widget.item['tag4'] != null &&
+                          widget.item["tag4"] != "")
+                        Text(
+                          "#" + widget.item['tag4'],
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      if (widget.item['tag5'] != null &&
+                          widget.item["tag5"] != "")
+                        Text(
+                          "#" + widget.item['tag5'],
+                          style: TextStyle(fontSize: 12),
+                        ),
+                    ]),
                   ],
                 ),
-              
-                Row(
-                  children: [
-
-                    if (widget.item['tag1'] != null && widget.item["tag1"] != "") Text("#"+widget.item['tag1'], style: TextStyle(fontSize: 12),),
-                    if (widget.item['tag2'] != null && widget.item["tag2"] != "") Text("#"+widget.item['tag2'], style: TextStyle(fontSize: 12),),
-                    if (widget.item['tag3'] != null && widget.item["tag3"] != "") Text("#"+widget.item['tag3'], style: TextStyle(fontSize: 12),),
-                    if (widget.item['tag4'] != null && widget.item["tag4"] != "") Text("#"+widget.item['tag4'], style: TextStyle(fontSize: 12),),
-                    if (widget.item['tag5'] != null && widget.item["tag5"] != "") Text("#"+widget.item['tag5'], style: TextStyle(fontSize: 12),),                
-                
-                  ]
-                ),
-
-                
               ],
             ),
-
           ],
         ),
-        onTap: () async{
-          
-          Navigator.of(context).push(
-            MaterialPageRoute(
+        onTap: () async {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => DisplayPage(
+              title: widget.item['title'],
 
-              builder: (context) => DisplayPage(
+              image_id: widget.item["image_data_id"],
+              image_own_user_id: widget.item["user_id"],
+              tag1: widget.item['tag1'],
+              tag2: widget.item['tag2'],
+              tag3: widget.item['tag3'],
+              tag4: widget.item['tag4'],
+              tag5: widget.item['tag5'],
 
-                title: widget.item['title'],
+              //tags: item['tags'],
+              level: widget.item['level']!,
+              subject: widget.item['subject']!,
+              image1: null,
+              image2: null,
+              imageUrlPX: imageUrlPX,
+              imageUrlCX: imageUrlCX,
 
-                image_id: widget.item["image_data_id"],
-                image_own_user_id: widget.item["user_id"],
-                tag1: widget.item['tag1'],
-                tag2: widget.item['tag2'],
-                tag3: widget.item['tag3'],
-                tag4: widget.item['tag4'],
-                tag5: widget.item['tag5'],
+              num: widget.item['num'],
 
-                //tags: item['tags'],
-                level: widget.item['level']!,
-                subject: widget.item['subject']!,
-                image1: null,
-                image2: null,
-                imageUrlPX: imageUrlPX,
-                imageUrlCX: imageUrlCX,
+              explanation: widget.item['explain'],
 
-                num: widget.item['num'],
+              problem_id: widget.item["problem_id"],
+              comment_id: widget.item["comment_id"],
 
-                explanation: widget.item['explain'],
+              watched: widget.item["watched"],
 
-                problem_id: widget.item["problem_id"],
-                comment_id: widget.item["comment_id"],
+              likes: widget.item["likes"],
 
-                watched: widget.item["watched"],
+              userName: widget.item["user_name"],
 
-                likes: widget.item["likes"],
-
-                userName: widget.item["user_name"],
-
-                difficulty: widget.item["eval_num"] != 0
-                  ? widget.item["difficulty_point"]/widget.item["eval_num"].toDouble()
+              difficulty: widget.item["eval_num"] != 0
+                  ? widget.item["difficulty_point"] /
+                      widget.item["eval_num"].toDouble()
                   : 0,
 
-                profileImage: profileImageId,
+              profileImage: profileImageId,
 
-                problemAdd: widget.item["pro_add"],
-                commentAdd: widget.item["com_add"],
+              problemAdd: widget.item["pro_add"],
+              commentAdd: widget.item["com_add"],
+            ),
+          )
 
-
-              ),
-            )
-
-
-            /*
+              /*
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => DisplayPage(
 
@@ -790,7 +779,7 @@ class _MyListItemState extends State<MyListItem> with AutomaticKeepAliveClientMi
             )
             */
 
-          );
+              );
         },
       ),
     );
