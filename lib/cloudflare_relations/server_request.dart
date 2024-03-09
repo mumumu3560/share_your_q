@@ -5,12 +5,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ImageSelectionAndRequest {
   final String knownUserInfo;
+  final bool isProblem;
+  final String type;
   final Function(String, String) onServerResponseReceived;
   
 
   ImageSelectionAndRequest({
     required this.knownUserInfo,
     required this.onServerResponseReceived,
+    required this.isProblem,
+    required this.type,
   });
 
 
@@ -27,10 +31,14 @@ class ImageSelectionAndRequest {
       print("here");
       print("serverRequest");
       print(serverUrl);
+
+
       final response = await http.post(
         Uri.parse(serverUrl),
         body: {
           "userId": knownUserInfo,
+          "type": type,
+          "proOrCom": isProblem.toString(),
         },
       );
 
