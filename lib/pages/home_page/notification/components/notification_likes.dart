@@ -5,6 +5,7 @@ import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 //import 'package:share_your_q/image_operations/image_list_display.dart';
@@ -17,19 +18,17 @@ import 'dart:typed_data';
 //TODO ビルドリリースの時のみ
 //import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
-class NotificationList extends StatefulWidget {
-  final String userId;
+class LikesNotificationList extends StatefulWidget {
 
-  const NotificationList({
+  const LikesNotificationList({
     Key? key,
-    required this.userId,
   }) : super(key: key);
 
   @override
-  NotificationListState createState() => NotificationListState();
+  LikesNotificationListState createState() => LikesNotificationListState();
 }
 
-class NotificationListState extends State<NotificationList> {
+class LikesNotificationListState extends State<LikesNotificationList> {
   bool isLoading = true;
 
   String profileImageId = "";
@@ -42,12 +41,12 @@ class NotificationListState extends State<NotificationList> {
       final response = await supabase
           .from("likes")
           .select<List<Map<String, dynamic>>>("image_id, user_id")
-          .eq("image_own_user_id", widget.userId)
+          .eq("image_own_user_id", myUserId)
           .eq("add", true)
           .order("added_at", ascending: false);
 
       for (int i = 0; i < response.length; i++) {
-        if (response[i]["user_id"] == widget.userId) {
+        if (response[i]["user_id"] == myUserId) {
           continue;
         }
 
@@ -188,7 +187,7 @@ class NotificationListState extends State<NotificationList> {
                                     ),
                                     //const ,
 
-                                    MyListItem(
+                                    LikesNotificationItem(
                                       imageItem: imageItem,
                                       profileItem: profileItem,
                                       canToPage: true,
@@ -201,7 +200,7 @@ class NotificationListState extends State<NotificationList> {
                                 final profileItem =
                                     likesUserData[index]["profile"];
 
-                                return MyListItem(
+                                return LikesNotificationItem(
                                   imageItem: imageItem,
                                   profileItem: profileItem,
                                   canToPage: true,
@@ -220,12 +219,12 @@ class NotificationListState extends State<NotificationList> {
 }
 
 //ここはsupabaseから取得したデータの内容を表示するためのウィジェット
-class MyListItem extends StatefulWidget {
+class LikesNotificationItem extends StatefulWidget {
   final Map<String, dynamic> imageItem;
   final Map<String, dynamic> profileItem;
   final bool canToPage;
 
-  const MyListItem({
+  const LikesNotificationItem({
     Key? key,
     required this.imageItem,
     required this.profileItem,
@@ -233,12 +232,12 @@ class MyListItem extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<MyListItem> createState() => _MyListItemState();
+  State<LikesNotificationItem> createState() => _LikesNotificationItemState();
 }
 
-class _MyListItemState extends State<MyListItem>
+class _LikesNotificationItemState extends State<LikesNotificationItem>
     with AutomaticKeepAliveClientMixin {
-  //TODO mylistitemが保持されているかどうか。
+  //TODO LikesNotificationItemが保持されているかどうか。
   @override
   bool get wantKeepAlive => true;
 

@@ -1,7 +1,7 @@
 //import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
-import 'package:share_your_q/pages/home_page/notification_page.dart';
+import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
 import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
 //import 'package:share_your_q/pages/notification_page.dart';
 import 'package:share_your_q/pages/search_page/search_page.dart';
@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
         children:  <Widget>[
           const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,),
           const SearchPage(),
-          NotificationList(userId: myUserId, ),
+          const NotificationPage(),
           SettingPage(),
           //ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
           //const TestPages(title: "D"),
