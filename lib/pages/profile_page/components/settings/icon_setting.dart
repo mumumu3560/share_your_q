@@ -169,20 +169,103 @@ class _IconSettingsState extends State<IconSettings> {
 
   Future<void> doUploadSeries() async{
 
+    showLoadingDialog(context,"処理中...");
+
 
     int response1 = await getImageUploadUrls(true);
 
     if(response1 != 0){
       if(context.mounted){
-        context.showErrorSnackBar(message: "サーバーエラー2");
+        Navigator.of(context).pop();
       }
-      return ;
+
+      if(context.mounted){
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+
+              title: const Text("エラー"),
+              content: const Text("サーバーエラーにより、画像の更新ができませんでした。"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // ダイアログを閉じる
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+
+      }
+
+      
+      
+      return;
+    }
+
+    if(context.mounted){
+      Navigator.of(context).pop();
+      showLoadingDialog(context, "情報を送信中...");
     }
 
     await sendInfoToSupabase();
 
-    await uploadSelectedImage(selectedImage1, newProfileImageId, directUploadUrl1);
+    int response2 = await uploadSelectedImage(selectedImage1, newProfileImageId, directUploadUrl1);
 
+    if(response2 != 0){
+      if(context.mounted){
+        Navigator.of(context).pop();
+      }
+
+      if(context.mounted){
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+
+              title: const Text("エラー"),
+              content: const Text("サーバーエラーにより、画像の更新ができませんでした。"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // ダイアログを閉じる
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+
+      }
+
+      return;
+    }
+
+    if(context.mounted){
+      // ダイアログを閉じる
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Great!"),
+            content: const Text("アイコンの更新が完了しました！"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // ダイアログを閉じる
+                },
+                child: const Text('閉じる'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
   
   
@@ -267,7 +350,7 @@ class _IconSettingsState extends State<IconSettings> {
                       onPressed: () async {
                         if(selectedImage1 != null){
                           await doUploadSeries();
-                          Navigator.pop(context);
+                          //Navigator.pop(context);
                         }
                         else{
                           context.showErrorSnackBar(message: "画像を選択してください。");

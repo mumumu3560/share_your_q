@@ -108,10 +108,11 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
 
   // Supabaseに情報を送信する関数
-  Future<void> sendInfoToSupabase() async {
+  Future<int> sendInfoToSupabase() async {
     // TODO: Supabaseに情報を送信するロジックを実装
 
     try{
+      
 
       linkText = [linkText1, linkText2, linkText3];
 
@@ -122,19 +123,19 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         "links": linkText,
       }).eq("id", myUserId);
 
-      return ;
+      return 0;
 
 
     } on PostgrestException catch (error){
       if(context.mounted){
         context.showErrorSnackBar(message: error.message);
       }
-      return ;
+      return 1;
     } catch(_){
       if(context.mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
-      return ;
+      return 2;
     }
 
 
@@ -365,8 +366,64 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           
                       ElevatedButton(
                         onPressed: () async{
-                          await sendInfoToSupabase();
-                          Navigator.pop(context);
+                          showLoadingDialog(context, "処理中...");
+                          int response = await sendInfoToSupabase();
+
+                          //2秒待つ
+                          await Future.delayed(const Duration(seconds: 2), () {});
+
+
+                          if(response != 0){
+                            if(context.mounted){
+                              Navigator.of(context).pop();
+                            }
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+
+                                  title: const Text("エラー"),
+                                  content: const Text("サーバーエラーにより、情報の更新ができませんでした。"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // ダイアログを閉じる
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                          }
+                          else{
+                            if(context.mounted){
+                              Navigator.of(context).pop();
+                            }
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+
+                                  title: const Text("完了"),
+                                  content: const Text("プロフィールを更新しました。"),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // ダイアログを閉じる
+                                      },
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                          }
+
                         },
                         child: const Text("更新"),
                       ),
