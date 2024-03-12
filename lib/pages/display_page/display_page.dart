@@ -243,53 +243,46 @@ class _DisplayPageState extends State<DisplayPage>{
                   alignment: Alignment.center,
                   height: SizeConfig.blockSizeVertical! * 80,
             
-                  child: ListView(
-                    children: [
-                      ProblemViewWidget(
-                        title: widget.title,
-            
-                        tag1: widget.tag1,
-                        tag2: widget.tag2,
-                        tag3: widget.tag3,
-                        tag4: widget.tag4,
-                        tag5: widget.tag5,
-            
-                        //tags: tags,
-                        level: widget.level,
-                        subject: widget.subject,
-                        image1: null,
-                        image2: null,
-                        imageUrlPX: widget.imageUrlPX,
-                        imageUrlCX: widget.imageUrlCX,
-            
-                        explanation: widget.explanation,
-          
-                        isCreate: false,
-                        image_id: widget.image_id!,
-          
-                        problem_id: widget.problem_id!,
-                        comment_id: widget.comment_id!,
-          
-                        watched: widget.watched,
-          
-                        likes: widget.likes,
-          
-                        userName: widget.userName,
-          
-                        image_own_user_id: widget.image_own_user_id!,
-          
-                        difficulty: widget.difficulty,
-          
-                        profileImage: widget.profileImage,
-
-                        problemAdd: widget.problemAdd,
-                        commentAdd: widget.commentAdd,
-            
-                      ),
-
-                      
-          
-                    ],
+                  child: ProblemViewWidget(
+                    title: widget.title,
+                              
+                    tag1: widget.tag1,
+                    tag2: widget.tag2,
+                    tag3: widget.tag3,
+                    tag4: widget.tag4,
+                    tag5: widget.tag5,
+                              
+                    //tags: tags,
+                    level: widget.level,
+                    subject: widget.subject,
+                    image1: null,
+                    image2: null,
+                    imageUrlPX: widget.imageUrlPX,
+                    imageUrlCX: widget.imageUrlCX,
+                              
+                    explanation: widget.explanation,
+                            
+                    isCreate: false,
+                    image_id: widget.image_id!,
+                            
+                    problem_id: widget.problem_id!,
+                    comment_id: widget.comment_id!,
+                            
+                    watched: widget.watched,
+                            
+                    likes: widget.likes,
+                            
+                    userName: widget.userName,
+                            
+                    image_own_user_id: widget.image_own_user_id!,
+                            
+                    difficulty: widget.difficulty,
+                            
+                    profileImage: widget.profileImage,
+                  
+                    problemAdd: widget.problemAdd,
+                    commentAdd: widget.commentAdd,
+                              
                   )
             
                 ),
