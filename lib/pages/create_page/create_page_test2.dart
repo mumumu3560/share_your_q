@@ -748,6 +748,10 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
+                        setState(() {
+                          subject = "数学";
+                        });
+                        Navigator.of(context).pop();
 
                       },
                     ),
@@ -761,7 +765,10 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
-                        // 画像探しページに遷移するコードを追加
+                        setState(() {
+                          subject = "物理";
+                        });
+                        Navigator.of(context).pop();
                       },
                     ),
                     ListTile(
@@ -774,6 +781,10 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
+                        setState(() {
+                          subject = "化学";
+                        });
+                        Navigator.of(context).pop();
 
                       },
                     ),
@@ -787,6 +798,12 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
+                        setState(() {
+                          subject = "その他";
+                        });
+
+                        Navigator.of(context).pop();
+
 
                       },
                     ),
