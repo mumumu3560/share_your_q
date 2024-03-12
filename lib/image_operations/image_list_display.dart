@@ -7,9 +7,6 @@ import 'package:share_your_q/pages/display_page/display_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:timeago/timeago.dart';
-
-import 'package:http/http.dart' as http;
 //import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
@@ -183,8 +180,8 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                 //const Padding(padding: EdgeInsets.all(8.0),),
                 //const Center(child: Text("データがありません。"))
                 Container(
-                    padding:
-                        EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 10),
+                  padding: const EdgeInsets.all(8.0),
+                    
                     child: const Text(
                       "data is empty",
                       style: TextStyle(
@@ -392,13 +389,17 @@ class _MyListItemState extends State<MyListItem>
                 if (profileImageSnapshot.connectionState ==
                     ConnectionState.waiting) {
                   // データの読み込み中はローディングインジケータなどを表示する
-                  return const CircularProgressIndicator();
+                  return SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: const CircularProgressIndicator()
+                  );
                 } else if (profileImageSnapshot.hasError ||
                     profileImageSnapshot.data == "") {
                   // エラーが発生した場合は代替のアイコンを表示する
                   return GestureDetector(
                     child: const CircleAvatar(
-                      radius: 14,
+                      radius: 20,
                       child: Icon(
                         Icons.error_outline,
                         color: Colors.blue,
@@ -483,198 +484,203 @@ class _MyListItemState extends State<MyListItem>
             SizedBox(
               width: SizeConfig.blockSizeHorizontal! * 2,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.item['user_name'],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.item['user_name'],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-
-                //Supabaseのtimestamptz型をDateTime型に変換して表示
-                //日本時間に変換。
-                //Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
-                Text(formatCreatedAt(widget.item["created_at"])),
-
-                widget.item["title"] != null
-                    ? titleLines.length > 3
+              
+                  //Supabaseのtimestamptz型をDateTime型に変換して表示
+                  //日本時間に変換。
+                  //Text(format(DateTime.parse(widget.item["created_at"]), locale: 'ja')),
+                  Text(formatCreatedAt(widget.item["created_at"])),
+              
+                  widget.item["title"] != null
+                      ? titleLines.length > 3
+                          ? Text(
+                              "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ))
+                          : Text(
+                              "[${widget.item['title']}]",
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                      : const Text("タイトルなし"),
+              
+                  SizedBox(
+                    height: SizeConfig.blockSizeVertical! * 3,
+                  ),
+              
+                  SizedBox(
+                    //width: SizeConfig.blockSizeHorizontal! * 65,
+                    child: widget.item["explain"] != null
+                        ? explainLines.length > 5
+                            ? Text(
+                                "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n${titleLines[3]}\n${titleLines[4]}\n……",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ))
+                            : Text(widget.item["explain"],
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                ))
+                        : const Text(
+                            "説明文なし",
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                  ),
+              
+                  SizedBox(
+                    height: SizeConfig.blockSizeVertical! * 3,
+                  ),
+              
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.visibility,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          Text(widget.item["watched"].toString()),
+                          formSpacer,
+              
+                          const Icon(
+                            Icons.favorite,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          Text(widget.item["likes"].toString()),
+                          formSpacer,
+              
+                          const Icon(
+                            Icons.chat,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          Text(widget.item["comments"].toString()),
+                          formSpacer,
+              
+                          const Icon(Icons.thumb_up_alt,
+                              color: Colors.green, size: 16),
+                          //const Text("Q:"),
+                          Text(widget.item["pro_add"].toString()),
+                          formSpacer,
+              
+                          const Icon(
+                            Icons.thumb_up_alt,
+                            color: Colors.blue,
+                            size: 16,
+                          ),
+                          //const Text("A:"),
+                          Text(widget.item["com_add"].toString()),
+              
+                          /*
+                      formSpacer,
+              
+                      
+                       */
+                        ],
+                      ),
+              
+                      /*
+                  Row(
+                    children: [
+                      
+                      
+                    ],
+                  ),
+                   */
+              
+                      Row(
+                        children: [
+                          widget.item["level"] != null
+                              ? Text(
+                                  widget.item['level'],
+                                  style: const TextStyle(fontSize: 12),
+                                )
+                              : const Text(
+                                  "レベルなし",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          widget.item["subject"] != null
+                              ? Text(
+                                  widget.item['subject'],
+                                  style: const TextStyle(fontSize: 12),
+                                )
+                              : const Text(
+                                  "教科なし",
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+              
+                          /*
+                      widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
                         ? Text(
-                            "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n……",
+                            "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ))
-                        : Text(
-                            "[${widget.item['title']}]",
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                             fontSize: 12,
                             ),
                           )
-                    : const Text("タイトルなし"),
-
-                SizedBox(
-                  height: SizeConfig.blockSizeVertical! * 3,
-                ),
-
-                widget.item["explain"] != null
-                    ? explainLines.length > 5
-                        ? Text(
-                            "${titleLines[0]}\n${titleLines[1]}\n${titleLines[2]}\n${titleLines[3]}\n${titleLines[4]}\n……",
-                            style: const TextStyle(
-                              fontSize: 15,
-                            ))
-                        : Text(widget.item["explain"],
-                            style: const TextStyle(
-                              fontSize: 15,
-                            ))
-                    : const Text(
-                        "説明文なし",
-                        style: const TextStyle(fontSize: 16),
+                        : const Text("難易度なし", style: const TextStyle(fontSize: 12),),
+              
+                      const SizedBox(width: 10,),
+                      */
+                        ],
                       ),
-
-                SizedBox(
-                  height: SizeConfig.blockSizeVertical! * 3,
-                ),
-
-                Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.visibility,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        Text(widget.item["watched"].toString()),
-                        formSpacer,
-
-                        const Icon(
-                          Icons.favorite,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        Text(widget.item["likes"].toString()),
-                        formSpacer,
-
-                        const Icon(
-                          Icons.chat,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        Text(widget.item["comments"].toString()),
-                        formSpacer,
-
-                        const Icon(Icons.thumb_up_alt,
-                            color: Colors.green, size: 16),
-                        //const Text("Q:"),
-                        Text(widget.item["pro_add"].toString()),
-                        formSpacer,
-
-                        const Icon(
-                          Icons.thumb_up_alt,
-                          color: Colors.blue,
-                          size: 16,
-                        ),
-                        //const Text("A:"),
-                        Text(widget.item["com_add"].toString()),
-
-                        /*
-                    formSpacer,
-
-                    
-                     */
-                      ],
-                    ),
-
-                    /*
-                Row(
-                  children: [
-                    
-                    
-                  ],
-                ),
-                 */
-
-                    Row(
-                      children: [
-                        widget.item["level"] != null
-                            ? Text(
-                                widget.item['level'],
-                                style: const TextStyle(fontSize: 12),
-                              )
-                            : const Text(
-                                "レベルなし",
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        widget.item["subject"] != null
-                            ? Text(
-                                widget.item['subject'],
-                                style: const TextStyle(fontSize: 12),
-                              )
-                            : const Text(
-                                "教科なし",
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-
-                        /*
-                    widget.item["difficulty_point"] != null && widget.item["eval_num"] != 0
-                      ? Text(
-                          "${"難易度: " + (widget.item["difficulty_point"]/widget.item["eval_num"]).toDouble().toStringAsFixed(1)}点",
-                          style: const TextStyle(
-                           fontSize: 12,
+                      Row(children: [
+                        if (widget.item['tag1'] != null &&
+                            widget.item["tag1"] != "")
+                          Text(
+                            "#" + widget.item['tag1'],
+                            style: TextStyle(fontSize: 12),
                           ),
-                        )
-                      : const Text("難易度なし", style: const TextStyle(fontSize: 12),),
-
-                    const SizedBox(width: 10,),
-                    */
-                      ],
-                    ),
-                    Row(children: [
-                      if (widget.item['tag1'] != null &&
-                          widget.item["tag1"] != "")
-                        Text(
-                          "#" + widget.item['tag1'],
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      if (widget.item['tag2'] != null &&
-                          widget.item["tag2"] != "")
-                        Text(
-                          "#" + widget.item['tag2'],
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      if (widget.item['tag3'] != null &&
-                          widget.item["tag3"] != "")
-                        Text(
-                          "#" + widget.item['tag3'],
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      if (widget.item['tag4'] != null &&
-                          widget.item["tag4"] != "")
-                        Text(
-                          "#" + widget.item['tag4'],
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      if (widget.item['tag5'] != null &&
-                          widget.item["tag5"] != "")
-                        Text(
-                          "#" + widget.item['tag5'],
-                          style: TextStyle(fontSize: 12),
-                        ),
-                    ]),
-                  ],
-                ),
-              ],
+                        if (widget.item['tag2'] != null &&
+                            widget.item["tag2"] != "")
+                          Text(
+                            "#" + widget.item['tag2'],
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        if (widget.item['tag3'] != null &&
+                            widget.item["tag3"] != "")
+                          Text(
+                            "#" + widget.item['tag3'],
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        if (widget.item['tag4'] != null &&
+                            widget.item["tag4"] != "")
+                          Text(
+                            "#" + widget.item['tag4'],
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        if (widget.item['tag5'] != null &&
+                            widget.item["tag5"] != "")
+                          Text(
+                            "#" + widget.item['tag5'],
+                            style: TextStyle(fontSize: 12),
+                          ),
+                      ]),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
