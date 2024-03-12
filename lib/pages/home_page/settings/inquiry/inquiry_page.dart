@@ -1,35 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:share_your_q/pages/login_relatives/redirect.dart';
-import 'package:share_your_q/pages/profile_page/components/iroiro_test/image_test.dart';
 //import 'package:share_your_q/admob/ad_test.dart';
-import 'dart:math';
 
 import 'package:share_your_q/utils/various.dart';
-
-
-import 'package:share_your_q/pages/profile_page/components/settings/profile_setting.dart';
-import 'dart:typed_data';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import "package:share_your_q/image_operations/image_list_display.dart";
-import 'package:share_your_q/pages/profile_page/components/create_trend.dart';
 
 
 import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'package:share_your_q/pages/profile_page/components/follow_list/follow_list.dart';
-
-import 'package:share_your_q/pages/profile_page/components/likes/likes_list.dart';
-
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 
 
 
 //お問い合わせフォームのページ
 class InquiryPage extends StatefulWidget{
+  const InquiryPage({super.key});
+
   
   @override
   State<StatefulWidget> createState() {
@@ -46,8 +32,10 @@ class InquiryPageState extends State<InquiryPage> {
 
   bool isChecked = false;
 
-  List<Map<String,dynamic>> inquiries = [];
+  List<Map<dynamic,dynamic>> inquiries = [];
 
+  /*
+  
   Future<void> _switchNotification() async{
 
 
@@ -74,6 +62,7 @@ class InquiryPageState extends State<InquiryPage> {
     
 
   }
+   */
 
   String title = "";
   bool isLoading = true;
@@ -174,8 +163,8 @@ class InquiryPageState extends State<InquiryPage> {
           title: const Text('ヘルプ'),
           content: InkWell(
             child: const Text(
-              'お問い合わせやバグ報告などはこちらにお願いします。\n'
-              'チャット形式で返答します。(フランクな形での返答があります)\n' 
+              'お問い合わせやバグ報告がありましたら\n'
+              'こちらからお願いします。'
             ).urlToLink(context)
  
           ),
@@ -193,6 +182,22 @@ class InquiryPageState extends State<InquiryPage> {
 
   }
 
+  String formatCreatedAt(String createdAtString) {
+      DateTime createdAt = DateTime.parse(createdAtString);
+      DateTime now = DateTime.now();
+      Duration difference = now.difference(createdAt);
+
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes}分前';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours}時間前';
+      } else if (difference.inDays < 365) {
+        return '${createdAt.month}月${createdAt.day}日';
+      } else {
+        return '${createdAt.year}年${createdAt.month}月${createdAt.day}日';
+      }
+    }
+
   Future<void> fetchContents()async{
     try{
       final response = await supabase
@@ -205,12 +210,49 @@ class InquiryPageState extends State<InquiryPage> {
         .select<List<Map<String,dynamic>>>("contents , created_at")
         .eq('user_id', myUserId);
 
+      //inquiriesのものとinquiries_replyのものを結合するが、その際に新しい変数bool isYouを加えて、
+      //inquiriesのものはtrue、inquiries_replyのものはfalseとする
+      //その後、created_atでソートするという処理を書く
+
+      // inquiriesの各アイテムにisYouフィールドを追加してtrueをセット
+      final inquiriesList = (response as List).map((item) {
+        return {
+          ...item,
+          'isYou': true,
+        };
+      }).toList();
+
+      // inquiries_replyの各アイテムにisYouフィールドを追加してfalseをセット
+      final inquiriesReplyList = (response2 as List).map((item) {
+        return {
+          ...item,
+          'isYou': false,
+        };
+      }).toList();
+
+      // 両方のリストを結合
+      final combinedList = [...inquiriesList, ...inquiriesReplyList];
+
+      // created_atでリストをソート
+      combinedList.sort((a, b) => b['created_at'].compareTo(a['created_at']));
+
+      debugPrint(combinedList.toString());
+
+      debugPrint("combinedList");
+      //combinedlistの型は？
+      debugPrint(combinedList.runtimeType.toString());
+
+
+
+
+
+
       
       
 
 
       setState(() {
-        inquiries = response;
+        inquiries = combinedList /*as List<Map<String, dynamic>> */;
       });
 
 
@@ -247,11 +289,13 @@ class InquiryPageState extends State<InquiryPage> {
 
           //チャットマーク
           IconButton(
-            icon: const Icon(Icons.chat),
+            icon: const Icon(Icons.chat, color: Colors.green,),
             onPressed: () async{
               _showCommentSheet();
             },
           ),
+
+          SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
           //ヘルプマーク
           IconButton(
             icon: const Icon(Icons.help),
@@ -263,12 +307,88 @@ class InquiryPageState extends State<InquiryPage> {
       ),
       //ListViewの形式で表示
       body: ListView.builder(
+
+        reverse: true,
         itemCount: inquiries.length,
         itemBuilder: (context, index){
-          return ListTile(
-            dense: true,
-            title: Text(inquiries[index]['contents']),
-            subtitle: Text(inquiries[index]['created_at'].toString()),
+          return Align(
+            alignment: inquiries[index]['isYou'] ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              width: SizeConfig.blockSizeHorizontal! * 80,
+              child: Card(
+          
+
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  tileColor: inquiries[index]['isYou'] ? Colors.green : null,
+                  //Color.fromARGB(255, 73, 72, 72)
+                  //Color.fromARGB(255, 0, 0, 0)
+                  //tileColor: inquiries[index]['isYou'] ? null : Color.fromARGB(255, 73, 72, 72),
+                  dense: true,
+                  title: Text(inquiries[index]['contents']),
+                  subtitle: Text(
+                    formatCreatedAt(inquiries[index]['created_at']),
+                    style: const TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                            
+                  
+                  onLongPress: (){
+                    //自分の投稿の場合のみ削除できるようにする
+                    if(inquiries[index]['isYou']){
+                      showDialog(
+                        context: context,
+                        builder: (context){
+                          return AlertDialog(
+                            title: const Text('削除'),
+                            content: const Text('この投稿を削除しますか？'),
+                            actions: [
+                              TextButton(
+                                onPressed: (){
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('キャンセル'),
+                              ),
+                              TextButton(
+                                onPressed: () async{
+                                  
+                                  try{
+                                    await supabase
+                                      .from('inquiries')
+                                      .delete()
+                                      .eq('contents', inquiries[index]['contents'])
+                                      .eq("user_id", myUserId);
+                                    
+                                    await reloadList();
+
+                                  }
+                                  on PostgrestException catch (e){
+                                    context.showErrorSnackBar(message: e.message);
+                                    return;
+                                  }
+                                  catch(_){
+                                    context.showErrorSnackBar(message: unexpectedErrorMessage);
+                                    return;
+                                  }
+                                  if(context.mounted){
+                                    Navigator.pop(context);
+                                  }
+                                },
+                                child: const Text('削除'),
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
           );
         },
       ),
