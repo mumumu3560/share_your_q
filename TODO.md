@@ -90,3 +90,21 @@ https://qiita.com/Ratdotl/items/91f9561d1c09d226eee1
 2, CloudflareでSupabaseのテーブルを監視
 
 5, プライバシーポリシー
+
+
+Iconの方での問題。
+更新できるのは自分の列だけ
+profiles更新→image取得→返却→
+profile_image_idはuniqueなのでおｋ
+
+Cloudflare Image周りはできた。
+
+
+
+1, OneSignalの通知
+2, コメント周り
+3, settingpage
+
+4, アイコンの移動と、問い合わせフォーム
+
+5, comment機能の最終実装
