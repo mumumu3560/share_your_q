@@ -549,6 +549,242 @@ class _ConfirmPageState extends State<ConfirmPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text('確認ページ'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart, color: Colors.blue,),
+            tooltip: "参考文献",
+            onPressed: (){
+              _showReferenceSheet(context);
+            },
+          ),
+
+          SizedBox(width: SizeConfig.blockSizeHorizontal!*1,),
+
+          ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text("編集"),
+                        ),
+
+          SizedBox(width: SizeConfig.blockSizeHorizontal!*1,),
+
+          ElevatedButton(
+            onPressed: () async {
+                                        
+              showLoadingDialog(context,"処理中...");
+                          
+                          
+              //TODO Admob
+                          
+              /*
+              if (_interstitialAd == null) {
+                return;
+              }
+              _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+                onAdShowedFullScreenContent: (InterstitialAd ad) =>
+                  print('$ad onAdShowedFullScreenContent.'),
+                  //context.showSuccessSnackBar(message: "aaa"),
+                          
+                onAdDismissedFullScreenContent: (InterstitialAd ad) {
+                  print('$ad onAdDismissedFullScreenContent.');
+                  //context.showSuccessSnackBar(message: "bbb");
+                  ad.dispose();
+                  _loadAd();
+                  return;
+                },
+                          
+                onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+                  print('$ad onAdFailedToShowFullScreenContent: $error');
+                  //context.showErrorSnackBar(message: "ccc");
+                  ad.dispose();
+                  _loadAd();
+                  return;
+                },
+                          
+                onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+                onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
+              );
+                          
+              // TODO admob本番
+              _interstitialAd!.show();
+              _interstitialAd = null;
+                */
+                          
+              //TODO Admob
+              
+                          
+              
+              
+                          
+                          
+                          
+                          
+              //ここからSupabase
+              int checkSupabase = await sendInfoToSupabase();
+                          
+              if(checkSupabase != 0){
+                if(context.mounted){
+                  //deleteInfoFromSupabase();
+                  //context.showErrorSnackBar(message: "サーバーエラーにより、問題の投稿ができませんでした。");
+                  Navigator.of(context).pop();
+                }
+                          
+                if(context.mounted){
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                          
+                        title: const Text("エラー"),
+                        content: const Text("サーバーエラーにより、問題の投稿ができませんでした。"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // ダイアログを閉じる
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                          
+                }
+                          
+                
+                
+                return;
+              }
+          
+              //2秒待つ
+              await Future.delayed(const Duration(seconds: 2));
+          
+              //ここまで来たらSupabaseはおｋ
+              if(context.mounted){
+                Navigator.of(context).pop();
+                showLoadingDialog(context, "画像のアップロード中...");
+              }
+                          
+              //3秒待つ
+              await Future.delayed(const Duration(seconds: 5));
+                          
+              //ここから画像のアップロードURL取得。
+              int checkGetUploadUrl1 = await getImageUploadUrls(true);
+              int checkGetUploadUrl2 = await getImageUploadUrls(false);
+              
+                          
+              if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
+                if(context.mounted){
+                  deleteInfoFromSupabase();
+                  //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                  Navigator.of(context).pop();
+                }
+                          
+                if(context.mounted){
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                            title: const Text("エラー"),
+                            content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // ダイアログを閉じる
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                      },
+                  );
+                          
+                }
+                
+                
+                          
+                return;
+              }
+                          
+                          
+                          
+              int checkUpload1 = await imageUploadWithUrls(true);
+              int checkUpload2 = await imageUploadWithUrls(false);
+                          
+                          
+              if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
+                if(context.mounted){
+                  //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                  Navigator.of(context).pop();
+                }
+                          
+                if(context.mounted){
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("エラー"),
+                        content: const Text("サーバーエラーにより、画像のアップロードができませんでした。"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // ダイアログを閉じる
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                          
+                }
+                
+                
+                          
+                return;
+              }
+                          
+                          
+                          
+              
+                          
+              if(context.mounted){
+                // ダイアログを閉じる
+                Navigator.of(context).pop();
+          
+                widget.subject == "数学" ? math-- : widget.subject == "物理" ? phys-- : widget.subject == "化学" ? chem-- : other--;              
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Great!"),
+                        content: const Text("問題の投稿が完了しました！"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // ダイアログを閉じる
+                            },
+                            child: const Text('閉じる'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+              }
+          
+                          
+                          
+                  
+                          
+              
+                          
+              
+            },
+            child: Text("投稿"),
+          )
+
+        ],
 
         
       ),
@@ -659,141 +895,99 @@ class _ConfirmPageState extends State<ConfirmPage> {
                     ),
                      */
                 
-                    Row(
+                    /*
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("参考文献はこんな感じに表示されます→"),
-                
-                
-                        IconButton(
-                          icon: const Icon(Icons.bar_chart, color: Colors.blue,),
-                          tooltip: "参考文献の確認",
-                          onPressed: (){
-                            _showReferenceSheet(context);
-                          },
-                        ),
-                      ],
-                    ),
-                     
-                    
-                    ElevatedButton(
-                      onPressed: () async {
-                
-                        showLoadingDialog(context,"処理中...");
-                
-                
-                        //TODO Admob
-                
-                        /*
-                        if (_interstitialAd == null) {
-                          return;
-                        }
-                        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-                          onAdShowedFullScreenContent: (InterstitialAd ad) =>
-                            print('$ad onAdShowedFullScreenContent.'),
-                            //context.showSuccessSnackBar(message: "aaa"),
-                
-                          onAdDismissedFullScreenContent: (InterstitialAd ad) {
-                            print('$ad onAdDismissedFullScreenContent.');
-                            //context.showSuccessSnackBar(message: "bbb");
-                            ad.dispose();
-                            _loadAd();
-                            return;
-                          },
-                
-                          onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-                            print('$ad onAdFailedToShowFullScreenContent: $error');
-                            //context.showErrorSnackBar(message: "ccc");
-                            ad.dispose();
-                            _loadAd();
-                            return;
-                          },
-                
-                          onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
-                          onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
-                        );
-                
-                        // TODO admob本番
-                        _interstitialAd!.show();
-                        _interstitialAd = null;
-                         */
-                
-                        //TODO Admob
-                        
-                
-                        
-                        
-                
-                
-                
-                
-                        //ここからSupabase
-                        int checkSupabase = await sendInfoToSupabase();
-                
-                        if(checkSupabase != 0){
-                          if(context.mounted){
-                            //deleteInfoFromSupabase();
-                            //context.showErrorSnackBar(message: "サーバーエラーにより、問題の投稿ができませんでした。");
-                            Navigator.of(context).pop();
-                          }
-                
-                          if(context.mounted){
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                
-                                  title: const Text("エラー"),
-                                  content: const Text("サーバーエラーにより、問題の投稿ができませんでした。"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+
+                          children: [
+                            Text("参考文献"),
+
+                            SizedBox(height: SizeConfig.blockSizeVertical! * 2),
+                                        
+                                        
+                            IconButton(
+                              icon: const Icon(Icons.bar_chart, color: Colors.blue,),
+                              tooltip: "参考文献の確認",
+                              onPressed: (){
+                                _showReferenceSheet(context);
                               },
-                            );
-                
-                          }
-                
-                          
-                          
-                          return;
-                        }
-
-                        //2秒待つ
-                        await Future.delayed(const Duration(seconds: 2));
-
-                        //ここまで来たらSupabaseはおｋ
-                        if(context.mounted){
-                          Navigator.of(context).pop();
-                          showLoadingDialog(context, "画像のアップロード中...");
-                        }
-                
-                        //3秒待つ
-                        await Future.delayed(const Duration(seconds: 5));
-                
-                        //ここから画像のアップロードURL取得。
-                        int checkGetUploadUrl1 = await getImageUploadUrls(true);
-                        int checkGetUploadUrl2 = await getImageUploadUrls(false);
+                            ),
+                          ],
+                        ),
+                         
                         
-                
-                        if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
-                          if(context.mounted){
-                            deleteInfoFromSupabase();
-                            //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
-                            Navigator.of(context).pop();
-                          }
-                
-                          if(context.mounted){
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
+                        ElevatedButton(
+                          onPressed: () async {
+                                        
+                            showLoadingDialog(context,"処理中...");
+                                        
+                                        
+                            //TODO Admob
+                                        
+                            /*
+                            if (_interstitialAd == null) {
+                              return;
+                            }
+                            _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+                              onAdShowedFullScreenContent: (InterstitialAd ad) =>
+                                print('$ad onAdShowedFullScreenContent.'),
+                                //context.showSuccessSnackBar(message: "aaa"),
+                                        
+                              onAdDismissedFullScreenContent: (InterstitialAd ad) {
+                                print('$ad onAdDismissedFullScreenContent.');
+                                //context.showSuccessSnackBar(message: "bbb");
+                                ad.dispose();
+                                _loadAd();
+                                return;
+                              },
+                                        
+                              onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+                                print('$ad onAdFailedToShowFullScreenContent: $error');
+                                //context.showErrorSnackBar(message: "ccc");
+                                ad.dispose();
+                                _loadAd();
+                                return;
+                              },
+                                        
+                              onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+                              onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
+                            );
+                                        
+                            // TODO admob本番
+                            _interstitialAd!.show();
+                            _interstitialAd = null;
+                             */
+                                        
+                            //TODO Admob
+                            
+                                        
+                            
+                            
+                                        
+                                        
+                                        
+                                        
+                            //ここからSupabase
+                            int checkSupabase = await sendInfoToSupabase();
+                                        
+                            if(checkSupabase != 0){
+                              if(context.mounted){
+                                //deleteInfoFromSupabase();
+                                //context.showErrorSnackBar(message: "サーバーエラーにより、問題の投稿ができませんでした。");
+                                Navigator.of(context).pop();
+                              }
+                                        
+                              if(context.mounted){
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                        
                                       title: const Text("エラー"),
-                                      content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
+                                      content: const Text("サーバーエラーにより、問題の投稿ができませんでした。"),
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () {
@@ -803,101 +997,160 @@ class _ConfirmPageState extends State<ConfirmPage> {
                                         ),
                                       ],
                                     );
-                                },
-                            );
-                
-                          }
-                          
-                          
-                
-                          return;
-                        }
-                
-                
-                
-                        int checkUpload1 = await imageUploadWithUrls(true);
-                        int checkUpload2 = await imageUploadWithUrls(false);
-                
-                
-                        if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
-                          if(context.mounted){
-                            //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                                  },
+                                );
+                                        
+                              }
+                                        
+                              
+                              
+                              return;
+                            }
+                        
+                            //2秒待つ
+                            await Future.delayed(const Duration(seconds: 2));
+                        
+                            //ここまで来たらSupabaseはおｋ
+                            if(context.mounted){
+                              Navigator.of(context).pop();
+                              showLoadingDialog(context, "画像のアップロード中...");
+                            }
+                                        
+                            //3秒待つ
+                            await Future.delayed(const Duration(seconds: 5));
+                                        
+                            //ここから画像のアップロードURL取得。
+                            int checkGetUploadUrl1 = await getImageUploadUrls(true);
+                            int checkGetUploadUrl2 = await getImageUploadUrls(false);
+                            
+                                        
+                            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
+                              if(context.mounted){
+                                deleteInfoFromSupabase();
+                                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                                Navigator.of(context).pop();
+                              }
+                                        
+                              if(context.mounted){
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                          title: const Text("エラー"),
+                                          content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(); // ダイアログを閉じる
+                                              },
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                    },
+                                );
+                                        
+                              }
+                              
+                              
+                                        
+                              return;
+                            }
+                                        
+                                        
+                                        
+                            int checkUpload1 = await imageUploadWithUrls(true);
+                            int checkUpload2 = await imageUploadWithUrls(false);
+                                        
+                                        
+                            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
+                              if(context.mounted){
+                                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
+                                Navigator.of(context).pop();
+                              }
+                                        
+                              if(context.mounted){
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text("エラー"),
+                                      content: const Text("サーバーエラーにより、画像のアップロードができませんでした。"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // ダイアログを閉じる
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                        
+                              }
+                              
+                              
+                                        
+                              return;
+                            }
+                                        
+                                        
+                                        
+                            
+                                        
+                            if(context.mounted){
+                              // ダイアログを閉じる
+                              Navigator.of(context).pop();
+                        
+                              widget.subject == "数学" ? math-- : widget.subject == "物理" ? phys-- : widget.subject == "化学" ? chem-- : other--;              
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text("Great!"),
+                                      content: const Text("問題の投稿が完了しました！"),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(); // ダイアログを閉じる
+                                          },
+                                          child: const Text('閉じる'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                            }
+                        
+                                        
+                                        
+                                
+                                        
+                            
+                                        
+                            
+                          },
+                          child: const Text("確認して投稿"),
+                        ),
+
+                        SizedBox(height: SizeConfig.blockSizeVertical! * 2),
+
+                        /*
+                        ElevatedButton(
+                          onPressed: () {
                             Navigator.of(context).pop();
-                          }
-                
-                          if(context.mounted){
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("エラー"),
-                                  content: const Text("サーバーエラーにより、画像のアップロードができませんでした。"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                
-                          }
-                          
-                          
-                
-                          return;
-                        }
-                
-                
-                
-                        
-                
-                        if(context.mounted){
-                          // ダイアログを閉じる
-                          Navigator.of(context).pop();
+                          },
+                          child: const Text("編集"),
+                        ),
+                         */
 
-                          widget.subject == "数学" ? math-- : widget.subject == "物理" ? phys-- : widget.subject == "化学" ? chem-- : other--;              
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Great!"),
-                                  content: const Text("問題の投稿が完了しました！"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('閉じる'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                        }
-
-                
-                
-        
-                
-                        
-                
-                        
-                      },
-                      child: const Text("確認して投稿"),
-                    ),
-                
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text("編集"),
+                        SizedBox(height: SizeConfig.blockSizeVertical! * 2),
+                      ],
                     ),
                 
                     
+                     */
                 
                   ],
                 
