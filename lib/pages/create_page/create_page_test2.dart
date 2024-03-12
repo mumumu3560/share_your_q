@@ -722,32 +722,113 @@ class _CreatePageState extends State<CreatePage> {
                 //height: SizeConfig.blockSizeVertical! * 20,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("残り回数", style: TextStyle(fontSize: 20),),
+
+                    //const Text("ヘルプ", style: TextStyle(fontSize: 20),),
 
                     ListTile(
-                      title: Text("数学: ${math}回"),
+                      title: Text('各ジャンルの投稿は一日一回まで',style: TextStyle(fontSize: 18)),
+                      onTap: () {
+
+                      },
+                    ),
+
+                    //const Text("残り回数", style: TextStyle(fontSize: 20),),
+
+                    ListTile(
+                      //チェックマークのアイコンにする
+                      //Text("数学: ${math}/1回"),
+                      title: Row(
+                        children: [
+                          const Text("数学: ",style: TextStyle(fontSize: 18)),
+                          math == 0 
+                            ? const Icon(Icons.check_box, color: Colors.green,) 
+                            : const Icon(Icons.check_box_outline_blank, color: Colors.red,),
+                        ],
+                      ),
                       onTap: () {
 
                       },
                     ),
                     ListTile(
-                      title: Text('物理: ${phys}回'),
+                      title: Row(
+                        children: [
+                          const Text("物理: ",style: TextStyle(fontSize: 18)),
+                          phys == 0 
+                            ? const Icon(Icons.check_box, color: Colors.green,) 
+                            : const Icon(Icons.check_box_outline_blank, color: Colors.red,),
+                        ],
+                      ),
                       onTap: () {
                         // 画像探しページに遷移するコードを追加
                       },
                     ),
                     ListTile(
-                      title: Text('化学: ${chem}回'),
+                      title: Row(
+                        children: [
+                          const Text("化学: ",style: TextStyle(fontSize: 18)),
+                          chem == 0 
+                            ? const Icon(Icons.check_box, color: Colors.green,) 
+                            : const Icon(Icons.check_box_outline_blank, color: Colors.red,),
+                        ],
+                      ),
                       onTap: () {
 
                       },
                     ),
                     ListTile(
-                      title: Text('その他: ${other}回'),
+                      title: Row(
+                        children: [
+                          const Text("その他: ",style: TextStyle(fontSize: 18)),
+                          other == 0 
+                            ? const Icon(Icons.check_box, color: Colors.green,) 
+                            : const Icon(Icons.check_box_outline_blank, color: Colors.red,),
+                        ],
+                      ),
                       onTap: () {
 
                       },
+                    ),
+                  ],
+
+                ),
+                
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // ダイアログを閉じる
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+        },
+    );
+    
+  }
+
+  void showHelp(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+              content: Container(
+                //height: SizeConfig.blockSizeVertical! * 20,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("ヘルプ", style: TextStyle(fontSize: 20),),
+
+                    ListTile(
+                      title: Text('各ジャンルの投稿は一日一回まで'),
+                      onTap: () {
+
+                      },
+
+                    
                     ),
                   ],
 
@@ -783,10 +864,19 @@ class _CreatePageState extends State<CreatePage> {
         title: const Text('作成ページ'),
 
         actions: [
+          /*
           TextButton(
             onPressed: showRestriction, 
             child: const Text("投稿可能回数")
-          )
+          ),
+          SizedBox(width: SizeConfig.blockSizeHorizontal!*1,),
+           */
+
+          //ヘルプマーク
+          IconButton(
+            onPressed: showRestriction,
+            icon: const Icon(Icons.help),
+          ),
 
         ],
 
