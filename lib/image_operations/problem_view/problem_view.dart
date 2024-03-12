@@ -99,6 +99,9 @@ class ProblemViewWidget extends StatefulWidget {
 
 class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
+  //これは画面全体の話
+  bool isLoading = true;
+
   bool showProblemImage = false;
   bool showExplanationImage = false;
 
@@ -476,63 +479,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
   }
 
 
-  
-
-  @override
-  void initState() {
-    super.initState();
-
-    setState(() {
-      likes = widget.likes;
-    });
-
-    if(!widget.isCreate){
-      loadLikes();
-    }
-
-    fetchImage(widget.profileImage).then((bytes){
-      setState(() {
-        profileImageBytes = bytes;
-      });
-    });
-
-    if(widget.image1 != null || widget.image2 != null){
-      isLoadingImage1 = false;
-      isLoadingImage2 = false;
-    }
-    else{
-
-      // 1つ目の画像のバイナリデータを取得
-      fetchImage(widget.problem_id).then((bytes) {
-        setState(() {
-          image1Bytes = bytes;
-          isLoadingImage1 = false;
-        });
-      });
-
-      // 2つ目の画像のバイナリデータを取得
-      fetchImage(widget.comment_id).then((bytes) {
-        setState(() {
-          image2Bytes = bytes;
-          isLoadingImage2 = false;
-        });
-      });
-
-
-    }
-
-    //followProcess();
-
-    if(myUserId != widget.image_own_user_id){
-      isFollow();
-    }
-
-    
-    
-
-
-  }
-
   bool? isFollowed = null;
   String myUsername = "";
 
@@ -661,6 +607,71 @@ void _toggleSystemBars100(Function(void Function()) setState) {
     }
   }
 
+  Future<void> waitProcess() async{
+    setState(() {
+      likes = widget.likes;
+    });
+
+    if(!widget.isCreate){
+      await loadLikes();
+    }
+
+    await fetchImage(widget.profileImage).then((bytes){
+      setState(() {
+        profileImageBytes = bytes;
+      });
+    });
+
+    if(widget.image1 != null || widget.image2 != null){
+      isLoadingImage1 = false;
+      isLoadingImage2 = false;
+    }
+    else{
+
+      // 1つ目の画像のバイナリデータを取得
+      await fetchImage(widget.problem_id).then((bytes) {
+        setState(() {
+          image1Bytes = bytes;
+          isLoadingImage1 = false;
+        });
+      });
+
+      // 2つ目の画像のバイナリデータを取得
+      await fetchImage(widget.comment_id).then((bytes) {
+        setState(() {
+          image2Bytes = bytes;
+          isLoadingImage2 = false;
+        });
+      });
+
+
+    }
+
+    //followProcess();
+
+    if(myUserId != widget.image_own_user_id){
+      await isFollow();
+    }
+
+    isLoading = false;
+
+  }
+
+
+  
+
+  @override
+  void initState() {
+    super.initState();
+
+    waitProcess();
+ 
+    
+
+
+  }
+
+  
 
   
   
@@ -671,7 +682,11 @@ void _toggleSystemBars100(Function(void Function()) setState) {
     
     SizeConfig().init(context);
 
-    return SingleChildScrollView(
+    return (isLoading && widget.isCreate == false) 
+    ? Center(
+        child: CircularProgressIndicator()
+      ) 
+    :SingleChildScrollView(
     
       child: Column(
     
