@@ -52,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> imageData = [];
 
   Uint8List? profileImageBytes = Uint8List(0);
-  String profileId = "";
+  String? profileId;
 
   String userName ="";
   int selectedYear = 0;
@@ -65,16 +65,19 @@ class _ProfilePageState extends State<ProfilePage> {
       final profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", widget.userId);
 
       setState(() {
-        profileId = profileData[0]["profile_image_id"];
+        
+        if(profileData[0]["profile_image_id"] != null){
+          profileId = profileData[0]["profile_image_id"];
+        }
+
         userName = profileData[0]["username"];
         selectedYear = profileData[0]["age"];
         explainText = profileData[0]["explain"];
 
-        if (profileData[0]["links"] == null){
-        }
-        else{
+        if(profileData[0]["links"] != null){
           linkText = profileData[0]["links"];
         }
+
         
       });
 
@@ -94,6 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
       return ;
     } catch(_){
       if(context.mounted){
+        print("ここはおおきなエラーです");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return ;
@@ -141,6 +145,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
       print(response);
 
+      print("ここがいいねのデータです");
+
       for(int i = 0; i < response.length; i++){
         final response2 = await supabase
           .from("image_data")
@@ -173,6 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
       return ;
     }
     catch (_) {
+      print("ここはおおおおおおおんｎ");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       return ;
     }
@@ -189,6 +196,7 @@ class _ProfilePageState extends State<ProfilePage> {
     on PostgrestException catch (error){
       context.showErrorSnackBar(message: error.message);
     } catch(_){
+      print("ここがああなお");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
 
@@ -263,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     return DefaultTabController(
-      length: 4,
+      length: 3,
       initialIndex: 0,
 
       child: Scaffold(
@@ -396,7 +404,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     method: "新着",
                                     subject: "全て",
                                     tags: const [],
-                                    title: "$userNameの投稿一覧",
+                                    title: "投稿一覧",
                                     showAppbar: false,
                                     lang: "全て",
                                     canToPage: false,
@@ -580,10 +588,12 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
     }
     on PostgrestException catch (error){
+      print("ここはエラーです");
       context.showErrorSnackBar(message: error.message);
       return ;
     }
     catch(_){
+      print("ここはへんなエラーです");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       return ;
     }
@@ -648,6 +658,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       return null;
     } catch(_){
       if(context.mounted){
+        print("わけあ りｒｒ");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return null;
@@ -714,6 +725,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       }
     } catch(_){
       if(context.mounted){
+        print("iiiiiiiiiiiiimimigawara");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
     }
@@ -740,6 +752,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
       }
     } catch(_){
+      print("ここがおかしい");
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       return ;
     }
