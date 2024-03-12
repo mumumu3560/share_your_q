@@ -408,6 +408,9 @@ void _toggleSystemBars100(Function(void Function()) setState) {
           .eq('user_id', myUserId)
           .eq('image_id', widget.image_id);
 
+      print(existingRecord);
+      print("ここがexisi");
+
       // レコードが存在する場合はアップデート、存在しない場合は挿入する
       if (existingRecord.isNotEmpty) {
         // レコードが存在する場合はアップデート
@@ -443,7 +446,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
         }
       } else {
         // レコードが存在しない場合は挿入
-        final response = await supabase
+        final response2 = await supabase
             .from('likes')
             .insert({ 
               'add': false,
@@ -453,9 +456,14 @@ void _toggleSystemBars100(Function(void Function()) setState) {
               "image_own_user_id" : widget.image_own_user_id,
               });
 
-        if (response == null) {
+        isFirst = false;
+
+        print(response2);
+        print("response2はここでした");
+
+        if (response2 == null) {
           // エラーハンドリング
-          print('Error inserting data: $response');
+          print('Error inserting data: $response2');
         } else {
           // 成功時の処理
           print('Data inserted successfully!');
