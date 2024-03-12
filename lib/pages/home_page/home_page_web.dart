@@ -7,7 +7,6 @@ import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
 import 'package:share_your_q/pages/search_page/search_page.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
-import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 
 //TODO OneSignal
