@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_your_q/pages/display_page/display_page.dart';
+import 'package:share_your_q/pages/home_page/notification/components/notification_likes/notification_likes.dart';
+import 'package:share_your_q/pages/home_page/notification/components/notification_others/notification_others.dart';
+import 'package:share_your_q/pages/home_page/notification/components/riverpod/tab_notifier.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
@@ -24,14 +27,38 @@ class NotificationPage extends ConsumerWidget{
 
   @override
   Widget build(BuildContext context, WidgetRef ref){
-    return Scaffold(
-      appBar: AppBar(
-        title: TabBar(
-          tabs: [
-            Tab(text: "通知"),
-            Tab(text: "お知らせ"),
+
+    final tabs = ref.watch(tabNotifierProvider);
+
+
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TabBar(
+            tabs: [
+              Tab(text: "いいね "),
+              Tab(text: "お知らせ "),
+            ],
+            onTap: (index) {
+              ref.read(tabNotifierProvider.notifier).updateState(index);
+            },
+          ),
+          
+        ),
+        body: TabBarView(
+          children: [
+            //通知
+            Container(
+              child: LikesNotificationList(),
+            ),
+            //お知らせ
+            Container(
+              child: OtherNotificationList(),
+            ),
           ],
-        )
+        ),
       ),
     );
 
