@@ -313,9 +313,17 @@ class _MyListItemState extends State<MyListItem> {
 
     return Card(
       child: ListTile(
+
+
+
         dense: true,
 
-        leading: FutureBuilder(
+        
+
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder(
           future: fetchProfileImage(targetUserId),
           builder: (context, profileImageSnapshot) {
             if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
@@ -403,30 +411,35 @@ class _MyListItemState extends State<MyListItem> {
           },
         ),
 
-
-
-
-
-
-        title: Text(
-          userName,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              explainText,
-              style: const TextStyle(
-                fontSize: 12,
-              ),
+            SizedBox(
+              width: SizeConfig.blockSizeHorizontal! * 2,
             ),
 
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  Text(
+                    userName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  Text(
+                    explainText,
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
+        
         onTap: () async{
           
           
