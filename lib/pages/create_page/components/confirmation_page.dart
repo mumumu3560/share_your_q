@@ -61,7 +61,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
   void _showReferenceSheet(BuildContext context) {
     showModalBottomSheet(
       constraints: BoxConstraints(
-        maxWidth: SizeConfig.blockSizeHorizontal! * 100,
+        minWidth: SizeConfig.blockSizeHorizontal! * 100,
       ),
       context: context,
       //これがないと高さが変わらない
@@ -762,6 +762,15 @@ class _ConfirmPageState extends State<ConfirmPage> {
                           
                           return;
                         }
+
+                        //2秒待つ
+                        await Future.delayed(const Duration(seconds: 2));
+
+                        //ここまで来たらSupabaseはおｋ
+                        if(context.mounted){
+                          Navigator.of(context).pop();
+                          showLoadingDialog(context, "画像のアップロード中...");
+                        }
                 
                         //3秒待つ
                         await Future.delayed(const Duration(seconds: 5));
@@ -805,7 +814,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
                         }
                 
                 
-                        print("Supabaseはおｋ");
                 
                         int checkUpload1 = await imageUploadWithUrls(true);
                         int checkUpload2 = await imageUploadWithUrls(false);
@@ -870,31 +878,10 @@ class _ConfirmPageState extends State<ConfirmPage> {
                               },
                             );
                         }
-                
-                        if(context.mounted){
-                          widget.subject == "数学" ? math-- : widget.subject == "物理" ? phys-- : widget.subject == "化学" ? chem-- : other--;              
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text("Great!"),
-                                  content: const Text("問題の投稿が完了しました！"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('閉じる'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                
-                          }
+
                 
                 
-                          Navigator.of(context).pop();
+        
                 
                         
                 
