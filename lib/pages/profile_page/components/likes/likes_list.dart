@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:share_your_q/image_operations/image_list_display.dart';
@@ -15,7 +15,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class LikesList extends StatefulWidget {
 
@@ -154,11 +154,12 @@ class LikesListState extends State<LikesList> {
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                                       //TODO Admob
                                       /*
+                                      //InlineAdaptiveExample(),
+                                       */
                                       child: InlineAdaptiveAdBanner(
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                      )//InlineAdaptiveExample(),
-                                       */
+                                      )
                                     ),
                                     //const ,
                                                 

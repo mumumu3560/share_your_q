@@ -309,12 +309,13 @@ class _DisplayPageState extends State<DisplayPage>{
           SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
           /*
+          
+           */
           Container(
             height: SizeConfig.blockSizeVertical!* 13,
-            //color: Colors.white,
+            color: Colors.white,
             child: AdaptiveAdBanner(requestId: "DISPLAY",)
           ),
-           */
           //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           //InlineAdaptiveExample(),
         ],

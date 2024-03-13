@@ -8,7 +8,7 @@ import 'package:share_your_q/pages/home_page/notification/components/riverpod/ta
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 //import 'package:share_your_q/image_operations/image_list_display.dart';
@@ -36,26 +36,41 @@ class NotificationPage extends ConsumerWidget{
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
-          title: TabBar(
-            tabs: [
-              Tab(text: "いいね "),
-              Tab(text: "お知らせ "),
+          
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("通知"),
             ],
-            onTap: (index) {
-              ref.read(tabNotifierProvider.notifier).updateState(index);
-            },
           ),
           
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            //通知
-            Container(
-              child: LikesNotificationList(),
-            ),
-            //お知らせ
-            Container(
-              child: OtherNotificationList(),
+            TabBar(
+                tabs: [
+                  Tab(text: "いいね "),
+                  Tab(text: "お知らせ "),
+                ],
+                onTap: (index) {
+                  ref.read(tabNotifierProvider.notifier).updateState(index);
+                },
+              ),
+            SizedBox(
+              height: SizeConfig.blockSizeVertical! * 60,
+              child: TabBarView(
+                children: [
+                  //通知
+                  Container(
+                    child: LikesNotificationList(),
+                  ),
+                  //お知らせ
+                  Container(
+                    child: OtherNotificationList(),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

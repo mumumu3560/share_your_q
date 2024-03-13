@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_your_q/cloudflare_relations/server_request.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/image_operations/image_upload.dart';
 import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 import 'package:share_your_q/pages/create_page/components/reference.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 
 class ConfirmPage extends StatefulWidget {
 
@@ -89,18 +94,22 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
 
   // TODO admob本番
-  //InterstitialAd? _interstitialAd;
+  InterstitialAd? _interstitialAd;
 
   //TODO ここは今test用のものなので後で変更する。
   /*
+  
+   */
   final String _adUnitId = Platform.isAndroid
       ? "ca-app-pub-3940256099942544/1033173712"//dotenv.get("INTERSTITIAL_ID_CREATE")
       : "ca-app-pub-3940256099942544/1033173712";//dotenv.get("INTERSTITIAL_ID_CREATE");
-   */
+
+  //final String _adUnitId = Env.i1;
 
   /// Loads an interstitial ad.
   /// TODO admob本番
-  /*
+  /// 
+  
   void _loadAd() {
     InterstitialAd.load(
         adUnitId: _adUnitId,
@@ -139,20 +148,21 @@ class _ConfirmPageState extends State<ConfirmPage> {
         ));
   }
 
+  /*
    */
 
 
   @override
   void dispose() {
     // TODO admob本番
-    //_interstitialAd?.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     // TODO admob本番
-    //_loadAd();
+    _loadAd();
     super.initState();
     fetchImageSubject();
   }
@@ -578,6 +588,8 @@ class _ConfirmPageState extends State<ConfirmPage> {
               //TODO Admob
                           
               /*
+              
+                */
               if (_interstitialAd == null) {
                 return;
               }
@@ -609,7 +621,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
               // TODO admob本番
               _interstitialAd!.show();
               _interstitialAd = null;
-                */
                           
               //TODO Admob
               
@@ -1166,8 +1177,8 @@ class _ConfirmPageState extends State<ConfirmPage> {
           //TODO Admob
           Container(
             height: SizeConfig.blockSizeVertical! * 17,
-            //color: Colors.white,
-            //child: AdaptiveAdBanner(requestId: "CREATE",)
+            color: Colors.white,
+            child: AdaptiveAdBanner(requestId: "CREATE",)
           ),
           //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           //InlineAdaptiveExample(),

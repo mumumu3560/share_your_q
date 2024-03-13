@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/display_page/display_page.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,7 +17,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class LikesNotificationList extends StatefulWidget {
 
@@ -181,11 +182,12 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                                       //TODO Admob
                                       /*
+                                      //InlineAdaptiveExample(),
+                                       */
                                       child: InlineAdaptiveAdBanner(
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                      )//InlineAdaptiveExample(),
-                                       */
+                                      )
                                     ),
                                     //const ,
 
@@ -280,8 +282,8 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
 
       if (widget.profileItem["profile_image_id"] == null) {
         print("ここはダメな方ですプロフィールの");
-        likesUserImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
-        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        likesUserImageId = Env.c3;
+        return Env.c3;
       } else {
         print("ここはいい方ですプロフィールの");
         likesUserImageId = widget.profileItem["profile_image_id"];
@@ -293,12 +295,12 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
       if (context.mounted) {
         context.showErrorSnackBar(message: error.message);
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      return Env.c3;
     } catch (_) {
       if (context.mounted) {
         context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      return Env.c3;
     }
   }
 
@@ -323,7 +325,7 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
 
     targetUserId = widget.imageItem["user_id"];
 
-    myProfileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+    myProfileImageId = Env.c3;
 
     fetchMyProfileImage();
   }

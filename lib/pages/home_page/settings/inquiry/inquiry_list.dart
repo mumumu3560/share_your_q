@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/env/env.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -15,7 +16,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 String textKeeper = "";
 
@@ -370,18 +371,20 @@ class CommentListState extends State<CommentList> {
                                            */
                                                       
                                           /*
+                                          
+                                           */
                                           SizedBox(
                                             height: SizeConfig.blockSizeVertical! * 40,
                                             //InlineAdaptiveAdBanner(requestId: "LIST",),
                                             //TODO Admob
                                             /*
+                                            //InlineAdaptiveExample(),
+                                             */
                                             child: InlineAdaptiveAdBanner(
                                               requestId: "LIST", 
                                               adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                            )//InlineAdaptiveExample(),
-                                             */
+                                            )
                                           ),
-                                           */
                                           //const ,
                                                       
                                           
@@ -494,7 +497,7 @@ class _CommentItemState extends State<CommentItem> with AutomaticKeepAliveClient
   bool get wantKeepAlive => true;
 
 
-  String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+  String profileImageId = Env.c3;
   String userName = "";
 
   String targetUserId = "";
@@ -537,7 +540,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
       
 
       if(response[0]["profile_image_id"] == null){
-        profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        profileImageId = Env.c3;
         //return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
       }
       else{

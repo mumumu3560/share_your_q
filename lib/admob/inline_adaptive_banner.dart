@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-//dotenv
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import "package:share_your_q/utils/various.dart";
+import 'package:share_your_q/env/env.dart';
 
 class InlineAdaptiveAdBanner extends StatelessWidget {
 
@@ -16,13 +13,24 @@ class InlineAdaptiveAdBanner extends StatelessWidget {
     this.onLoaded,
     required this.requestId,
     required this.adHeight,
-  });
+  }):super(key: key);
+
+  
 
   final VoidCallback? onLoaded;
 
+  static Map<String, String> adUnits = {
+    "create": Env.b1,
+    "update": Env.b2,
+    "search": Env.b3,
+    "profile": Env.b4,
+    "list": Env.b5,
+    "display": Env.b6,
+  };
+
   @override
   Widget build(BuildContext context) {
-    final adUnitId = kReleaseMode ? dotenv.get("BANNER_ID_$requestId") : dotenv.get("BANNER_ID_$requestId");
+    final adUnitId = kReleaseMode ?  adUnits[requestId]: adUnits[requestId];
     return LayoutBuilder(builder: (context, constraint) {
       return HookBuilder(builder: (context) {
         final bannerLoaded = useState(false);
@@ -37,7 +45,7 @@ class InlineAdaptiveAdBanner extends StatelessWidget {
 
               return BannerAd(
                 size: adSize,
-                adUnitId: adUnitId,
+                adUnitId: adUnitId!,
                 listener: BannerAdListener(
                   onAdFailedToLoad: (ad, error) {
                     ad.dispose();

@@ -7,7 +7,7 @@ import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_list_display.dart";
 
 //TODO Admob
-//import "package:share_your_q/admob/inline_adaptive_banner.dart";
+import "package:share_your_q/admob/inline_adaptive_banner.dart";
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -345,11 +345,12 @@ class _SearchPageState extends State<SearchPage> {
             color: Colors.white,
             //TODO Admob
             /*
+            
+             */
             child: InlineAdaptiveAdBanner(
               requestId: "SEARCH", 
               adHeight: SizeConfig.blockSizeVertical!.toInt() * 15,
             ),
-             */
           ),
 
 

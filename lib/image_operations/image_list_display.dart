@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/env/env.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
 import 'package:share_your_q/pages/display_page/display_page.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 //import "package:share_your_q/admob/ad_test.dart";
@@ -13,7 +14,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class ImageListDisplay extends StatefulWidget {
   final String? subject;
@@ -233,11 +234,13 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                                       //TODO Admob
                                       /*
+                                      //InlineAdaptiveExample(),
+                                       */
+
                                       child: InlineAdaptiveAdBanner(
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                      )//InlineAdaptiveExample(),
-                                       */
+                                      )
                                     ),
                                     //const ,
 
@@ -317,7 +320,7 @@ class _MyListItemState extends State<MyListItem>
 
     final String targetUserId = widget.item["user_id"];
 
-    String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+    String profileImageId = Env.c3;
 
     //ここで投稿日時の管理
     String formatCreatedAt(String createdAtString) {
@@ -349,7 +352,7 @@ class _MyListItemState extends State<MyListItem>
             .eq("id", target);
 
         if (response[0]["profile_image_id"] == null) {
-          return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+          return Env.c3;
         } else {
           profileImageId = response[0]["profile_image_id"];
           return response[0]["profile_image_id"];
@@ -362,12 +365,12 @@ class _MyListItemState extends State<MyListItem>
         if (context.mounted) {
           context.showErrorSnackBar(message: error.message);
         }
-        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        return Env.c3;
       } catch (_) {
         if (context.mounted) {
           context.showErrorSnackBar(message: unexpectedErrorMessage);
         }
-        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        return Env.c3;
       }
     }
 

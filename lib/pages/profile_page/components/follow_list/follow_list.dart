@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/env/env.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -14,7 +15,7 @@ import 'dart:typed_data';
 
 //google_admob
 //TODO ビルドリリースの時のみ
-//import 'package:share_your_q/admob/inline_adaptive_banner.dart';
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class FollowList extends StatefulWidget {
 
@@ -159,11 +160,12 @@ class FollowListState extends State<FollowList> {
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                                       //TODO Admob
                                       /*
+                                      //InlineAdaptiveExample(),
+                                       */
                                       child: InlineAdaptiveAdBanner(
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                      )//InlineAdaptiveExample(),
-                                       */
+                                      )
                                     ),
                                     //const ,
                                                 
@@ -222,7 +224,7 @@ class _MyListItemState extends State<MyListItem> {
 
   String targetUserId = "";
   String targetUserId2 = "";
-  String profileImageId = dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+  String profileImageId = Env.c3;
   String explainText = "";
   String userName = "";
 
@@ -255,7 +257,7 @@ class _MyListItemState extends State<MyListItem> {
 
       if(response[0]["profile_image_id"] == null){
 
-        return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+        return Env.c3;
       }
       else{
         profileImageId = response[0]["profile_image_id"];
@@ -271,13 +273,13 @@ class _MyListItemState extends State<MyListItem> {
         context.showErrorSnackBar(message: error.message);
         
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      return Env.c3;
     } catch(_){
       if(context.mounted){
         context.showErrorSnackBar(message: unexpectedErrorMessage);
         
       }
-      return dotenv.get("CLOUDFLARE_NO_IMAGE_URL");
+      return Env.c3;
     }
 
 

@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/home_page/settings/inquiry/inquiry_page.dart';
 import 'package:share_your_q/pages/login_relatives/redirect.dart';
-import 'package:share_your_q/pages/profile_page/components/iroiro_test/image_test.dart';
-//import 'package:share_your_q/admob/ad_test.dart';
-import 'dart:math';
 
 import 'package:share_your_q/utils/various.dart';
 
 
-import 'package:share_your_q/pages/profile_page/components/settings/profile_setting.dart';
-import 'dart:typed_data';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import "package:share_your_q/image_operations/image_list_display.dart";
-import 'package:share_your_q/pages/profile_page/components/create_trend.dart';
-
-
-import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'package:share_your_q/pages/profile_page/components/follow_list/follow_list.dart';
-
-import 'package:share_your_q/pages/profile_page/components/likes/likes_list.dart';
-
-import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
-
 
 class SettingPage extends StatefulWidget{
   
@@ -87,12 +70,12 @@ class SettingPageState extends State<SettingPage> {
 
     if(isChecked){
       //TODO 通知を受けらない OneSignal
-      //await OneSignal.logout();
+      await OneSignal.logout();
     }
     else{
       //TODO 通知を受ける OneSignal
       
-      //await OneSignal.login(myUserId);
+      await OneSignal.login(myUserId);
 
     }
 
@@ -151,13 +134,13 @@ class SettingPageState extends State<SettingPage> {
           ListTile(
             title: const Text('利用規約'),
             onTap: () {
-              _launchURL(dotenv.get("termsUrlJa"));
+              _launchURL(Env.u3);
             },
           ),
           ListTile(
             title: const Text('プライバシーポリシー'),
             onTap: () {
-              _launchURL(dotenv.get("privacyUrlJa"));
+              _launchURL(Env.u1);
             },
           ),
           ListTile(

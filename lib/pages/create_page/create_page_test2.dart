@@ -18,8 +18,9 @@ import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 // TODO ここはリリース時のみ Admob
 /*
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+
  */
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 
 
 
@@ -27,7 +28,7 @@ import 'dart:async';
 import 'dart:io';
 
 //dotenv
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 
@@ -1422,8 +1423,8 @@ class _CreatePageState extends State<CreatePage> {
           //TODO Admob
           Container(
             height: SizeConfig.blockSizeVertical! * 17,
-            //color: Colors.white,
-            //child: AdaptiveAdBanner(requestId: "CREATE",)
+            color: Colors.white,
+            child: AdaptiveAdBanner(requestId: "CREATE",)
           ),
           //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
           //InlineAdaptiveExample(),

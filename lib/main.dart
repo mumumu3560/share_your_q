@@ -13,7 +13,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //OneSignal
 //TODO
-//import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 
 import 'package:timeago/timeago.dart' as timeago;
@@ -27,17 +27,16 @@ OneSignal.Notifications.requestPermission(true);
   OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
 
  */
-//import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   //TODO ここはandroidビルドリリースの時のみ
-  //MobileAds.instance.initialize();
+  MobileAds.instance.initialize();
   
   //await dotenv.load(fileName: '.env');
   
@@ -83,13 +82,15 @@ Future<void> main() async {
   //push notification prompt. We recommend removing the following code and 
   //instead using an In-App Message to prompt for notification permission
 
+  //TODO ここはandroidビルドリリースの時のみ
+  OneSignal.initialize(Env.o1);
+
+  OneSignal.Notifications.requestPermission(true);
+
   
   
   /*
-  OneSignal.Notifications.requestPermission(true);
-
-  //TODO ここはandroidビルドリリースの時のみ
-  OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
+  
   
   
   */

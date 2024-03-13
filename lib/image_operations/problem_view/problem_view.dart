@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
@@ -733,7 +734,8 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                         child: CircleAvatar(
                           backgroundImage: profileImageBytes != null && profileImageBytes != Uint8List(0)
                             ? MemoryImage(profileImageBytes!)
-                            : NetworkImage(dotenv.get("CLOUDFLARE_NO_IMAGE_URL")) as ImageProvider<Object>?,
+                            : NetworkImage(Env.c3) as ImageProvider<Object>?,
+                            
                           radius: 20,
                         ),
                       ),

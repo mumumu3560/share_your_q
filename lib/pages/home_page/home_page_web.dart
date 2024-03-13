@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     final String externalId = supabase.auth.currentUser!.id.toString();
     print(externalId);
     //TODO ここはandroidビルドリリースの時のみ
-    //OneSignal.login(externalId);
+    OneSignal.login(externalId);
   }
 
   /*

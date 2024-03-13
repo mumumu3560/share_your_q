@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display/comments_display.dart';
+//import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_display/comments_display.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/components/evaluate_display.dart';
 
 

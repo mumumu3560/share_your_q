@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_your_q/pages/home_page/notification/components/riverpod/supabase/notification_list_supabase.dart';
 import 'package:share_your_q/pages/home_page/settings/inquiry/inquiry_page.dart';
 import "package:share_your_q/utils/various.dart";
-
+//TODO ビルドリリースの時のみ
+import 'package:share_your_q/admob/inline_adaptive_banner.dart';
 
 class OtherNotificationList extends ConsumerWidget {
   const OtherNotificationList({Key? key}) : super(key: key);
@@ -44,11 +45,12 @@ class OtherNotificationList extends ConsumerWidget {
                       //InlineAdaptiveAdBanner(requestId: "LIST",),
                       //TODO Admob
                       /*
+                      //InlineAdaptiveExample(),
+                        */
                       child: InlineAdaptiveAdBanner(
                         requestId: "LIST", 
                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                      )//InlineAdaptiveExample(),
-                        */
+                      )
                     ),
                     //const ,
                     OtherNotificationListItem(
