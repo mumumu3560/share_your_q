@@ -342,117 +342,113 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                FutureBuilder(
-                  future: fetchProfileImage(),
-                  builder: (context, profileImageSnapshot) {
-                    print("profileImageSnapshotの中身");
-                    print(profileImageSnapshot.data);
-                    if (profileImageSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      // データの読み込み中はローディングインジケータなどを表示する
-                      return const CircularProgressIndicator();
-                    } else if (profileImageSnapshot.hasError ||
-                        profileImageSnapshot.data == "") {
-                      // エラーが発生した場合は代替のアイコンを表示する
-                      return GestureDetector(
-                        child: const CircleAvatar(
-                          radius: 16,
-                          child: Icon(
-                            Icons.error_outline,
-                            color: Colors.blue,
-                            size: 40,
-                          ),
-                        ),
-                        onTap: () {
-                          print('エラーが発生しました。onTap アクションをここで処理してください。');
-                          context.showErrorSnackBar(message: "プロフィールに遷移できません");
-                        },
-                      );
-                    } else {
-                      print(targetUserId);
-                      isLoadingImage = false;
-                      // データが正常に読み込まれた場合に画像を表示する
-                      return GestureDetector(
-                        child: CircleAvatar(
-                          radius: 16,
-                          child: ClipOval(
-                            child: FutureBuilder(
-                              future: fetchImageWithCache(
-                                  profileImageSnapshot.data as String),
-                              builder: (context, imageSnapshot) {
-                                if (imageSnapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  // データの読み込み中はローディングインジケータなどを表示する
-                                  return const CircularProgressIndicator();
-                                } else if (imageSnapshot.hasError ||
-                                    imageSnapshot.data == null) {
-                                  print("ここかもしれないなぁ");
-                                  // エラーが発生した場合は代替のアイコンを表示する
+            FutureBuilder(
+              future: fetchProfileImage(),
+              builder: (context, profileImageSnapshot) {
+                print("profileImageSnapshotの中身");
+                print(profileImageSnapshot.data);
+                if (profileImageSnapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  // データの読み込み中はローディングインジケータなどを表示する
+                  return const CircularProgressIndicator();
+                } else if (profileImageSnapshot.hasError ||
+                    profileImageSnapshot.data == "") {
+                  // エラーが発生した場合は代替のアイコンを表示する
+                  return GestureDetector(
+                    child: const CircleAvatar(
+                      radius: 16,
+                      child: Icon(
+                        Icons.error_outline,
+                        color: Colors.blue,
+                        size: 40,
+                      ),
+                    ),
+                    onTap: () {
+                      print('エラーが発生しました。onTap アクションをここで処理してください。');
+                      context.showErrorSnackBar(message: "プロフィールに遷移できません");
+                    },
+                  );
+                } else {
+                  print(targetUserId);
+                  isLoadingImage = false;
+                  // データが正常に読み込まれた場合に画像を表示する
+                  return GestureDetector(
+                    child: CircleAvatar(
+                      radius: 16,
+                      child: ClipOval(
+                        child: FutureBuilder(
+                          future: fetchImageWithCache(
+                              profileImageSnapshot.data as String),
+                          builder: (context, imageSnapshot) {
+                            if (imageSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              // データの読み込み中はローディングインジケータなどを表示する
+                              return const CircularProgressIndicator();
+                            } else if (imageSnapshot.hasError ||
+                                imageSnapshot.data == null) {
+                              print("ここかもしれないなぁ");
+                              // エラーが発生した場合は代替のアイコンを表示する
+                              return const Icon(
+                                Icons.error_outline,
+                                color: Colors.red,
+                                size: 32,
+                              );
+                            } else {
+                              // データが正常に読み込まれた場合に画像を表示する
+                              print("ここは最後の砦です");
+                              print(profileImageSnapshot.data);
+                              return Image.memory(
+                                imageSnapshot.data as Uint8List,
+                                fit: BoxFit.cover,
+                                width: 32,
+                                height: 32,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print("ここは最後のエラーとアンって");
+                                  // エラーが発生した場合の代替イメージを表示する
                                   return const Icon(
                                     Icons.error_outline,
                                     color: Colors.red,
                                     size: 32,
                                   );
-                                } else {
-                                  // データが正常に読み込まれた場合に画像を表示する
-                                  print("ここは最後の砦です");
-                                  print(profileImageSnapshot.data);
-                                  return Image.memory(
-                                    imageSnapshot.data as Uint8List,
-                                    fit: BoxFit.cover,
-                                    width: 32,
-                                    height: 32,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      print("ここは最後のエラーとアンって");
-                                      // エラーが発生した場合の代替イメージを表示する
-                                      return const Icon(
-                                        Icons.error_outline,
-                                        color: Colors.red,
-                                        size: 32,
-                                      );
-                                    },
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          if (!isLoadingImage) {
-                            if (widget.canToPage) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => ProfilePage(
-                                    userId: widget.profileItem["id"],
-                                    userName: widget.profileItem["username"],
-                                    profileImage: likesUserImageId,
-                                  ),
-                                ),
+                                },
                               );
                             }
-                          } else {
-                            context.showErrorSnackBar(message: "現在読み込み中です...");
-                          }
-                        },
-                      );
-                    }
-                  },
-                ),
-                SizedBox(
-                  width: SizeConfig.blockSizeHorizontal! * 1,
-                ),
-                Text(
-                  widget.profileItem['username'] + "さんからいいねされました",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    //背景が黒に合う色、水色か緑色を使いたい。
-                    color: Color.fromARGB(255, 99, 236, 99),
-                  ),
-                ),
-              ],
+                          },
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      if (!isLoadingImage) {
+                        if (widget.canToPage) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                userId: widget.profileItem["id"],
+                                userName: widget.profileItem["username"],
+                                profileImage: likesUserImageId,
+                              ),
+                            ),
+                          );
+                        }
+                      } else {
+                        context.showErrorSnackBar(message: "現在読み込み中です...");
+                      }
+                    },
+                  );
+                }
+              },
+            ),
+            SizedBox(
+              width: SizeConfig.blockSizeHorizontal! * 1,
+            ),
+            Text(
+              widget.profileItem['username'] + "さんからいいねされました",
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                //背景が黒に合う色、水色か緑色を使いたい。
+                color: Color.fromARGB(255, 99, 236, 99),
+              ),
             ),
             SizedBox(
               height: SizeConfig.blockSizeHorizontal! * 2,
@@ -460,6 +456,7 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                
                 widget.imageItem["title"] != null
                     ? titleLines.length > 3
                         ? Text(

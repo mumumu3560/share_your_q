@@ -266,8 +266,10 @@ class CommentListState extends State<CommentList> {
                                           isRes: true, 
                                           commentsId: widget.item!["id"] as int,
                                         ),
-                                  const Text(
-                                    "返信はありません",
+                                  Text(
+                                    widget.responseId == -1
+                                        ? "コメントはありません"
+                                        : "返信はありません",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

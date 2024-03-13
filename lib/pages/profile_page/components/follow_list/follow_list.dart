@@ -421,7 +421,7 @@ class _MyListItemState extends State<MyListItem> {
                 children: [
 
                   Text(
-                    userName,
+                    "${userName}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -429,7 +429,7 @@ class _MyListItemState extends State<MyListItem> {
                   ),
 
                   Text(
-                    explainText,
+                    "$explainText",
                     style: const TextStyle(
                       fontSize: 12,
                     ),

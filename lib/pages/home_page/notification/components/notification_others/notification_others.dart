@@ -126,24 +126,27 @@ class OtherNotificationListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title),
-          Text(formatCreatedAt(createdAt)),
-        ],
+    return Card(
+      child: ListTile(
+        dense: true,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title),
+            Text(formatCreatedAt(createdAt)),
+          ],
+        ),
+        onTap: () {
+          //お問い合わせページに飛ぶ
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return InquiryPage();
+              },
+            ),
+          );
+        },
       ),
-      onTap: () {
-        //お問い合わせページに飛ぶ
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return InquiryPage();
-            },
-          ),
-        );
-      },
     );
   }
 }

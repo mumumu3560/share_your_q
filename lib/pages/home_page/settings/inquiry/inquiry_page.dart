@@ -287,6 +287,7 @@ class InquiryPageState extends State<InquiryPage> {
         title: const Text('お問い合わせ'),
         actions: [
 
+          /*
           //チャットマーク
           IconButton(
             icon: const Icon(Icons.chat, color: Colors.green,),
@@ -294,6 +295,7 @@ class InquiryPageState extends State<InquiryPage> {
               _showCommentSheet();
             },
           ),
+           */
 
           SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
           //ヘルプマーク
@@ -303,94 +305,137 @@ class InquiryPageState extends State<InquiryPage> {
               showHelpDialog();
             },
           ),
+
+          SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
         ],
       ),
       //ListViewの形式で表示
-      body: ListView.builder(
-
-        reverse: true,
-        itemCount: inquiries.length,
-        itemBuilder: (context, index){
-          return Align(
-            alignment: inquiries[index]['isYou'] ? Alignment.centerRight : Alignment.centerLeft,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              width: SizeConfig.blockSizeHorizontal! * 80,
-              child: Card(
-          
-
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  tileColor: inquiries[index]['isYou'] ? Colors.green : null,
-                  //Color.fromARGB(255, 73, 72, 72)
-                  //Color.fromARGB(255, 0, 0, 0)
-                  //tileColor: inquiries[index]['isYou'] ? null : Color.fromARGB(255, 73, 72, 72),
-                  dense: true,
-                  title: Text(inquiries[index]['contents']),
-                  subtitle: Text(
-                    formatCreatedAt(inquiries[index]['created_at']),
-                    style: const TextStyle(
-                      fontSize: 10,
-                    ),
-                  ),
-                            
-                  
-                  onLongPress: (){
-                    //自分の投稿の場合のみ削除できるようにする
-                    if(inquiries[index]['isYou']){
-                      showDialog(
-                        context: context,
-                        builder: (context){
-                          return AlertDialog(
-                            title: const Text('削除'),
-                            content: const Text('この投稿を削除しますか？'),
-                            actions: [
-                              TextButton(
-                                onPressed: (){
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('キャンセル'),
+      body: Column(
+        children: [
+          SizedBox(
+            height: SizeConfig.blockSizeVertical! * 80,
+            child: ListView.builder(
+            
+              reverse: true,
+              itemCount: inquiries.length,
+              itemBuilder: (context, index){
+                return Column(
+                  children: [
+                    Align(
+                      alignment: inquiries[index]['isYou'] ? Alignment.centerRight : Alignment.centerLeft,
+                      child: InkWell(
+                        onLongPress:(){
+                          //自分の投稿の場合のみ削除できるようにする
+                          if(inquiries[index]['isYou']){
+                            showDialog(
+                              context: context,
+                              builder: (context){
+                                return AlertDialog(
+                                  title: const Text('削除'),
+                                  content: const Text('この投稿を削除しますか？'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: (){
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('キャンセル'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async{
+                                        
+                                        try{
+                                          await supabase
+                                            .from('inquiries')
+                                            .delete()
+                                            .eq('contents', inquiries[index]['contents'])
+                                            .eq("user_id", myUserId);
+                                          
+                                          await reloadList();
+                
+                                        }
+                                        on PostgrestException catch (e){
+                                          context.showErrorSnackBar(message: e.message);
+                                          return;
+                                        }
+                                        catch(_){
+                                          context.showErrorSnackBar(message: unexpectedErrorMessage);
+                                          return;
+                                        }
+                                        if(context.mounted){
+                                          Navigator.pop(context);
+                                        }
+                                      },
+                                      child: const Text('削除'),
+                                    ),
+                                  ],
+                                );
+                              }
+                            );
+                          }
+                        },
+                        child: Container(
+                          
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: inquiries[index]['isYou'] ? Colors.green : null,
+                          ),
+                          
+                          width: SizeConfig.blockSizeHorizontal! * 80,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                                        
+                              
+                            children: [
+                              Text(
+                                inquiries[index]['contents'],
+                                style: TextStyle(
+                                  color: inquiries[index]['isYou'] ? Colors.white : null,
+                                ),
                               ),
-                              TextButton(
-                                onPressed: () async{
-                                  
-                                  try{
-                                    await supabase
-                                      .from('inquiries')
-                                      .delete()
-                                      .eq('contents', inquiries[index]['contents'])
-                                      .eq("user_id", myUserId);
-                                    
-                                    await reloadList();
-
-                                  }
-                                  on PostgrestException catch (e){
-                                    context.showErrorSnackBar(message: e.message);
-                                    return;
-                                  }
-                                  catch(_){
-                                    context.showErrorSnackBar(message: unexpectedErrorMessage);
-                                    return;
-                                  }
-                                  if(context.mounted){
-                                    Navigator.pop(context);
-                                  }
-                                },
-                                child: const Text('削除'),
+                              Text(
+                                formatCreatedAt(inquiries[index]['created_at']),
+                                style: TextStyle(
+                                  color: inquiries[index]['isYou'] ? Colors.white : null,
+                                  fontSize: 10
+                                ),
                               ),
                             ],
-                          );
-                        }
-                      );
-                    }
-                  },
+                          )
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: SizeConfig.blockSizeVertical!*3,),
+            
+                    
+                  
+                  ],
+                );
+              },
+            ),
+          ),
+        
+          Expanded(
+            child: Container(
+              
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey,
                 ),
               ),
-            ),
-          );
-        },
+              child: ListTile(
+                title: const Text("コメントを入力"),
+                onTap: (){
+                  _showCommentSheet();
+                },
+              ),
+            )
+          )
+        ],
       ),
     );
   }

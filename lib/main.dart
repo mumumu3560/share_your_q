@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_your_q/env/env.dart';
 
 //import "package:google_fonts/google_fonts.dart";
 
@@ -38,7 +39,7 @@ Future<void> main() async {
   //TODO ここはandroidビルドリリースの時のみ
   //MobileAds.instance.initialize();
   
-  await dotenv.load(fileName: '.env');
+  //await dotenv.load(fileName: '.env');
   
 
   timeago.setLocaleMessages("ja", timeago.JaMessages());
@@ -62,8 +63,11 @@ Future<void> main() async {
 
   await Supabase.initialize(
     // TODO: ここにSupabaseのURLとAnon Keyを入力
-    url: dotenv.get('SUPABASE_URL'),
-    anonKey: dotenv.get('SUPABASE_KEY'),
+    //url: dotenv.get('SUPABASE_URL'),
+    //anonKey: dotenv.get('SUPABASE_KEY'),
+
+    url: Env.s1,
+    anonKey: Env.s2,
   );
 
   /*

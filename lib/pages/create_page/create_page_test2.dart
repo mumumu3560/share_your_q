@@ -731,6 +731,8 @@ class _CreatePageState extends State<CreatePage> {
                       title: Text('各ジャンルの投稿は一日一回まで',style: TextStyle(fontSize: 18)),
                       onTap: () {
 
+                        
+
                       },
                     ),
 
@@ -748,10 +750,16 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
-                        setState(() {
-                          subject = "数学";
-                        });
-                        Navigator.of(context).pop();
+                        if(math == 0){
+                          
+                        }
+                        else{
+
+                          setState(() {
+                            subject = "数学";
+                          });
+                          Navigator.of(context).pop();
+                        }
 
                       },
                     ),
@@ -765,10 +773,18 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
-                        setState(() {
-                          subject = "物理";
-                        });
-                        Navigator.of(context).pop();
+                        
+                        if(phys == 0){
+                          
+                        }
+                        else{
+
+                          setState(() {
+                            subject = "物理";
+                          });
+                          Navigator.of(context).pop();
+                        }
+
                       },
                     ),
                     ListTile(
@@ -781,10 +797,17 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
-                        setState(() {
-                          subject = "化学";
-                        });
-                        Navigator.of(context).pop();
+
+                        if(chem == 0){
+                          
+                        }
+                        else{
+
+                          setState(() {
+                            subject = "化学";
+                          });
+                          Navigator.of(context).pop();
+                        }
 
                       },
                     ),
@@ -798,11 +821,18 @@ class _CreatePageState extends State<CreatePage> {
                         ],
                       ),
                       onTap: () {
-                        setState(() {
-                          subject = "その他";
-                        });
+                        
+                        
+                        if(other == 0){
+                          
+                        }
+                        else{
 
-                        Navigator.of(context).pop();
+                          setState(() {
+                            subject = "その他";
+                          });
+                          Navigator.of(context).pop();
+                        }
 
 
                       },
