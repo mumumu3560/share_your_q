@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_your_q/pages/display_page/display_page.dart';
 import 'package:share_your_q/pages/home_page/notification/components/notification_likes/notification_likes.dart';
 import 'package:share_your_q/pages/home_page/notification/components/notification_others/notification_others.dart';
 import 'package:share_your_q/pages/home_page/notification/components/riverpod/tab_notifier.dart';
 
-import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
-
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-//import 'package:share_your_q/image_operations/image_list_display.dart';
-
-//import "package:share_your_q/admob/ad_test.dart";
-
-import 'dart:typed_data';
+//TODO Admob
+import "package:share_your_q/admob/inline_adaptive_banner.dart";
 
 //google_admob
 //TODO ビルドリリースの時のみ
@@ -28,7 +19,29 @@ class NotificationPage extends ConsumerWidget{
   @override
   Widget build(BuildContext context, WidgetRef ref){
 
-    final tabs = ref.watch(tabNotifierProvider);
+    void showHelp(){
+      //ここにはダイアログの形でヘルプを表示する
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("通知"),
+            content: Text(
+              "お知らせはお問い合わせへの返事などが表示されます。"
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                }, 
+                child: Text("OK")
+              )
+            ],
+          );
+        }
+      );
+
+    }
 
 
     return DefaultTabController(
@@ -36,6 +49,13 @@ class NotificationPage extends ConsumerWidget{
       initialIndex: 0,
       child: Scaffold(
         appBar: AppBar(
+          actions: [
+            //ヘルプマーク
+            IconButton(
+              onPressed: showHelp, 
+              icon: Icon(Icons.help_outline)
+            )
+          ],
           
           title: Column(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -48,6 +68,8 @@ class NotificationPage extends ConsumerWidget{
         ),
         body: Column(
           children: [
+
+
             TabBar(
                 tabs: [
                   Tab(text: "いいね "),
@@ -57,8 +79,10 @@ class NotificationPage extends ConsumerWidget{
                   ref.read(tabNotifierProvider.notifier).updateState(index);
                 },
               ),
-            SizedBox(
-              height: SizeConfig.blockSizeVertical! * 60,
+
+
+
+            Expanded(
               child: TabBarView(
                 children: [
                   //通知
@@ -72,6 +96,27 @@ class NotificationPage extends ConsumerWidget{
                 ],
               ),
             ),
+
+            SizedBox(
+            height: SizeConfig.blockSizeVertical! * 2,
+          ),
+
+
+          Container(
+            height: SizeConfig.blockSizeVertical! * 10,
+            color: Colors.white,
+            //TODO Admob
+            /*
+            
+             */
+            child: InlineAdaptiveAdBanner(
+              requestId: "NOTIFICATION", 
+              adHeight: SizeConfig.blockSizeVertical!.toInt() * 10,
+            ),
+          ),
+
+
+            
           ],
         ),
       ),

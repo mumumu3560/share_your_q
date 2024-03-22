@@ -31,6 +31,7 @@ class ImageListDisplay extends StatefulWidget {
   final bool canToPage;
 
   final bool add;
+  final bool showAdd;
 
   const ImageListDisplay({
     Key? key,
@@ -44,6 +45,7 @@ class ImageListDisplay extends StatefulWidget {
     required this.lang,
     required this.canToPage,
     required this.add,
+    required this.showAdd,
   }) : super(key: key);
 
   @override
@@ -86,13 +88,20 @@ class ImageListDisplayState extends State<ImageListDisplay> {
       //https://supabase.com/docs/reference/dart/using-filters
       var query =
           supabase.from("image_data").select<List<Map<String, dynamic>>>();
-      if (widget.level != "全て" && widget.level != null)
+      if (widget.level != "全て" && widget.level != null) {
         query = query.eq("level", widget.level as String);
-      if (widget.subject != "全て" && widget.subject != null)
+      }
+
+      if (widget.subject != "全て" && widget.subject != null) {
         query = query.eq("subject", widget.subject as String);
+      }
+
       if (widget.method == "未発掘") query = query.eq("watched", 0);
-      if (widget.searchUserId != "" && widget.searchUserId != null)
+
+      if (widget.searchUserId != "" && widget.searchUserId != null) {
         query = query.eq("user_id", widget.searchUserId as String);
+      }
+
       if (widget.lang != "全て") query = query.eq("lang", widget.lang);
 
       List<String> tags = [];
@@ -102,9 +111,6 @@ class ImageListDisplayState extends State<ImageListDisplay> {
         tags.add(tag);
       }
 
-      for (var tag in tags) {
-        print(tag);
-      }
 
       //ここでtagを検索する
       for (var tag in tags) {
@@ -119,11 +125,8 @@ class ImageListDisplayState extends State<ImageListDisplay> {
             "tag3.like.*$tag*,"
             "tag4.like.*$tag*,"
             "tag5.like.*$tag*");
-        print(tag);
         //query = query.eq("tag1", tag);
       }
-      print("ここまでtag");
-      //query = query.eq("tag1", tags[0]);
 
       if (widget.method == "新着") {
         response = await query.order("created_at", ascending: false);
@@ -141,7 +144,6 @@ class ImageListDisplayState extends State<ImageListDisplay> {
         imageData = response;
       });
     } catch (e) {
-      print('Error fetching data: $e');
     }
   }
 
@@ -228,7 +230,8 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                     ),
                                      */
 
-                                    SizedBox(
+                                    widget.showAdd
+                                      ?SizedBox(
                                       height:
                                           SizeConfig.blockSizeVertical! * 40,
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
@@ -241,7 +244,8 @@ class ImageListDisplayState extends State<ImageListDisplay> {
                                         requestId: "LIST", 
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
                                       )
-                                    ),
+                                    )
+                                    : const SizedBox(),
                                     //const ,
 
                                     MyListItem(
@@ -290,27 +294,6 @@ class _MyListItemState extends State<MyListItem>
   @override
   bool get wantKeepAlive => true;
 
-  /*
-  Future<String> loadUserImage(String imageUrl) async {
-    try {
-      final response = await http.get(Uri.parse(imageUrl));
-
-      if (response.statusCode == 200) {
-        // レスポンスステータスコードが 200 の場合、画像のデータを返す
-        return imageUrl;
-      } else {
-        // レスポンスステータスコードが 200 以外の場合、エラーメッセージを返す
-        print('Error loading image: Status Code ${response.statusCode}');
-        return '';
-      }
-    } catch (e) {
-      // ネットワークエラーが発生した場合、エラーメッセージを返す
-      print('Error loading image: $e');
-      return '';
-    }
-  }
-   */
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -324,9 +307,28 @@ class _MyListItemState extends State<MyListItem>
 
     //ここで投稿日時の管理
     String formatCreatedAt(String createdAtString) {
-      DateTime createdAt = DateTime.parse(createdAtString);
-      DateTime now = DateTime.now();
+
+      
+      //ここで日本時間に変換する
+      //DateTime createdAt = DateTime.parse(createdAtString).add(const Duration(hours: 9));
+      DateTime createdAt = DateTime.parse(createdAtString).toLocal();
+
+      /*
+      print("createdAtString: $createdAtString");
+      print("変換後の");
+      print(createdAt);
+       */
+      DateTime now = DateTime.now().toLocal();
+      
+      /*
+      print("現在時刻");
+      print(now);
+       */
       Duration difference = now.difference(createdAt);
+      /*
+      print("差分");
+      print(difference);
+       */
 
       if (difference.inMinutes < 60) {
         return '${difference.inMinutes}分前';
@@ -341,10 +343,6 @@ class _MyListItemState extends State<MyListItem>
 
     Future<String> fetchProfileImage(String target) async {
       try {
-        print("これからlistの確認を行います");
-        print(target);
-
-        print(targetUserId);
 
         final response = await supabase
             .from("profiles")
@@ -358,9 +356,6 @@ class _MyListItemState extends State<MyListItem>
           return response[0]["profile_image_id"];
         }
 
-        //print(profileImageId);
-
-        //return response[0]["profile_image_id"];
       } on PostgrestException catch (error) {
         if (context.mounted) {
           context.showErrorSnackBar(message: error.message);
@@ -410,12 +405,10 @@ class _MyListItemState extends State<MyListItem>
                       ),
                     ),
                     onTap: () {
-                      print('エラーが発生しました。onTap アクションをここで処理してください。');
                       context.showErrorSnackBar(message: "プロフィールに遷移できません");
                     },
                   );
                 } else {
-                  print(targetUserId);
                   isLoadingImage = false;
                   // データが正常に読み込まれた場合に画像を表示する
                   return GestureDetector(
@@ -432,7 +425,6 @@ class _MyListItemState extends State<MyListItem>
                               return const CircularProgressIndicator();
                             } else if (imageSnapshot.hasError ||
                                 imageSnapshot.data == null) {
-                              print("ここかもしれないなぁ");
                               // エラーが発生した場合は代替のアイコンを表示する
                               return const Icon(
                                 Icons.error_outline,
@@ -440,16 +432,13 @@ class _MyListItemState extends State<MyListItem>
                                 size: 40,
                               );
                             } else {
-                              // データが正常に読み込まれた場合に画像を表示する
-                              print("ここは最後の砦です");
-                              print(profileImageSnapshot.data);
+                              // データが正常に読み込まれた場合に画像を表示
                               return Image.memory(
                                 imageSnapshot.data as Uint8List,
                                 fit: BoxFit.cover,
                                 width: 40,
                                 height: 40,
                                 errorBuilder: (context, error, stackTrace) {
-                                  print("ここは最後のエラーとアンって");
                                   // エラーが発生した場合の代替イメージを表示する
                                   return const Icon(
                                     Icons.error_outline,
@@ -732,61 +721,6 @@ class _MyListItemState extends State<MyListItem>
               commentAdd: widget.item["com_add"],
             ),
           )
-
-              /*
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) => DisplayPage(
-
-                title: widget.item['title'],
-
-                image_id: widget.item["image_data_id"],
-                image_own_user_id: widget.item["user_id"],
-                tag1: widget.item['tag1'],
-                tag2: widget.item['tag2'],
-                tag3: widget.item['tag3'],
-                tag4: widget.item['tag4'],
-                tag5: widget.item['tag5'],
-
-                //tags: item['tags'],
-                level: widget.item['level']!,
-                subject: widget.item['subject']!,
-                image1: null,
-                image2: null,
-                imageUrlPX: imageUrlPX,
-                imageUrlCX: imageUrlCX,
-
-                num: widget.item['num'],
-
-                explanation: widget.item['explain'],
-
-                problem_id: widget.item["problem_id"],
-                comment_id: widget.item["comment_id"],
-
-                watched: widget.item["watched"],
-
-                likes: widget.item["likes"],
-
-                userName: widget.item["user_name"],
-
-                difficulty: widget.item["eval_num"] != 0
-                  ? widget.item["difficulty_point"]/widget.item["eval_num"].toDouble()
-                  : 0,
-
-                profileImage: profileImageId,
-
-                problemAdd: widget.item["pro_add"],
-                commentAdd: widget.item["com_add"],
-
-
-              ),
-              transitionsBuilder:(context, animation, secondaryAnimation, child) {
-                Offset _start = Offset(1.0, 0.0); //出てくる場所
-                Offset _end = Offset.zero; //最終地点
-                Animation<Offset> _offset = Tween(begin: _start, end: _end).animate(animation);
-                return SlideTransition(child: child, position: _offset);
-              },
-            )
-            */
 
               );
         },

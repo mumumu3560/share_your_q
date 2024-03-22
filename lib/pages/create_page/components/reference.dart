@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ReferenceDisplay extends StatefulWidget{
@@ -28,10 +27,14 @@ class _ReferenceDisplayState extends State<ReferenceDisplay>{
       if (await canLaunchUrl(Uri.parse(targetUrl))) {
         await launchUrl(Uri.parse(targetUrl));
       } else {
-        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+        if(mounted){
+          context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+        }
       }
     } catch(_){
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
       return ;
     }
   }
@@ -42,12 +45,6 @@ class _ReferenceDisplayState extends State<ReferenceDisplay>{
   Widget build(BuildContext context){
     return SingleChildScrollView(
       child: Container(
-        /*
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.green),
-          borderRadius: BorderRadius.circular(10),
-        ),
-         */
     
         child: Column(
           
@@ -86,9 +83,11 @@ class _ReferenceDisplayState extends State<ReferenceDisplay>{
                               const SizedBox(width: 5),
                               
                               InkWell(
+                                /*
                                 onTap: () async {
-                                  await _launchURL(entry.value);
+                                  //await _launchURL(entry.value);
                                 },
+                                 */
                                 child: Text(
                                   entry.value,
                                 ).urlToLink(context),

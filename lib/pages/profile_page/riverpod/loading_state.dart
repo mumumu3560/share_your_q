@@ -1,3 +1,4 @@
+/*
 import "package:riverpod_annotation/riverpod_annotation.dart";
 
 part"loading_state.g.dart";
@@ -32,3 +33,4 @@ class LoadingNotifier extends _$LoadingNotifier {
   }
 
 }
+ */

@@ -41,17 +41,8 @@ class _IconSettingsState extends State<IconSettings> {
   @override
   void initState() {
 
-    print(profileImageBytes);
-    print(widget.profileImage);
     // TODO: implement initState
     super.initState();
-    /*
-    fetchImage(widget.profileImage).then((bytes){
-      setState(() {
-        profileImageBytes = bytes;
-      });
-    });
-     */
 
 
   }
@@ -81,22 +72,19 @@ class _IconSettingsState extends State<IconSettings> {
     response1 = 1;
   }
 
-  print(response1);
-  print("ここではdirectUploadUrlが取得できたかどうか");
-
   if(response1 == 0){
     //context.showErrorSnackBar(message: "サーバーエラーが発生しました。");
   }
   else if(response1 == 1){
 
-    if(context.mounted){
+    if(mounted){
       context.showErrorSnackBar(message: "サーバーエラー1");
     }
     
     return 1;
   }
   else{
-    if(context.mounted){
+    if(mounted){
       context.showErrorSnackBar(message: "ネットワークエラー1。");
     }
     
@@ -126,12 +114,12 @@ class _IconSettingsState extends State<IconSettings> {
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return ;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return ;
@@ -144,7 +132,6 @@ class _IconSettingsState extends State<IconSettings> {
   // 選択した画像をアップロードする関数
   Future<int> uploadSelectedImage(PlatformFile? selectedImage, String customId, String? directUploadUrl) async{
     if (selectedImage != null && directUploadUrl != null) {
-      print("ここはどうですか？");
       final uploadUrl = directUploadUrl;
       int responseNum;
       try{
@@ -175,11 +162,11 @@ class _IconSettingsState extends State<IconSettings> {
     int response1 = await getImageUploadUrls(true);
 
     if(response1 != 0){
-      if(context.mounted){
+      if(mounted){
         Navigator.of(context).pop();
       }
 
-      if(context.mounted){
+      if(mounted){
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -206,7 +193,7 @@ class _IconSettingsState extends State<IconSettings> {
       return;
     }
 
-    if(context.mounted){
+    if(mounted){
       Navigator.of(context).pop();
       showLoadingDialog(context, "情報を送信中...");
     }
@@ -216,11 +203,11 @@ class _IconSettingsState extends State<IconSettings> {
     int response2 = await uploadSelectedImage(selectedImage1, newProfileImageId, directUploadUrl1);
 
     if(response2 != 0){
-      if(context.mounted){
+      if(mounted){
         Navigator.of(context).pop();
       }
 
-      if(context.mounted){
+      if(mounted){
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -245,7 +232,7 @@ class _IconSettingsState extends State<IconSettings> {
       return;
     }
 
-    if(context.mounted){
+    if(mounted){
       // ダイアログを閉じる
       Navigator.of(context).pop();
       showDialog(

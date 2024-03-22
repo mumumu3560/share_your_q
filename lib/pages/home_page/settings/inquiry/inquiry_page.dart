@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
 //import 'package:share_your_q/admob/ad_test.dart';
 
 import 'package:share_your_q/utils/various.dart';
@@ -145,10 +144,14 @@ class InquiryPageState extends State<InquiryPage> {
 
     } on PostgrestException catch (error) {
       // エラーが発生した場合はエラーメッセージを表示
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (_) {
       // 予期せぬエラーが起きた際は予期せぬエラー用のメッセージを表示
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
 
 
@@ -236,11 +239,6 @@ class InquiryPageState extends State<InquiryPage> {
       // created_atでリストをソート
       combinedList.sort((a, b) => b['created_at'].compareTo(a['created_at']));
 
-      debugPrint(combinedList.toString());
-
-      debugPrint("combinedList");
-      //combinedlistの型は？
-      debugPrint(combinedList.runtimeType.toString());
 
 
 
@@ -259,11 +257,15 @@ class InquiryPageState extends State<InquiryPage> {
 
     }
     on PostgrestException catch (e){
-      context.showErrorSnackBar(message: e.message);
+      if(mounted){
+        context.showErrorSnackBar(message: e.message);
+      }
       return;
     }
     catch(_){
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
       return;
     }
   }
@@ -354,11 +356,15 @@ class InquiryPageState extends State<InquiryPage> {
                 
                                         }
                                         on PostgrestException catch (e){
-                                          context.showErrorSnackBar(message: e.message);
+                                          if(context.mounted){
+                                            context.showErrorSnackBar(message: e.message);
+                                          }
                                           return;
                                         }
                                         catch(_){
-                                          context.showErrorSnackBar(message: unexpectedErrorMessage);
+                                          if(context.mounted){
+                                            context.showErrorSnackBar(message: unexpectedErrorMessage);
+                                          }
                                           return;
                                         }
                                         if(context.mounted){
@@ -384,7 +390,7 @@ class InquiryPageState extends State<InquiryPage> {
                             color: inquiries[index]['isYou'] ? Colors.green : null,
                           ),
                           
-                          width: SizeConfig.blockSizeHorizontal! * 80,
+                          //width: SizeConfig.blockSizeHorizontal! * 80,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                                         

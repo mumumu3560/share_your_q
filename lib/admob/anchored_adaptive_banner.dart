@@ -1,9 +1,61 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:share_your_q/env/env.dart';
+
+
+/*
+
+ */
+
+
+
+class AdaptiveAdBanner extends StatelessWidget{
+  final String requestId;
+
+  const AdaptiveAdBanner({
+    Key? key,
+    required this.requestId,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
 
 class AdaptiveAdBanner extends StatelessWidget {
 
@@ -15,19 +67,21 @@ class AdaptiveAdBanner extends StatelessWidget {
   }): super(key: key);
 
   static Map<String, String> adUnits = {
-    "create": Env.b1,
-    "update": Env.b2,
-    "search": Env.b3,
-    "profile": Env.b4,
-    "list": Env.b5,
-    "display": Env.b6,
+    "CREATE": Env.b1,
+    "UPDATE": Env.b2,
+    "SEARCH": Env.b3,
+    "PROFILE": Env.b4,
+    "LIST": Env.b5,
+    "DISPLAY": Env.b6,
+    "SETTING": Env.b7,
+    "NOTIFICATION": Env.b8,
   };
 
   final VoidCallback? onLoaded;
 
   @override
   Widget build(BuildContext context) {
-    final adUnitId = kReleaseMode ? adUnits[requestId]: adUnits[requestId];
+    final adUnitId = adUnits[requestId];
     return LayoutBuilder(builder: (context, constraint) {
       return HookBuilder(builder: (context) {
         final bannerLoaded = useState(false);
@@ -79,3 +133,11 @@ class AdaptiveAdBanner extends StatelessWidget {
     });
   }
 }
+
+
+
+
+
+
+ */
+

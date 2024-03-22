@@ -11,6 +11,9 @@ import 'package:share_your_q/utils/various.dart';
 
 import "package:share_your_q/pages/profile_page/components/settings/icon_setting.dart";
 
+
+
+
 //問題を作るページ
 
 //TODO textformfieldの長さの制限を考える。
@@ -63,10 +66,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   Future<void> getInfoFromSupabase() async{
     try{
 
-      print("エラー箇所はここの可能性");
       profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
 
-      print("ここが来ればおｋ");
 
       setState(() {
         userName = profileData[0]["username"];
@@ -94,12 +95,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return ;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return ;
@@ -128,12 +129,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return 1;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return 2;
@@ -375,7 +376,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
 
                           if(response != 0){
-                            if(context.mounted){
+                            if(mounted){
                               Navigator.of(context).pop();
                             }
 
@@ -400,7 +401,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
                           }
                           else{
-                            if(context.mounted){
+                            if(mounted){
                               Navigator.of(context).pop();
                             }
 
@@ -438,7 +439,12 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           ),
 
           Container(
-            height: SizeConfig.blockSizeVertical! * 15,
+            height: SizeConfig.blockSizeVertical! * 2,
+
+          ),
+
+          Container(
+            height: SizeConfig.blockSizeVertical! * 10,
             color: Colors.white,
             child: AdaptiveAdBanner(requestId: "UPDATE"),
           ),
@@ -448,33 +454,6 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

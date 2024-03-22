@@ -5,8 +5,6 @@ import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 //google_admob
 //TODO ビルドリリースの時のみ
 //import "package:share_your_q/admob/ad_mob.dart";
@@ -112,81 +110,26 @@ class _DisplayPageState extends State<DisplayPage>{
   bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
-  //final AdMob _adMob = AdMob();
-
-  /*
-  late Future<List<int>> problemImageFuture;
-  late Future<List<int>> commentimageFuture;
-
-   */
+  
 
   List<Map<String,dynamic>> likesData = [];
 
 
 
-/*
-
-  Future<void> loadLikes() async{
-    
-    try{
-      likesData = await supabase
-        .from('likes')
-        .select<List<Map<String, dynamic>>>()
-        .eq('image_id', widget.image_id)
-        .eq('user_id', myUserId);
-      
-      isLiked = likesData[0]['add'];
-
-      if(likesData.isNotEmpty){
-
-        await supabase
-          .from("likes")
-          .update({
-            'add': isLiked,
-          })
-          .eq('image_id', widget.image_id).eq('user_id', myUserId);
-
-        setState(() {
-          isLiked = isLiked;
-        });
-      }
-      else{
-
-      }
-
-    }
-    on PostgrestException catch (error){
-      context.showErrorSnackBar(message: error.message);
-    }
-
-    
-  }
- */
-  
-  
-  
   @override
   void initState(){
     
 
-    /*
-    problemImageFuture = fetchImage(widget.problem_id!);
-    commentimageFuture = fetchImage(widget.comment_id!);
-     */
-
     super.initState();
-    //_insertOrUpdateDataToSupabaseTable();
     _initializeData();
 
     //TODO ビルドリリースの時のみ
-    //_adMob.load();
   }
 
   @override
   void dispose() {
     super.dispose();
     //TODO ビルドリリースの時のみ
-    //_adMob.dispose();
   }
 
 
@@ -241,7 +184,7 @@ class _DisplayPageState extends State<DisplayPage>{
                   ),
           
                   alignment: Alignment.center,
-                  height: SizeConfig.blockSizeVertical! * 80,
+                  height: SizeConfig.blockSizeVertical! * 75,
             
                   child: ProblemViewWidget(
                     title: widget.title,
@@ -306,13 +249,12 @@ class _DisplayPageState extends State<DisplayPage>{
             ),
           ),
 
-          SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
           
           /*
           
            */
           Container(
-            height: SizeConfig.blockSizeVertical!* 13,
+            height: SizeConfig.blockSizeVertical!* 10,
             color: Colors.white,
             child: AdaptiveAdBanner(requestId: "DISPLAY",)
           ),

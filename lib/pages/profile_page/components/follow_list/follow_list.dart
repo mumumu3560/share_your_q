@@ -269,13 +269,13 @@ class _MyListItemState extends State<MyListItem> {
       //return response[0]["profile_image_id"];
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
         
       }
       return Env.c3;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: unexpectedErrorMessage);
         
       }
@@ -307,8 +307,6 @@ class _MyListItemState extends State<MyListItem> {
 
     fetchUserProfile(targetUserId);
 
-    print(userName);
-    print(explainText);
   }
   @override
   Widget build(BuildContext context) {
@@ -343,12 +341,10 @@ class _MyListItemState extends State<MyListItem> {
                   ),
                 ),
                 onTap: () {
-                  print('エラーが発生しました。onTap アクションをここで処理してください。');
                   context.showErrorSnackBar(message: "プロフィールに遷移できません");
                 },
               );
             } else {
-              print(targetUserId);
               isLoadingImage = false;
               // データが正常に読み込まれた場合に画像を表示する
               return GestureDetector(
@@ -362,7 +358,6 @@ class _MyListItemState extends State<MyListItem> {
                           // データの読み込み中はローディングインジケータなどを表示する
                           return const CircularProgressIndicator();
                         } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                          print("ここかもしれないなぁ");
                           // エラーが発生した場合は代替のアイコンを表示する
                           return const Icon(
                             Icons.error_outline,
@@ -371,15 +366,12 @@ class _MyListItemState extends State<MyListItem> {
                           );
                         } else {
                           // データが正常に読み込まれた場合に画像を表示する
-                          print("ここは最後の砦です");
-                          print(profileImageSnapshot.data);
                           return Image.memory(
                             imageSnapshot.data as Uint8List,
                             fit: BoxFit.cover,
                             width: 40,
                             height: 40,
                             errorBuilder: (context, error, stackTrace) {
-                              print("ここは最後のエラーとアンって");
                               // エラーが発生した場合の代替イメージを表示する
                               return const Icon(
                                 Icons.error_outline,

@@ -39,6 +39,7 @@ class OtherNotificationList extends ConsumerWidget {
                     ),
                       */
 
+                    /*
                     SizedBox(
                       height:
                           SizeConfig.blockSizeVertical! * 20,
@@ -52,6 +53,7 @@ class OtherNotificationList extends ConsumerWidget {
                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
                       )
                     ),
+                     */
                     //const ,
                     OtherNotificationListItem(
                       title: item["contents"],
@@ -81,12 +83,16 @@ class OtherNotificationList extends ConsumerWidget {
 
 
     return Scaffold(
+      /*
       appBar: AppBar(
         title: const Text("お知らせ"),
+        /*
         actions: [
           refreshIcon,
         ],
+         */
       ),
+       */
       body: Container(
         child: widget,
       ),

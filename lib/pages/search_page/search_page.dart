@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// ImageDisplayScreenをインポート
 import "package:share_your_q/utils/various.dart";
 
 
@@ -44,11 +43,8 @@ class _SearchPageState extends State<SearchPage> {
 
     if (tagInput.isNotEmpty && tags.length < 5) {
 
-      print(tags);
-      print(tagInput);
 
       if (!tags.contains(tagInput)) {
-        print("this is a test");
         setState(() {
           tags.add(tagInput);
           tagInput = '';
@@ -74,8 +70,6 @@ class _SearchPageState extends State<SearchPage> {
       
     }
 
-    print(jad);
-    print(tags);
   }
 
   // タグを削除する関数
@@ -224,50 +218,6 @@ class _SearchPageState extends State<SearchPage> {
             
                   ),
 
-                  /*
-                  Row(
-                    //mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // 検索方法の選択
-                      DropdownButton<String>(
-                        value: method,
-                        onChanged: (value) {
-                          setState(() {
-                            method = value;
-                          });
-                        },
-                        items: <String>['新着', '未発掘', "ランダム"]
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        //hint: const Text('並び替え方法の選択'),
-                      ),
-
-                      SizedBox(width: SizeConfig.blockSizeHorizontal! * 2,),
-
-                      DropdownButton<String>(
-                        value: lang,
-                        onChanged: (value) {
-                          setState(() {
-                            lang = value;
-                          });
-                        },
-                        items: <String>["全て", 'ja', 'en']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        //hint: const Text('並び替え方法の選択'),
-                      )
-
-                    ],
-                  ),
-                   */
 
 
                   SizedBox(height: SizeConfig.blockSizeVertical!*3,),
@@ -317,7 +267,7 @@ class _SearchPageState extends State<SearchPage> {
                     onPressed:(){
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true, lang: lang!,canToPage: true, add: false,), // ImageDisplayに遷移
+                          builder: (context) => ImageListDisplay(title: method, subject: subject, level: level, method: method,tags: tags, searchUserId: "",showAppbar: true, lang: lang!,canToPage: true, add: false, showAdd: true,), // ImageDisplayに遷移
                         ),
                       );
                     },
@@ -341,7 +291,7 @@ class _SearchPageState extends State<SearchPage> {
 
 
           Container(
-            height: SizeConfig.blockSizeVertical! * 15,
+            height: SizeConfig.blockSizeVertical! * 10,
             color: Colors.white,
             //TODO Admob
             /*
@@ -349,7 +299,7 @@ class _SearchPageState extends State<SearchPage> {
              */
             child: InlineAdaptiveAdBanner(
               requestId: "SEARCH", 
-              adHeight: SizeConfig.blockSizeVertical!.toInt() * 15,
+              adHeight: SizeConfig.blockSizeVertical!.toInt() * 10,
             ),
           ),
 

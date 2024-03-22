@@ -5,13 +5,8 @@ import 'package:share_your_q/pages/display_page/display_page.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-//import 'package:share_your_q/image_operations/image_list_display.dart';
-
-//import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
 
@@ -38,6 +33,8 @@ class LikesNotificationListState extends State<LikesNotificationList> {
   List<Map<String, dynamic>> likesUserData = [];
 
   Future<void> fetchData() async {
+
+    likesUserData = [];
     try {
       final response = await supabase
           .from("likes")
@@ -77,10 +74,13 @@ class LikesNotificationListState extends State<LikesNotificationList> {
         isLoading = false;
       });
     } on PostgrestException catch (e) {
-      print('Error: ${e.message}');
-      print('Status code: ${e.code}');
+      if(mounted){
+        context.showErrorSnackBar(message: e.message);
+      }
     } catch (e) {
-      print("error");
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
@@ -115,10 +115,12 @@ class LikesNotificationListState extends State<LikesNotificationList> {
     SizeConfig().init(context);
 
     return Scaffold(
+      /*
       appBar: AppBar(
           automaticallyImplyLeading: false, title: Text("いいね") // アプリバーに表示するタイトル
 
           ),
+       */
       body: Center(
         child: Container(
           //中央寄り
@@ -176,6 +178,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                     ),
                                      */
 
+                                    /*
                                     SizedBox(
                                       height:
                                           SizeConfig.blockSizeVertical! * 40,
@@ -189,6 +192,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
                                       )
                                     ),
+                                     */
                                     //const ,
 
                                     LikesNotificationItem(
@@ -256,19 +260,17 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
 
       myProfileImageId = response[0]["profile_image_id"];
 
-      print("ここがあああああああああああああああああmyProfileImageId");
-      print(myProfileImageId);
 
       setState(() {
         myProfileImageId = myProfileImageId;
       });
     } on PostgrestException catch (error) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: error.message);
       }
       return;
     } catch (_) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return;
@@ -277,27 +279,20 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
 
   Future<String> fetchProfileImage() async {
     try {
-      print("widget.profileItem['profile_image_id']の中身");
-      print(widget.profileItem["profile_image_id"]);
-
       if (widget.profileItem["profile_image_id"] == null) {
-        print("ここはダメな方ですプロフィールの");
         likesUserImageId = Env.c3;
         return Env.c3;
       } else {
-        print("ここはいい方ですプロフィールの");
         likesUserImageId = widget.profileItem["profile_image_id"];
-        print(likesUserImageId);
-        //return likesUserImageId;
         return widget.profileItem["profile_image_id"];
       }
     } on PostgrestException catch (error) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: error.message);
       }
       return Env.c3;
     } catch (_) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return Env.c3;
@@ -347,8 +342,6 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
             FutureBuilder(
               future: fetchProfileImage(),
               builder: (context, profileImageSnapshot) {
-                print("profileImageSnapshotの中身");
-                print(profileImageSnapshot.data);
                 if (profileImageSnapshot.connectionState ==
                     ConnectionState.waiting) {
                   // データの読み込み中はローディングインジケータなどを表示する
@@ -366,12 +359,10 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
                       ),
                     ),
                     onTap: () {
-                      print('エラーが発生しました。onTap アクションをここで処理してください。');
                       context.showErrorSnackBar(message: "プロフィールに遷移できません");
                     },
                   );
                 } else {
-                  print(targetUserId);
                   isLoadingImage = false;
                   // データが正常に読み込まれた場合に画像を表示する
                   return GestureDetector(
@@ -388,7 +379,6 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
                               return const CircularProgressIndicator();
                             } else if (imageSnapshot.hasError ||
                                 imageSnapshot.data == null) {
-                              print("ここかもしれないなぁ");
                               // エラーが発生した場合は代替のアイコンを表示する
                               return const Icon(
                                 Icons.error_outline,
@@ -397,15 +387,12 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
                               );
                             } else {
                               // データが正常に読み込まれた場合に画像を表示する
-                              print("ここは最後の砦です");
-                              print(profileImageSnapshot.data);
                               return Image.memory(
                                 imageSnapshot.data as Uint8List,
                                 fit: BoxFit.cover,
                                 width: 32,
                                 height: 32,
                                 errorBuilder: (context, error, stackTrace) {
-                                  print("ここは最後のエラーとアンって");
                                   // エラーが発生した場合の代替イメージを表示する
                                   return const Icon(
                                     Icons.error_outline,

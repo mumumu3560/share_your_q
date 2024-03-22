@@ -45,7 +45,6 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
         .select<List<Map<String, dynamic>>>()
         .eq('image_data_id', widget.image_id!);
 
-        print(data[0]["links"]);
         setState(() {
           if (data[0]["links"] == null){
           }
@@ -59,19 +58,20 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
       return data; 
 
     } on PostgrestException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
       return [];
     }
     catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
       return [];
     }
   }
 
   void judPoints(){
-    print("eval、diffの順番");
-    print(evalValue);
-    print(diff_point);
   }
 
 
@@ -106,11 +106,11 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
 
 
 
-    if(context.mounted){
+    if(mounted){
         Navigator.of(context).pop(); // ダイアログを閉じる
     }
 
-    if(context.mounted){
+    if(mounted){
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -163,7 +163,6 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
       });
     });
 
-    //print(_imageData[0]["links"]);
 
   }
 
@@ -172,49 +171,12 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
   Widget build(BuildContext context){
     return SingleChildScrollView(
       child: Container(
-        /*
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.green),
-          borderRadius: BorderRadius.circular(10),
-        ),
-         */
-    
-        //height: SizeConfig.blockSizeVertical! * 80,
-        //width: SizeConfig.blockSizeHorizontal! * 100,
-    
+  
         child: Column(
           
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            /*
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                myUserId == widget.image_own_user_id 
-                  ? Container()
-                  : const EvaluateWithRadio(),
-                
-                
-    
-                myUserId == widget.image_own_user_id 
-                  ? Container()
-                  : SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
-    
-                myUserId == widget.image_own_user_id 
-                  ? Container()
-                  : ElevatedButton(
-                    onPressed: () {
-                      judPoints();
-                      _submitEvaluation();
-                    },
-                    child: const Text("送信"),
-                  ),
-              ],
-            ),
-
-            SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
-            */
 
             Container(
               padding: const EdgeInsets.all(10),
@@ -356,100 +318,7 @@ class _EvaluateWithRadioState extends State<EvaluateWithRadio>{
 
           SizedBox(height: SizeConfig.blockSizeVertical!,),
           
-          /*
-          const Text(
-            "Q1: この問題はどんな問題？",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ), 
-            
-        
-
-          SizedBox(height: SizeConfig.blockSizeVertical!,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              
-              
-              Radio(
-                value: 1,
-                groupValue: evalValue,
-                onChanged: (value) {
-                  print(evalValue);
-                  setEval(value!);
-                  print(evalValue);
-                },
-              ),
-              Text("教育的"),
-
-
-              Radio(
-                value: 2,
-                groupValue: evalValue,
-                onChanged: (value) {
-                  print(evalValue);
-                  setEval(value!);
-                  print(evalValue);
-                },
-              ),
-              Text("芸術的"),
-
-
-              Radio(
-                value: 3,
-                groupValue: evalValue,
-                onChanged: (value) {
-                  print(evalValue);
-                  setEval(value!);
-                  print(evalValue);
-                },
-              ),
-              Text("計算的"),
-
-
-            ],
-          ),
-
-          SizedBox(height: SizeConfig.blockSizeVertical!,),
-    
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-
-              Radio(
-                value: 4,
-                groupValue: evalValue,
-                onChanged: (value) {
-                  print(evalValue);
-                  setEval(value!);
-                  print(evalValue);
-                },
-              ),
-              Text("興味深い"),
-
-
-              Radio(
-                value: 5,
-                groupValue: evalValue,
-                onChanged: (value) {
-                  print(evalValue);
-                  setEval(value!);
-                  print(evalValue);
-                },
-              ),
-              Text("基礎的"),
-
-
-
-            ],
-          ),
-
-          SizedBox(height: SizeConfig.blockSizeVertical! * 3,),
-           */
+          
 
           const Text(
             "Q1: この問題は易しい？難しい？",

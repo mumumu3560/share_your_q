@@ -7,7 +7,7 @@ part of 'notification_list_supabase.dart';
 // **************************************************************************
 
 String _$notificationListSupabaseHash() =>
-    r'f58cc5bc51a339d21796df411f08cbc211fb71e3';
+    r'760246e85be8f09d598b33375775d7606bbc4846';
 
 /// See also [NotificationListSupabase].
 @ProviderFor(NotificationListSupabase)

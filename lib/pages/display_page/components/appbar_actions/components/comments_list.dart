@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:share_your_q/env/env.dart';
 
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
@@ -66,8 +65,10 @@ class CommentListState extends State<CommentList> {
         isLoading = false;
         commentList = response;
       });
-    } catch (e) {
-      print('Error fetching data: $e');
+    } on PostgrestException catch(error) {
+      context.showErrorSnackBar(message: error.message);
+    } catch (_) {
+      context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
   }
 
@@ -214,23 +215,7 @@ class CommentListState extends State<CommentList> {
           title: Text(widget.title), // アプリバーに表示するタイトル
 
           actions: [
-            /*
-          if(widget.responseId == -1 ) ElevatedButton(
-            onPressed: () {
-              setState(() {
-                showCommentListTest(context);
-                //commentShow = !commentShow;
-              });
-            },
-            child: const Text("コメント表示")
-          ),
-           */
-            /*
-          IconButton(
-            onPressed: reloadList,
-            icon: commentShow ? Icon(Icons.refresh) : Container(), // リロードアイコン
-          ),
-           */
+
 
             IconButton(
                 // 閉じるときはネストしているModal内のRouteではなく、root側のNavigatorを指定する必要がある
@@ -238,13 +223,6 @@ class CommentListState extends State<CommentList> {
                     Navigator.of(context, rootNavigator: true).pop(),
                 icon: Icon(Icons.close))
 
-            /*
-          例外が発生しました
-          _AssertionError (
-            'package:flutter/src/widgets/navigator.dart': 
-            Failed assertion: line 5277 pos 12: '!_debugLocked': is not true.
-          )
-           */
           ],
         ),
         body: commentShow
@@ -332,34 +310,7 @@ class CommentListState extends State<CommentList> {
                                               final item = commentList[index];
                                               return Column(
                                                 children: [
-                                                  /*
-                                          Container(
-                                            height: 64,
-                                            width: double.infinity,
-                                            color: Colors.white,
-                                            //TODO ビルドリリースの時のみ
-                                            //child: _adMob.getAdBanner(),
-                                          ),
-                                           */
-
-                                                  /*
-                                          
-                                           */
-
-                                          SizedBox(
-                                            height: SizeConfig.blockSizeVertical! * 40,
-                                            //InlineAdaptiveAdBanner(requestId: "LIST",),
-                                            //TODO Admob
-                                            /*
-                                            //InlineAdaptiveExample(),
-                                             */
-                                            child: InlineAdaptiveAdBanner(
-                                              requestId: "LIST", 
-                                              adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
-                                            )
-                                          ),
-                                                  //const ,
-
+                                  
                                                   CommentItem(
                                                     item: item,
                                                     isRes: false,
@@ -456,11 +407,7 @@ class _CommentItemState extends State<CommentItem>
 
   String targetUserId = "";
 
-  /*
-  例外が発生しました
-FlutterError (This widget has been unmounted, so the State no longer has a context (and should be considered defunct).
-Consider canceling any active work during "dispose" or using the "mounted" getter to determine if the State is still active.)
-   */
+
 
   Future<void> fetchUserProfile(String target) async {
     try {
@@ -501,11 +448,10 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
 
       return response2;
 
-      //print(profileImageId);
 
       //return response[0]["profile_image_id"];
     } on PostgrestException catch (error) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: error.message);
       }
       final response2 = await fetchImageWithCache(profileImageId);
@@ -513,7 +459,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
 
       return response2;
     } catch (_) {
-      if (context.mounted) {
+      if (mounted) {
         context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       final response2 = await fetchImageWithCache(profileImageId);
@@ -522,14 +468,6 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
       return response2;
     }
   }
-
-  /*
-  PostgrestException 
-  (
-    PostgrestException(message: Column 'good' of relation 'comments_like' does not exist, 
-    code: PGRST204, details: Bad Request, hint: null)
-  )
-   */
 
   bool isLike = false;
   bool isDisLike = false;
@@ -625,7 +563,6 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
   }
 
   Future<void> showCommentForm() async {
-    print("コメントフォームが表示されました");
   }
 
   //ここで投稿日時の管理
@@ -649,6 +586,134 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
   bool isLoading = true;
 
   int good = 0;
+  
+  Future<void> deletingComment() async{
+
+    //コメントを削除する
+
+    showLoadingDialog(context, "コメント削除中...");
+
+    try{
+      final response = await supabase
+        .from("comments")
+        .delete()
+        .eq("id", widget.commentsId);
+
+    }
+    on PostgrestException catch (error) {
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+
+        Navigator.of(context).pop();
+        return;
+      }
+    } catch (_) {
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+
+        Navigator.of(context).pop();
+        return;
+      }
+    }
+
+    //2秒待つ
+    await Future.delayed(Duration(seconds: 1));
+
+    if(mounted){
+      Navigator.of(context).pop();
+    }
+
+    if(mounted){
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("削除完了"),
+            content: Text("コメントを削除しました"),
+            actions: [
+              TextButton(
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        }
+      );
+
+    }
+
+  }
+
+
+
+  Future<void> reportComment() async{
+    //コメントを通報する
+
+    showLoadingDialog(context, "コメント通報中...");
+
+      try{
+      final response = await supabase
+        .from("comments_report")
+        .insert({
+          "comments_id": widget.commentsId,
+          "reporter_id": myUserId,
+          "target_id": targetUserId,
+        });
+
+    }
+    on PostgrestException catch (error) {
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+
+        Navigator.of(context).pop();
+        return;
+      }
+    } catch (_) {
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+
+        Navigator.of(context).pop();
+        return;
+      }
+    }
+
+    //2秒待つ
+    await Future.delayed(Duration(seconds: 1));
+
+
+    if(mounted){
+      Navigator.of(context).pop();
+    }
+
+    if(mounted){
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("通報完了"),
+            content: Text("コメントを通報しました"),
+            actions: [
+              TextButton(
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        }
+      );
+
+    }
+
+
+
+
+    
+
+  }
 
   @override
   void initState() {
@@ -672,6 +737,19 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
 
     //color: widget.isRes ? Colors.black12 : null,
     return ListTile(
+      //削除ボタンの追加
+      trailing: IconButton(
+        icon: Icon(Icons.more_vert),
+        onPressed: () async {
+          await ShowDialogWithFunction(
+            title: "確認", 
+            shownMessage: myUserId == targetUserId ? "コメントを削除しますか？" : "コメントを通報しますか？", 
+            functionOnPressed: myUserId == targetUserId ? deletingComment : reportComment, 
+            context: context
+          ).show();
+        },
+      ),
+
       tileColor: widget.isRes ? Color.fromARGB(255, 73, 72, 72) : null,
       dense: true,
       //selectedColor: widget.isRes ? Colors.white : Colors.black12,
@@ -693,7 +771,6 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                       return const CircularProgressIndicator();
                     } else if (imageSnapshot.hasError ||
                         imageSnapshot.data == null) {
-                      print("ここかもしれないなぁ");
                       // エラーが発生した場合は代替のアイコンを表示する
                       return const Icon(
                         Icons.error_outline,
@@ -701,15 +778,12 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                         size: 40,
                       );
                     } else {
-                      // データが正常に読み込まれた場合に画像を表示する
-                      print("ここは最後の砦です");
                       return Image.memory(
                         imageSnapshot.data as Uint8List,
                         fit: BoxFit.cover,
                         width: 40,
                         height: 40,
                         errorBuilder: (context, error, stackTrace) {
-                          print("ここは最後のエラーとアンって");
                           // エラーが発生した場合の代替イメージを表示する
                           return const Icon(
                             Icons.error_outline,

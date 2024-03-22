@@ -36,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _usernameController = TextEditingController();
 
   late final StreamSubscription<AuthState> _authSubscription;
+  final locale = WidgetsBinding.instance.platformDispatcher.locale;
 
    @override
   void initState() {
@@ -76,13 +77,20 @@ class _RegisterPageState extends State<RegisterPage> {
     final username = _usernameController.text;
 
     try {
+
+      showLoadingDialog(context, "登録中...");
       //https://supabase.com/docs/guides/getting-started/tutorials/with-flutter?platform=android
       await supabase.auth.signUp(
           email: email, 
           password: password, 
-          data: {'username': username},
+          data: {'username': username , 'locale': locale.toString()/* */},
           emailRedirectTo: 'io.supabase.shareimage://login',
         );
+      
+      if(mounted){
+        Navigator.of(context).pop();
+      }
+        
 
       if (!mounted) return;
       context.showSuccessSnackBar(message: 'メールを送りました。認証を行ってください');

@@ -5,6 +5,10 @@ import 'package:share_your_q/utils/various.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
 class Profile extends StatefulWidget {
 
   final String userId;
@@ -87,3 +91,52 @@ class _ProfileState extends State<Profile> {
 
 
 
+
+
+//https://qiita.com/Hiiisan/items/f0bbc5715fab7e6787ad
+RegExp _urlReg = RegExp(
+  r'https?://([\w-]+\.)+[\w-]+(/[\w-./?%&=#]*)?',
+);
+
+extension TextEx on Text {
+
+  RichText urlToLink(
+    BuildContext context,
+  ) {
+    final textSpans = <InlineSpan>[];
+
+    data!.splitMapJoin(
+      _urlReg,
+      onMatch: (Match matchPre) {
+        final match = matchPre[0] ?? '';
+        textSpans.add(
+          TextSpan(
+            text: match,
+            style: const TextStyle(
+              color: Colors.blue,
+              decoration: TextDecoration.underline,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async => await launchUrl(
+                    Uri.parse(match),
+                  ),
+          ),
+        );
+        return '';
+      },
+      onNonMatch: (String text) {
+        textSpans.add(
+          TextSpan(
+            text: text,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        );
+        return '';
+      },
+    );
+
+    return RichText(text: TextSpan(children: textSpans));
+  }
+}

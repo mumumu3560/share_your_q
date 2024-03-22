@@ -1,9 +1,5 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:share_your_q/utils/various.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 
 
@@ -14,6 +10,10 @@ class TrendHeatmap extends StatefulWidget{
   final Map<DateTime, int>? heatmapDataChemi;
   final Map<DateTime, int>? heatmapDataOther;
 
+  final Map<String, int> streakSums;
+  final Map<String, int> streakNows;
+  final Map<String, int> streakMaxs;
+
   const TrendHeatmap({
     Key? key,
     required this.subject,
@@ -21,6 +21,10 @@ class TrendHeatmap extends StatefulWidget{
     required this.heatmapDataPhys,
     required this.heatmapDataChemi,
     required this.heatmapDataOther,
+
+    required this.streakSums,
+    required this.streakNows,
+    required this.streakMaxs,
   }) : super(key: key);
 
   @override
@@ -236,23 +240,39 @@ class TrendHeatmapState extends State<TrendHeatmap>{
                 Text(
                   "$formattedDate",
                 ),
-                /*
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.remove_red_eye),
-
-                    Text(
-                      "$nowDate",
-                    ),
-                  ],
-                ),
-                 */
+               
               ],
             ),
           ),
 
         SizedBox(height: SizeConfig.blockSizeVertical!*2,),
+
+        Text(
+          "streak sum: ${widget.streakSums[selectedSubject]}日",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        
+        Text(
+          "longest streak: ${widget.streakMaxs[selectedSubject]}日",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        
+
+        Text(
+          "current streak: ${widget.streakNows[selectedSubject]}日",
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
 
         HeatMap(
           colorMode: ColorMode.opacity,
@@ -268,6 +288,12 @@ class TrendHeatmapState extends State<TrendHeatmap>{
             setHeatMap(value, 0);
           },
         ),
+
+        SizedBox(height: SizeConfig.blockSizeVertical!*2,),
+
+        
+
+
 
       ],
     );

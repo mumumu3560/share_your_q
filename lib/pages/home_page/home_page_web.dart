@@ -1,27 +1,18 @@
-//import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
 import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
 import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
-//import 'package:share_your_q/pages/notification_page.dart';
+
 import 'package:share_your_q/pages/search_page/search_page.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 
 //TODO OneSignal
-import 'package:onesignal_flutter/onesignal_flutter.dart';
-
-//import "package:share_your_q/admob/ad_test.dart";
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
-
-
-
-//homepage
-//TODO ここではホームページを作成する
-//navigationbottombarを使って、ホーム、検索、プロフィール、設定の4つのページに遷移できるようにしたい？
-//プロフィールはボトムナビゲーションよりも左上のappbarから遷移できるようにした方がいいかもしれない
 
 
 class HomePage extends StatefulWidget {
@@ -89,10 +80,22 @@ class _HomePageState extends State<HomePage> {
         firstFetch = false;
       }
 
-    } catch (e) {
-      // エラーハンドリングを実装
-      print('Error fetching data: $e');
-      context.showErrorSnackBar(message: "データの取得に失敗しました。");
+      return;
+
+    } on PostgrestException catch(error){
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+
+      return;
+
+    }
+    catch (e) {
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+
+      return;
     }
   }
 
@@ -102,22 +105,15 @@ class _HomePageState extends State<HomePage> {
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
     fetchData();
     fetchProfile();
+
+    
+    
+    
     //
     final String externalId = supabase.auth.currentUser!.id.toString();
-    print(externalId);
     //TODO ここはandroidビルドリリースの時のみ
-    OneSignal.login(externalId);
+    //OneSignal.login(externalId);
   }
-
-  /*
-  void _handleLogin() {
-    print("Setting external user ID");
-    if ( == null) return;
-    OneSignal.login(_externalUserId!);
-    OneSignal.User.addAlias("fb_id", "1341524");
-  }
-   */
-
 
 
   
@@ -192,7 +188,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て", canToPage: true, add: false,), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て", canToPage: true, add: false, showAdd: true,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -209,7 +205,7 @@ class _HomePageState extends State<HomePage> {
         physics: const NeverScrollableScrollPhysics(),
         
         children:  <Widget>[
-          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,),
+          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,  showAdd: true,),
           const SearchPage(),
           const NotificationPage(),
           SettingPage(),
@@ -269,28 +265,7 @@ class _HomePageState extends State<HomePage> {
 
           
 
-          /*
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-            tooltip: "Profile",
-            backgroundColor: Colors.black,
-            
-          ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Settings',
-            tooltip: "This is a Settings Page",
-            backgroundColor: Colors.black,
-          ),
-          */
         ],
-
-        //type: BottomNavigationBarType.shifting,
-        //type: BottomNavigationBarType.fixed,
 
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black87,

@@ -4,12 +4,7 @@ import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-
-
-//import "package:share_your_q/admob/ad_test.dart";
 
 import 'dart:typed_data';
 
@@ -75,8 +70,15 @@ class CommentListState extends State<CommentList> {
         isLoading = false;
         commentList = response;
       });
-    } catch (e) {
-      print('Error fetching data: $e');
+    } on PostgrestException catch(error){
+      if(mounted){
+        
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
@@ -195,10 +197,19 @@ class CommentListState extends State<CommentList> {
 
     } on PostgrestException catch (error) {
       // エラーが発生した場合はエラーメッセージを表示
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+
+      return;
+
     } catch (_) {
       // 予期せぬエラーが起きた際は予期せぬエラー用のメッセージを表示
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+
+      return;
     }
 
     /*
@@ -264,13 +275,6 @@ class CommentListState extends State<CommentList> {
             icon: Icon(Icons.close)
           )
 
-          /*
-          例外が発生しました
-          _AssertionError (
-            'package:flutter/src/widgets/navigator.dart': 
-            Failed assertion: line 5277 pos 12: '!_debugLocked': is not true.
-          )
-           */
         ],
          
 
@@ -281,20 +285,10 @@ class CommentListState extends State<CommentList> {
           //height: SizeConfig.blockSizeVertical! * 70,
           child: Column(
             children: [
-              /*
-              widget.responseId != -1 ? Container(
-                child: CommentItem(item: widget.item!, isRes: true,),
-              )
-              : Container(),
-               */
+      
               
               
               Expanded(
-                /*
-                height: SizeConfig.blockSizeVertical! * 65,
-                //中央寄り
-                alignment: Alignment.center,
-                 */
                 
                 child: Column(
                   children: [
@@ -519,9 +513,13 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
         userName = response[0]["username"];
       });
     } on PostgrestException catch (error){
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch(_){
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
@@ -558,7 +556,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
       //return response[0]["profile_image_id"];
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
         
       }
@@ -568,7 +566,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
       return response2;
       
     } catch(_){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: unexpectedErrorMessage);
         
       }
@@ -652,124 +650,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
       dense: true,
       //selectedColor: widget.isRes ? Colors.white : Colors.black12,
     
-    
-      
-    
-      /* 
-      leading: FutureBuilder(
-        future: fetchProfileImage(targetUserId),
-        builder: (context, profileImageSnapshot) {
-          if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
-            // データの読み込み中はローディングインジケータなどを表示する
-            return SizedBox(
-              width: 28,
-              height: 28,
-              child: const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-              ),
-            );
-          } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
-            // エラーが発生した場合は代替のアイコンを表示する
-            return GestureDetector(
-              child: const CircleAvatar(
-                radius: 14,
-                child: Icon(
-                  Icons.error_outline,
-                  color: Colors.blue,
-                  size: 40,
-                ),
-              ),
-              onTap: () {
-                print('エラーが発生しました。onTap アクションをここで処理してください。');
-                context.showErrorSnackBar(message: "プロフィールに遷移できません");
-              },
-            );
-          } else {
-            print(targetUserId);
-            isLoadingImage = false;
-            // データが正常に読み込まれた場合に画像を表示する
-            return GestureDetector(
-              child: CircleAvatar(
-                radius: 14,
-                child: ClipOval(
-                  child: FutureBuilder(
-                    future: fetchImageWithCache(profileImageSnapshot.data as String),
-                    builder: (context, imageSnapshot) {
-                      if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                        // データの読み込み中はローディングインジケータなどを表示する
-                        return const CircularProgressIndicator();
-                      } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                        print("ここかもしれないなぁ");
-                        // エラーが発生した場合は代替のアイコンを表示する
-                        return const Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 40,
-                        );
-                      } else {
-                        // データが正常に読み込まれた場合に画像を表示する
-                        print("ここは最後の砦です");
-                        print(profileImageSnapshot.data);
-                        return Image.memory(
-                          imageSnapshot.data as Uint8List,
-                          fit: BoxFit.cover,
-                          width: 40,
-                          height: 40,
-                          errorBuilder: (context, error, stackTrace) {
-                            print("ここは最後のエラーとアンって");
-                            // エラーが発生した場合の代替イメージを表示する
-                            return const Icon(
-                              Icons.error_outline,
-                              color: Colors.red,
-                              size: 40,
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-                ),
-              ),
-              onTap: () {
-                if (!isLoadingImage) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ProfilePage(
-                        userId: targetUserId, 
-                        userName: userName, 
-                        profileImage: profileImageId,
-                      ),
-                    ),
-                  );
-                } else {
-                  context.showErrorSnackBar(message: "現在読み込み中です...");
-                }
-              },
-            );
-          }
-        },
-      ),
-      */
-    
-    
-    
-    
-    
-    
-      /*
-      title: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: Text(
-          userName,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-      ),
-      
-      
-       */
+   
       title:  Row(
             //rowは上にそろえる
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -786,7 +667,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                                 // データの読み込み中はローディングインジケータなどを表示する
                                 return const CircularProgressIndicator();
                               } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                                print("ここかもしれないなぁ");
+                               
                                 // エラーが発生した場合は代替のアイコンを表示する
                                 return const Icon(
                                   Icons.error_outline,
@@ -794,15 +675,12 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                                   size: 40,
                                 );
                               } else {
-                                // データが正常に読み込まれた場合に画像を表示する
-                                print("ここは最後の砦です");
                                 return Image.memory(
                                   imageSnapshot.data as Uint8List,
                                   fit: BoxFit.cover,
                                   width: 40,
                                   height: 40,
                                   errorBuilder: (context, error, stackTrace) {
-                                    print("ここは最後のエラーとアンって");
                                     // エラーが発生した場合の代替イメージを表示する
                                     return const Icon(
                                       Icons.error_outline,
@@ -834,105 +712,6 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                     ),
 
 
-              /*
-              FutureBuilder(
-                future: fetchProfileImage(targetUserId),
-                builder: (context, profileImageSnapshot) {
-                  if (profileImageSnapshot.connectionState == ConnectionState.waiting) {
-                    // データの読み込み中はローディングインジケータなどを表示する
-                    return SizedBox(
-                      width: 28,
-                      height: 28,
-                      /*
-                      child: const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                      ),
-                      */
-                    );
-                  } else if (profileImageSnapshot.hasError || profileImageSnapshot.data == "") {
-                    // エラーが発生した場合は代替のアイコンを表示する
-                    return GestureDetector(
-                      child: const CircleAvatar(
-                        radius: 14,
-                        child: Icon(
-                          Icons.error_outline,
-                          color: Colors.blue,
-                          size: 40,
-                        ),
-                      ),
-                      onTap: () {
-                        print('エラーが発生しました。onTap アクションをここで処理してください。');
-                        context.showErrorSnackBar(message: "プロフィールに遷移できません");
-                      },
-                    );
-                  } else {
-                    print(targetUserId);
-                    isLoadingImage = false;
-                    // データが正常に読み込まれた場合に画像を表示する
-                    return GestureDetector(
-                      child: CircleAvatar(
-                        radius: 14,
-                        child: ClipOval(
-                          child: FutureBuilder(
-                            future: fetchImageWithCache(profileImageSnapshot.data as String),
-                            builder: (context, imageSnapshot) {
-                              if (imageSnapshot.connectionState == ConnectionState.waiting) {
-                                // データの読み込み中はローディングインジケータなどを表示する
-                                return const CircularProgressIndicator();
-                              } else if (imageSnapshot.hasError || imageSnapshot.data == null) {
-                                print("ここかもしれないなぁ");
-                                // エラーが発生した場合は代替のアイコンを表示する
-                                return const Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red,
-                                  size: 40,
-                                );
-                              } else {
-                                // データが正常に読み込まれた場合に画像を表示する
-                                print("ここは最後の砦です");
-                                print(profileImageSnapshot.data);
-                                return Image.memory(
-                                  imageSnapshot.data as Uint8List,
-                                  fit: BoxFit.cover,
-                                  width: 40,
-                                  height: 40,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    print("ここは最後のエラーとアンって");
-                                    // エラーが発生した場合の代替イメージを表示する
-                                    return const Icon(
-                                      Icons.error_outline,
-                                      color: Colors.red,
-                                      size: 40,
-                                    );
-                                  },
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        if (!isLoadingImage) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(
-                                userId: targetUserId, 
-                                userName: userName, 
-                                profileImage: profileImageId,
-                              ),
-                            ),
-                          );
-                        } else {
-                          context.showErrorSnackBar(message: "現在読み込み中です...");
-                        }
-                      },
-                    );
-                  }
-                },
-              ),
-               */
-              
-              
               
             
               SizedBox(width: SizeConfig.blockSizeHorizontal!*2,),

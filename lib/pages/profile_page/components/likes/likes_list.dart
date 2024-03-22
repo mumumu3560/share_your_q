@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:share_your_q/image_operations/image_list_display.dart';
-
-//import "package:share_your_q/admob/ad_test.dart";
-
-import 'dart:typed_data';
 
 
 //google_admob
@@ -149,6 +142,7 @@ class LikesListState extends State<LikesList> {
                                     ),
                                      */
                                                 
+                                    /*
                                     SizedBox(
                                       height: SizeConfig.blockSizeVertical! * 40,
                                       //InlineAdaptiveAdBanner(requestId: "LIST",),
@@ -161,6 +155,7 @@ class LikesListState extends State<LikesList> {
                                         adHeight: SizeConfig.blockSizeVertical!.toInt() * 40,
                                       )
                                     ),
+                                     */
                                     //const ,
                                                 
                                     

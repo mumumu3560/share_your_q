@@ -1,19 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:share_your_q/admob/inline_adaptive_banner.dart';
-import 'package:share_your_q/pages/profile_page/profile_page.dart';
 import 'package:share_your_q/utils/various.dart';
 
-import 'package:share_your_q/pages/display_page/display_page.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:timeago/timeago.dart';
-
-import 'package:http/http.dart' as http;
-import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 //import "package:share_your_q/admob/ad_test.dart";
-
-import 'dart:typed_data';
 
 
 //google_admob
@@ -75,12 +65,12 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
 
     }
     on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
         
       }
     } catch(_){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: unexpectedErrorMessage);
         
       }
@@ -116,12 +106,12 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
       });
     }
     on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
         
       }
     } catch(_){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: unexpectedErrorMessage);
         
       }

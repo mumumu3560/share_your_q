@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_your_q/cloudflare_relations/server_request.dart';
+
+//TODO Adomob
 import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/image_operations/image_upload.dart';
 import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
@@ -11,6 +11,7 @@ import 'package:share_your_q/pages/create_page/components/reference.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
+
 
 class ConfirmPage extends StatefulWidget {
 
@@ -94,22 +95,25 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
 
   // TODO admob本番
-  InterstitialAd? _interstitialAd;
+  //InterstitialAd? _interstitialAd;
 
   //TODO ここは今test用のものなので後で変更する。
   /*
-  
-   */
   final String _adUnitId = Platform.isAndroid
       ? "ca-app-pub-3940256099942544/1033173712"//dotenv.get("INTERSTITIAL_ID_CREATE")
       : "ca-app-pub-3940256099942544/1033173712";//dotenv.get("INTERSTITIAL_ID_CREATE");
+  
+   */
+  
 
   //final String _adUnitId = Env.i1;
 
   /// Loads an interstitial ad.
   /// TODO admob本番
   /// 
-  
+  /// 
+  ///
+  /*
   void _loadAd() {
     InterstitialAd.load(
         adUnitId: _adUnitId,
@@ -118,8 +122,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
           onAdLoaded: (InterstitialAd ad) {
             ad.fullScreenContentCallback = FullScreenContentCallback(
                 onAdShowedFullScreenContent: (ad) {
-                  //print('$ad onAdShowedFullScreenContent.');
-                  context.showSuccessSnackBar(message: "onAdShowedFullScreenContent");
+                  //context.showSuccessSnackBar(message: "onAdShowedFullScreenContent");
                 },
                 // Called when an impression occurs on the ad.
                 onAdImpression: (ad) {},
@@ -140,13 +143,18 @@ class _ConfirmPageState extends State<ConfirmPage> {
           // Called when an ad request failed.
           onAdFailedToLoad: (LoadAdError error) {
             // ignore: avoid_print
-            print('InterstitialAd failed to load: $error');
             context.showErrorSnackBar(message: "InterstitialAd failed to load: $error");
             
             
           },
         ));
-  }
+
+  } 
+   */
+  
+  /*
+  
+   */
 
   /*
    */
@@ -155,14 +163,14 @@ class _ConfirmPageState extends State<ConfirmPage> {
   @override
   void dispose() {
     // TODO admob本番
-    _interstitialAd?.dispose();
+    //_interstitialAd?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     // TODO admob本番
-    _loadAd();
+    //_loadAd();
     super.initState();
     fetchImageSubject();
   }
@@ -220,11 +228,11 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
     }
     on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
     }
@@ -246,7 +254,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
   // 選択した画像をアップロードする関数
   Future<int> uploadSelectedImage(PlatformFile? selectedImage, String customId, String? directUploadUrl) async{
     if (selectedImage != null && directUploadUrl != null) {
-      print("ここはどうですか？");
       final uploadUrl = directUploadUrl;
       int responseNum;
       try{
@@ -296,8 +303,8 @@ class _ConfirmPageState extends State<ConfirmPage> {
         "problem_id": null,
         "comment_id": null,
         //"likes": 100,
-        "links": widget.urls,
-        "ref_explain": widget.refText,
+        "links": widget.urls == [] ? ["特になし"] : widget.urls,
+        "ref_explain": widget.refText == "" ? "特になし" : widget.refText,
         "lang": widget.lang,
       });
 
@@ -316,12 +323,12 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return 1;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return 2;
@@ -362,29 +369,17 @@ class _ConfirmPageState extends State<ConfirmPage> {
         return 1;
       }
 
-      //ここで自分Supabaseにある最新のデータを削除する。
-
-
-
-      //TODO ここを消す。supabaseで処理
-      
-      /*
-      await supabase.from("profiles").update({
-        "problem_num": problemNum,
-      }).eq("id", userId);
-
-       */
 
       return 0;
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return 1;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return 2;
@@ -400,14 +395,12 @@ class _ConfirmPageState extends State<ConfirmPage> {
     //TODO今は1つの問題につき2つの画像をアップロードするようにしているが、
     //これからは問題、解答複数枚に対応するようにする。
 
-    print("ここは？");
-
     int response1;
     try{
       
       //ここではknownUserInfoとonServerResponseReceived(関数)が必要なのでそれを渡す。
       response1 = await ImageSelectionAndRequest(
-        //knownUserInfo: '${userId}XproblemXnum${problemNum.toString()}XPnum${problemIcount.toString()}XCnum${commentIcount.toString()}',
+        
         knownUserInfo: myUserId,
         isProblem: isOne,
         type: "create",
@@ -423,87 +416,25 @@ class _ConfirmPageState extends State<ConfirmPage> {
       response1 = 1;
     }
 
-    print(response1);
-    print("ここではdirectUploadUrlが取得できたかどうか");
-
     if(response1 == 0){
       //context.showErrorSnackBar(message: "サーバーエラーが発生しました。");
     }
     else if(response1 == 1){
 
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: "サーバーエラー1");
       }
       
       return 1;
     }
     else{
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: "ネットワークエラー1。");
       }
       
       return 2;
     }
 
-    /*
-    // customId1, customId2, directUploadUrl1, directUploadUrl2 を使用して画像をアップロード
-    final checkUpload2 = await uploadSelectedImage(selectedImage2, customId2!, directUploadUrl2);
-
-    if(checkUpload2 as int != 0){
-      return 1;
-    }
-     */
-
-    print("レスポンス確認");
-
-    //TODO: responseがエラーを起こした場合の処理を書く
-
-    
-
-    print("ここが問題2");
-    /*
-    int response2;
-    try{
-      // 2つ目の画像用のリクエスト
-      response2 = await ImageSelectionAndRequest(
-        //knownUserInfo: '${userId}XCommentXnum${problemNum.toString()}XPnum${problemIcount.toString()}XCnum${commentIcount.toString()}',
-        knownUserInfo: userId,
-        onServerResponseReceived: (customId, directUploadUrl) {
-          onServerResponseReceived(customId, directUploadUrl, false);
-        },
-
-      ).sendRequest().timeout(Duration(seconds: 5));
-    }catch(e){
-      response2 = 1;
-    }
-
-    if(response2 == 0){
-      //context.showErrorSnackBar(message: "サーバーエラーが発生しました。");
-    }
-    else if(response1 == 1){
-      if(context.mounted){
-        context.showErrorSnackBar(message: "サーバーエラー2。");
-      }
-      return 3;
-    }
-    else{
-      if(context.mounted){
-        context.showErrorSnackBar(message: "ネットワークエラー2");
-      }
-      return 4;
-    }
-     */
-
-    print("境目");
-    /*
-    // customId1, customId2, directUploadUrl1, directUploadUrl2 を使用して画像をアップロード
-    final checkUpload2 = await uploadSelectedImage(selectedImage2, customId2!, directUploadUrl2);
-
-    if(checkUpload2 as int != 0){
-      return 1;
-    }
-     */
-    print("できたかどうかの確認");
 
     return 0;
 
@@ -512,8 +443,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
   Future<int> imageUploadWithUrls(bool isOne) async{
     // customId1, customId2, directUploadUrl1, directUploadUrl2 を使用して画像をアップロード
-    print("ここが問題1");
-
     if(isOne){
       final checkUpload1 = await uploadSelectedImage(widget.selectedImage1, customId1!, directUploadUrl1);
     
@@ -558,9 +487,10 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text('確認ページ'),
+        //title: const Text('確認ページ'),
         actions: [
           IconButton(
+            iconSize: 32,
             icon: const Icon(Icons.bar_chart, color: Colors.blue,),
             tooltip: "参考文献",
             onPressed: (){
@@ -571,6 +501,13 @@ class _ConfirmPageState extends State<ConfirmPage> {
           SizedBox(width: SizeConfig.blockSizeHorizontal!*1,),
 
           ElevatedButton(
+            //色を変える
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              
+            ),
+            
+            
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
@@ -580,47 +517,59 @@ class _ConfirmPageState extends State<ConfirmPage> {
           SizedBox(width: SizeConfig.blockSizeHorizontal!*1,),
 
           ElevatedButton(
+            //色を変える
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              
+            ),
             onPressed: () async {
                                         
               showLoadingDialog(context,"処理中...");
                           
                           
               //TODO Admob
-                          
+
               /*
-              
-                */
               if (_interstitialAd == null) {
                 return;
               }
               _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+                /*
+                
+                  //context.showSuccessSnackBar(message: "aaa"),
+                 */
+
                 onAdShowedFullScreenContent: (InterstitialAd ad) =>
                   print('$ad onAdShowedFullScreenContent.'),
-                  //context.showSuccessSnackBar(message: "aaa"),
                           
                 onAdDismissedFullScreenContent: (InterstitialAd ad) {
-                  print('$ad onAdDismissedFullScreenContent.');
-                  //context.showSuccessSnackBar(message: "bbb");
                   ad.dispose();
                   _loadAd();
                   return;
                 },
                           
                 onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-                  print('$ad onAdFailedToShowFullScreenContent: $error');
-                  //context.showErrorSnackBar(message: "ccc");
                   ad.dispose();
                   _loadAd();
                   return;
                 },
                           
+                /*
                 onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
                 onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
+                 */
               );
                           
               // TODO admob本番
               _interstitialAd!.show();
               _interstitialAd = null;
+               */
+                          
+              /*
+              
+              
+                */
+              
                           
               //TODO Admob
               
@@ -669,7 +618,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
               }
           
               //2秒待つ
-              await Future.delayed(const Duration(seconds: 2));
+              await Future.delayed(const Duration(seconds: 1));
           
               //ここまで来たらSupabaseはおｋ
               if(context.mounted){
@@ -678,7 +627,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
               }
                           
               //3秒待つ
-              await Future.delayed(const Duration(seconds: 5));
+              await Future.delayed(const Duration(seconds: 1));
                           
               //ここから画像のアップロードURL取得。
               int checkGetUploadUrl1 = await getImageUploadUrls(true);
@@ -855,313 +804,6 @@ class _ConfirmPageState extends State<ConfirmPage> {
                       commentAdd: 0,
                     ),
                 
-                    /*
-                    SizedBox(
-                      height: SizeConfig.blockSizeVertical! * 5,
-                      child: InterstitialExample()
-                    ),
-                     */
-                
-                    
-                    /*
-                    ElevatedButton(
-                      onPressed: () async{
-                
-                        //showLoadingDialog(context,"処理中...");
-                
-                        //TODO Admob
-                        
-                        if (_interstitialAd == null) {
-                          return;
-                        }
-                        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-                          onAdShowedFullScreenContent: (InterstitialAd ad) =>
-                            print('$ad onAdShowedFullScreenContent.'),
-                            //context.showSuccessSnackBar(message: "aaa"),
-                
-                          onAdDismissedFullScreenContent: (InterstitialAd ad) {
-                            print('$ad onAdDismissedFullScreenContent.');
-                            //context.showSuccessSnackBar(message: "bbb");
-                            ad.dispose();
-                            _loadAd();
-                          },
-                
-                          onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-                            print('$ad onAdFailedToShowFullScreenContent: $error');
-                            //context.showErrorSnackBar(message: "ccc");
-                            ad.dispose();
-                            _loadAd();
-                            return;
-                          },
-                
-                          onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
-                          onAdClicked: (InterstitialAd ad) => print('$ad clicked.'));
-                
-                          // TODO admob本番
-                          _interstitialAd!.show();
-                          _interstitialAd = null;
-                
-                      },
-                      child: const Text("広告を見る1"),
-                    ),
-                     */
-                
-                    /*
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-
-                          children: [
-                            Text("参考文献"),
-
-                            SizedBox(height: SizeConfig.blockSizeVertical! * 2),
-                                        
-                                        
-                            IconButton(
-                              icon: const Icon(Icons.bar_chart, color: Colors.blue,),
-                              tooltip: "参考文献の確認",
-                              onPressed: (){
-                                _showReferenceSheet(context);
-                              },
-                            ),
-                          ],
-                        ),
-                         
-                        
-                        ElevatedButton(
-                          onPressed: () async {
-                                        
-                            showLoadingDialog(context,"処理中...");
-                                        
-                                        
-                            //TODO Admob
-                                        
-                            /*
-                            if (_interstitialAd == null) {
-                              return;
-                            }
-                            _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-                              onAdShowedFullScreenContent: (InterstitialAd ad) =>
-                                print('$ad onAdShowedFullScreenContent.'),
-                                //context.showSuccessSnackBar(message: "aaa"),
-                                        
-                              onAdDismissedFullScreenContent: (InterstitialAd ad) {
-                                print('$ad onAdDismissedFullScreenContent.');
-                                //context.showSuccessSnackBar(message: "bbb");
-                                ad.dispose();
-                                _loadAd();
-                                return;
-                              },
-                                        
-                              onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-                                print('$ad onAdFailedToShowFullScreenContent: $error');
-                                //context.showErrorSnackBar(message: "ccc");
-                                ad.dispose();
-                                _loadAd();
-                                return;
-                              },
-                                        
-                              onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
-                              onAdClicked: (InterstitialAd ad) => print('$ad clicked.')
-                            );
-                                        
-                            // TODO admob本番
-                            _interstitialAd!.show();
-                            _interstitialAd = null;
-                             */
-                                        
-                            //TODO Admob
-                            
-                                        
-                            
-                            
-                                        
-                                        
-                                        
-                                        
-                            //ここからSupabase
-                            int checkSupabase = await sendInfoToSupabase();
-                                        
-                            if(checkSupabase != 0){
-                              if(context.mounted){
-                                //deleteInfoFromSupabase();
-                                //context.showErrorSnackBar(message: "サーバーエラーにより、問題の投稿ができませんでした。");
-                                Navigator.of(context).pop();
-                              }
-                                        
-                              if(context.mounted){
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                        
-                                      title: const Text("エラー"),
-                                      content: const Text("サーバーエラーにより、問題の投稿ができませんでした。"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(); // ダイアログを閉じる
-                                          },
-                                          child: const Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                                        
-                              }
-                                        
-                              
-                              
-                              return;
-                            }
-                        
-                            //2秒待つ
-                            await Future.delayed(const Duration(seconds: 2));
-                        
-                            //ここまで来たらSupabaseはおｋ
-                            if(context.mounted){
-                              Navigator.of(context).pop();
-                              showLoadingDialog(context, "画像のアップロード中...");
-                            }
-                                        
-                            //3秒待つ
-                            await Future.delayed(const Duration(seconds: 5));
-                                        
-                            //ここから画像のアップロードURL取得。
-                            int checkGetUploadUrl1 = await getImageUploadUrls(true);
-                            int checkGetUploadUrl2 = await getImageUploadUrls(false);
-                            
-                                        
-                            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
-                              if(context.mounted){
-                                deleteInfoFromSupabase();
-                                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
-                                Navigator.of(context).pop();
-                              }
-                                        
-                              if(context.mounted){
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                          title: const Text("エラー"),
-                                          content: const Text("サーバーエラーにより、URLの取得ができませんでした。"),
-                                          actions: <Widget>[
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop(); // ダイアログを閉じる
-                                              },
-                                              child: const Text('OK'),
-                                            ),
-                                          ],
-                                        );
-                                    },
-                                );
-                                        
-                              }
-                              
-                              
-                                        
-                              return;
-                            }
-                                        
-                                        
-                                        
-                            int checkUpload1 = await imageUploadWithUrls(true);
-                            int checkUpload2 = await imageUploadWithUrls(false);
-                                        
-                                        
-                            if(checkGetUploadUrl1 != 0 || checkGetUploadUrl2 != 0){
-                              if(context.mounted){
-                                //context.showErrorSnackBar(message: "サーバーエラーにより、画像のアップロードができませんでした。");
-                                Navigator.of(context).pop();
-                              }
-                                        
-                              if(context.mounted){
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("エラー"),
-                                      content: const Text("サーバーエラーにより、画像のアップロードができませんでした。"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(); // ダイアログを閉じる
-                                          },
-                                          child: const Text('OK'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                                        
-                              }
-                              
-                              
-                                        
-                              return;
-                            }
-                                        
-                                        
-                                        
-                            
-                                        
-                            if(context.mounted){
-                              // ダイアログを閉じる
-                              Navigator.of(context).pop();
-                        
-                              widget.subject == "数学" ? math-- : widget.subject == "物理" ? phys-- : widget.subject == "化学" ? chem-- : other--;              
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text("Great!"),
-                                      content: const Text("問題の投稿が完了しました！"),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop(); // ダイアログを閉じる
-                                          },
-                                          child: const Text('閉じる'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                            }
-                        
-                                        
-                                        
-                                
-                                        
-                            
-                                        
-                            
-                          },
-                          child: const Text("確認して投稿"),
-                        ),
-
-                        SizedBox(height: SizeConfig.blockSizeVertical! * 2),
-
-                        /*
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("編集"),
-                        ),
-                         */
-
-                        SizedBox(height: SizeConfig.blockSizeVertical! * 2),
-                      ],
-                    ),
-                
-                    
-                     */
                 
                   ],
                 
@@ -1176,14 +818,10 @@ class _ConfirmPageState extends State<ConfirmPage> {
 
           //TODO Admob
           Container(
-            height: SizeConfig.blockSizeVertical! * 17,
+            height: SizeConfig.blockSizeVertical! * 10,
             color: Colors.white,
             child: AdaptiveAdBanner(requestId: "CREATE",)
           ),
-          //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
-          //InlineAdaptiveExample(),
-        
-        
         ],
       ),
     );

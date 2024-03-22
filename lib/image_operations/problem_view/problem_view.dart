@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:share_your_q/env/env.dart';
-import 'package:share_your_q/pages/display_page/components/appbar_actions/components/comments_list.dart';
 import "package:share_your_q/utils/various.dart";
 import "package:share_your_q/image_operations/image_request.dart";
-import 'dart:typed_data';
 import "package:share_your_q/pages/profile_page/profile_page.dart";
 
 import 'package:share_your_q/image_operations/problem_view/pro_com_add.dart';
@@ -123,79 +120,8 @@ class _ProblemViewWidgetState extends State<ProblemViewWidget> {
 
   bool _statusBarVisible = true;
 
-  void _toggleSystemBars(BuildContext context) {
-    setState(() {
-      _statusBarVisible = !_statusBarVisible;
-      /*
-      if (!_statusBarVisible) {
-        SystemChrome.setEnabledSystemUIMode(
-          SystemUiMode.manual, overlays: [SystemUiOverlay.top, /*SystemUiOverlay.bottom
-           */],
-        );
-      } else {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [/*SystemUiOverlay.bottom */]);
-      }
-      */
-    });
-  }
-
   //ここで画像を拡大表示など
   //https://qiita.com/ling350181/items/adfebd6f7c648084d1b5
-  void showPreviewImage(
-    BuildContext context, {
-    required Uint8List image,
-  }) {
-    showDialog(
-      //useSafeArea: false,
-      barrierDismissible: true,
-      barrierLabel: '閉じる',
-      context: context,
-      builder: (context) {
-        return Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.black,
-                    child: InteractiveViewer(
-                      
-                      minScale: 0.1,
-                      maxScale: 5,
-                      child: Image.memory(
-                        image,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: _statusBarVisible? IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                      color: Colors.green,
-                    ),
-                  )
-                  : SizedBox(width: 0,),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
-
 
 void showPreviewImage100(
   BuildContext context, {
@@ -212,8 +138,6 @@ void showPreviewImage100(
           return GestureDetector(
             onTap: () {
               _toggleSystemBars100(setState); // タップ時にシステムバーを切り替える
-              print("tapped");
-              print(_statusBarVisible);
             },
             child: Stack(
               alignment: Alignment.topCenter,
@@ -261,8 +185,6 @@ void showPreviewImage100(
   );
 }
 
-bool _statusBarVisible100 = false;
-
 void _toggleSystemBars100(Function(void Function()) setState) {
   setState(() {
     _statusBarVisible = !_statusBarVisible;
@@ -283,123 +205,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
 
 
 
-  void showPreviewImage10(
-  BuildContext context, {
-  required Uint8List image,
-}) {
-  showDialog(
-    //useSafeArea: false,
-    barrierDismissible: true,
-    //barrierLabel: '閉じる',
-    context: context,
-    builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          _toggleSystemBars(context); // タップ時にシステムバーを切り替える
-          print("tapped");
-          print(_statusBarVisible);
-        },
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Container(
-              color: Colors.black,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: InteractiveViewer(
-                    minScale: 0.1,
-                    maxScale: 5,
-                    child: Image.memory(
-                      image,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Material(
-                  color: Colors.transparent,
-                  child: _statusBarVisible ? IconButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                    ),
-                  )
-                  : SizedBox(width: 0,),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
-
-  void showPreviewImage2(
-  BuildContext context, {
-  required Uint8List image,
-}) {
-  showDialog(
-    //useSafeArea: false,
-    barrierDismissible: true,
-    barrierLabel: '閉じる',
-    context: context,
-    builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          _toggleSystemBars(context);
-        },
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Center(
-              child: InteractiveViewer(
-                minScale: 0.1,
-                maxScale: 5,
-                child: Image.memory(
-                  image,
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                SizedBox(
-                  height: SizeConfig.safeAreaTop!
-                ),
-                Row(
-                  children: [
-                    Material(
-                      color: Colors.transparent,
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        icon: const Icon(
-                          Icons.close,
-                          size: 30,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-
 
 
 
@@ -412,8 +217,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
           .eq('user_id', myUserId)
           .eq('image_id', widget.image_id);
 
-      print(existingRecord);
-      print("ここがexisi");
 
       // レコードが存在する場合はアップデート、存在しない場合は挿入する
       if (existingRecord.isNotEmpty) {
@@ -443,10 +246,8 @@ void _toggleSystemBars100(Function(void Function()) setState) {
         //isLiked = !isLiked;
         if (response != null) {
           // エラーハンドリング
-          print('Error updating data: $response');
         } else {
           // 成功時の処理
-          print('Data updated successfully!');
         }
       } else {
         // レコードが存在しない場合は挿入
@@ -462,8 +263,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
 
         isFirst = false;
 
-        print(response2);
-        print("response2はここでした");
 
         if (response2 == null) {
           // エラーハンドリング
@@ -473,14 +272,19 @@ void _toggleSystemBars100(Function(void Function()) setState) {
           print('Data inserted successfully!');
         }
       }
-    } catch (error) {
-      // 例外が発生した場合のエラーハンドリング
-      print('Error: $error');
+    } on PostgrestException catch(error){
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+    } catch(_){
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
 
-  bool? isFollowed = null;
+  bool? isFollowed;
   String myUsername = "";
 
   Future<void> isFollow() async{
@@ -531,12 +335,12 @@ void _toggleSystemBars100(Function(void Function()) setState) {
       }
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
       return null;
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return null;
@@ -544,13 +348,11 @@ void _toggleSystemBars100(Function(void Function()) setState) {
   } 
 
 
-
   Future<void> followProcess() async{
     try{
 
       if(isFollowed == true){
 
-        print("kokohatrue");
         await supabase
           .from('follow')
           .update({ "add": false })
@@ -570,7 +372,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
       }
       else if(isFollowed == false){
 
-        print("kokohafalse");
 
         await supabase
           .from('follow')
@@ -598,11 +399,11 @@ void _toggleSystemBars100(Function(void Function()) setState) {
 
 
     } on PostgrestException catch (error){
-      if(context.mounted){
+      if(mounted){
         context.showErrorSnackBar(message: error.message);
       }
     } catch(_){
-      if(context.mounted){
+      if(mounted){
       context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
     }
@@ -617,6 +418,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
       await loadLikes();
     }
 
+    /*
     await fetchImage(widget.profileImage).then((bytes){
       setState(() {
         profileImageBytes = bytes;
@@ -647,6 +449,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
 
 
     }
+     */
 
     //followProcess();
 
@@ -665,7 +468,42 @@ void _toggleSystemBars100(Function(void Function()) setState) {
   void initState() {
     super.initState();
 
+
+    //ここでいいねとフォローの処理を行う
     waitProcess();
+
+    //この先で画像を取得する。waitProcessから外したのはローディングの関係
+    fetchImage(widget.profileImage).then((bytes){
+      setState(() {
+        profileImageBytes = bytes;
+      });
+    });
+
+    if(widget.image1 != null || widget.image2 != null){
+      isLoadingImage1 = false;
+      isLoadingImage2 = false;
+    }
+    else{
+
+      // 1つ目の画像のバイナリデータを取得
+      fetchImage(widget.problem_id).then((bytes) {
+        setState(() {
+          image1Bytes = bytes;
+          isLoadingImage1 = false;
+        });
+      });
+
+      // 2つ目の画像のバイナリデータを取得
+      fetchImage(widget.comment_id).then((bytes) {
+        setState(() {
+          image2Bytes = bytes;
+          isLoadingImage2 = false;
+        });
+      });
+
+
+    }
+    
  
     
 
@@ -780,52 +618,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                           ? const Text("フォローする", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold))
                           : const Text("フォロー解除", style:TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
-    
-                const SizedBox(height: 5,),
-    
-                Row(
-                  children: [
-                    /*
-                    Text("難易度: ${widget.difficulty}"),
-    
-                    const SizedBox(width: 10,),
-                     */
-    
-                    /*
-                    GestureDetector(
-                      child: CircleAvatar(
-                        backgroundColor: Colors.blue,
-                        child: Text(
-                          "易",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        radius: 15,
-                      )
-                    ),
-    
-                    SizedBox(width: 10,),
-    
-                    GestureDetector(
-                      child: CircleAvatar(
-                        backgroundColor: Colors.red,
-                        child: Text(
-                          "難",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        radius: 15,
-                      )
-                    ),
-                     */
-                  ],
-                ),
     
                 const SizedBox(height: 5,),
     
@@ -981,46 +773,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                 ),
     
                 onTap:(){
-                  //画像を拡大表示する
-                  /*
-                  showDialog(
-                    context: context,
-                    builder: (_) {
-                      return Dialog(
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: Image.memory(
-                                    image1Bytes!,
-                                    fit: BoxFit.cover,
-                                  ).image,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 16.0,
-                              left: 16.0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop(); // ダイアログを閉じる
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                  size: 24.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                   */
+           
     
                   showPreviewImage100(
                     context,
@@ -1094,47 +847,6 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                 ),
     
                 onTap:(){
-                  //画像を拡大表示する
-                  /*
-                  showDialog(
-                    useSafeArea: false,
-                    context: context,
-                    builder: (_) {
-                      return Dialog(
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: Image.memory(
-                                    image2Bytes!,
-                                    fit: BoxFit.cover,
-                                  ).image,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: 16.0,
-                              left: 16.0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.of(context).pop(); // ダイアログを閉じる
-                                },
-                                child: const Icon(
-                                  Icons.arrow_back,
-                                  color: Colors.white,
-                                  size: 24.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                   */
     
                   showPreviewImage100(
                     context,
@@ -1145,39 +857,10 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                  
                 }
               ),
-    
-          /*
-          CommentList(
-            imageId: widget.image_id!, 
-            responseId: -1,
-          ),
-           */
-    
-    
+  
           SizedBox(height: SizeConfig.blockSizeVertical! * 10,),
     
-          /*
           
-           */
-    
-          /*
-          Container(
-            height: SizeConfig.blockSizeVertical! * 80,
-            //width: SizeConfig.blockSizeHorizontal! * 90,
-    
-            child:CommentList(
-              imageId: widget.image_id!, 
-              responseId: -1,
-              canToPage: false,
-              resText: "コメント",
-              item: null,
-              title: "コメント"
-            ),
-          ),
-           */
-    
-    
-    
           
     
         ],
