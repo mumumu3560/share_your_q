@@ -11,9 +11,6 @@
 migrate_working_dir/
 .env
 
-ts-r2/
-supabase_relations/
-js-kv/
 # IntelliJ related
 *.iml
 *.ipr
@@ -48,13 +45,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# 関係ないもの
-lib/cloudflare_relations/server_request_memo.dart
-lib/config/size_config.dart
-lib/image_operations/image_display_memo.dart
-lib/image_operations/image_list_display_memo.dart
-lib/image_operations/test_override.dart
-lib/cloudflare_relations/direct_uploads_operation.js
-lib/cloudflare_relations/likes_onesignal.js
-lib/image_operations/image_display.dart
-android/shareyourq-968ff-firebase-adminsdk-t1k7t-98dd3cc1af.json
+
