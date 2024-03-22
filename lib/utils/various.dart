@@ -41,8 +41,10 @@ void showLoadingDialog(BuildContext context, String message) {
                   Text(message), // ローディング中のメッセージ                
                 ],
               ),
+
+              SizedBox(height: SizeConfig.blockSizeVertical! * 2),
         
-              Text("画像を取得中です"),
+              Text("処理中です。\nしばらくお待ちください。"),
         
             ],
           ),
@@ -249,8 +251,6 @@ var cache = LRUCache.create(20);
 Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   // キャッシュから画像を取得
 
-  print("ここはfetchImageWithCacheの中です");
-  print(imageId);
 
   if(imageId == null){
     return Uint8List(0);
@@ -265,8 +265,6 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   Uint8List? imageBytes = await fetchImage(imageId);
 
   if(imageBytes == null){
-    print("ここに入ってくるかな？");
-    print("ここじゃなかったらどうなるんだ？？");
     return null;
   }
 
@@ -285,56 +283,3 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
 
 
 
-
-
-/*
-class BannerContainer extends StatefulWidget{
-
-  final double height;
-
-  const BannerContainer({
-    Key? key,
-    required this.height,
-  }) : super(key: key);
-
-  @override
-  _BannerContainerState createState() => _BannerContainerState();
-}
-
-class _BannerContainerState extends State<BannerContainer> {
-
-  //TODO ビルドリリースの時のみ
-  final AdMob _adMob = AdMob();
-
-  @override
-  void initState() {
-    super.initState();
-    //TODO ビルドリリースの時のみ
-    _adMob.load();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    //TODO ビルドリリースの時のみ
-    _adMob.dispose();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    SizeConfig().init(context);
-    print("height");
-    print(widget.height);
-    print("height2222");
-    print(SizeConfig.blockSizeVertical! * 15);
-    return Container(
-      height: SizeConfig.blockSizeVertical! * 18,
-      //height: 100 ,
-      width: double.infinity,
-      color: const Color.fromARGB(255, 48, 46, 46),
-      //TODO ビルドリリースの時のみ
-      child: _adMob.getAdBanner(),
-    );
-  }
-}
- */
