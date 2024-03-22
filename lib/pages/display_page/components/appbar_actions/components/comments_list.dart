@@ -66,9 +66,13 @@ class CommentListState extends State<CommentList> {
         commentList = response;
       });
     } on PostgrestException catch(error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
@@ -176,10 +180,14 @@ class CommentListState extends State<CommentList> {
       await reloadList();
     } on PostgrestException catch (error) {
       // エラーが発生した場合はエラーメッセージを表示
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (_) {
       // 予期せぬエラーが起きた際は予期せぬエラー用のメッセージを表示
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
 
     /*
@@ -420,9 +428,13 @@ class _CommentItemState extends State<CommentItem>
         userName = response[0]["username"];
       });
     } on PostgrestException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 
@@ -556,9 +568,13 @@ class _CommentItemState extends State<CommentItem>
 
     }
     on PostgrestException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
     } catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
   }
 

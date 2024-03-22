@@ -43,11 +43,17 @@ class _ProfileState extends State<Profile> {
         .eq('id', widget.userId);
 
     } on PostgrestException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+      return;
 
     }
     catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+      return;
 
     }
 

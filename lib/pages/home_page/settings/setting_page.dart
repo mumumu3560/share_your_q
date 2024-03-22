@@ -38,10 +38,14 @@ class SettingPageState extends State<SettingPage> {
       if (await canLaunchUrl(Uri.parse(targetUrl))) {
         await launchUrl(Uri.parse(targetUrl));
       } else {
-        context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+        if(mounted){
+          context.showErrorSnackBar(message: "リンクを開くことができませんでした。");
+        }
       }
     } catch(_){
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
       return ;
     }
   }

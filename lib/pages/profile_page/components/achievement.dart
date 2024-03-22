@@ -53,11 +53,15 @@ class _CreateTrendState extends State<CreateTrend>{
 
 
     } on PostgrestException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
       return ;
     }
     catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
       return ;
     }
   }

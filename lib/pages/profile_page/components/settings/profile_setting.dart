@@ -365,6 +365,8 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           
           
                       SizedBox(height: SizeConfig.blockSizeVertical! * 5),
+
+                      //TODO response != 0の時の処理を考える。
           
                       ElevatedButton(
                         onPressed: () async{
@@ -376,53 +378,57 @@ class _ProfileSettingsState extends State<ProfileSettings> {
 
 
                           if(response != 0){
-                            if(mounted){
+                            if(context.mounted){
                               Navigator.of(context).pop();
                             }
 
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
+                            if(context.mounted){
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
 
-                                  title: const Text("エラー"),
-                                  content: const Text("サーバーエラーにより、情報の更新ができませんでした。"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                                    title: const Text("エラー"),
+                                    content: const Text("サーバーエラーにより、情報の更新ができませんでした。"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); // ダイアログを閉じる
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
 
                           }
                           else{
-                            if(mounted){
+                            if(context.mounted){
                               Navigator.of(context).pop();
                             }
 
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
+                            if(context.mounted){
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
 
-                                  title: const Text("完了"),
-                                  content: const Text("プロフィールを更新しました。"),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // ダイアログを閉じる
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                                    title: const Text("完了"),
+                                    content: const Text("プロフィールを更新しました。"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); // ダイアログを閉じる
+                                        },
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
 
                           }
 
