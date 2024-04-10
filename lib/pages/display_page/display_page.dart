@@ -105,8 +105,6 @@ class DisplayPage extends StatefulWidget {
 
 class _DisplayPageState extends State<DisplayPage>{
 
-
-  final userId = supabase.auth.currentUser!.id;
   bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
