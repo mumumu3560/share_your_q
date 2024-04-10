@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
 import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
 import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
+import 'package:share_your_q/pages/redirect_page/redirect_to_liked_page.dart';
 
 import 'package:share_your_q/pages/search_page/search_page.dart';
 import 'package:share_your_q/utils/various.dart';
@@ -38,23 +40,54 @@ class _HomePageState extends State<HomePage> {
 
   bool firstFetch = true;
 
-  String profileId = "";
+  String? profileId = "";
   String userName = "";
 
   Future<void> fetchProfile() async{
     try{
       final response = await supabase
         .from('profiles')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('id', myUserId);
       setState(() {
         profileId = response[0]["profile_image_id"];
         userName = response[0]["username"];
       });
+    } on PostgrestException catch(e){
+      if(mounted){
+        context.showErrorSnackBar(message: e.message);
+      }
+      
+    } catch(e){
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
-    catch(e){
-      print("error");
-    }
+  }
+
+  Future<void> onTapPushNotification()async {
+
+    OneSignal.Notifications.addClickListener((event) {
+
+      final additionalData = event.notification.additionalData;
+
+      //ここでredirectToLikedPageに飛ばす
+      if (additionalData!["action"] == "like") {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RedirectToLikedPage(
+              likedImageId: additionalData["image_id"],
+            ),
+          ),
+        );
+      }
+      else{
+        return;
+      }
+
+
+    });
   }
 
 
@@ -62,7 +95,7 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await supabase
             .from("image_data")
-            .select<List<Map<String, dynamic>>>()
+            .select()
             .order('created_at');
       isLoading = false;
       imageData = response;
@@ -99,10 +132,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  
+
   @override
   void initState() {
     super.initState();
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
+
+    //TODO ここでOneSignalの通知をタップした時の処理を書く
+    onTapPushNotification();
+    
     fetchData();
     fetchProfile();
 
@@ -177,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                 
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(userId:myUserId, userName: userName, profileImage: profileId,), // ImageDisplayに遷移
+                    builder: (context) => ProfilePage(userId:myUserId, userName: userName, /*profileImage: profileId, */), // ImageDisplayに遷移
                   ),
                 );
               },
