@@ -16,7 +16,6 @@ import 'package:share_your_q/pages/profile_page/components/create_trend.dart';
 
 
 import 'package:flutter/gestures.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:share_your_q/pages/profile_page/components/follow_list/follow_list.dart';
 
@@ -39,13 +38,13 @@ class ProfilePage extends StatefulWidget {
 
   final String userId;
   final String userName;
-  final String? profileImage;
+  //final String? profileImage;
 
   const ProfilePage({
     Key? key,
     required this.userId,
     required this.userName,
-    required this.profileImage,
+    //required this.profileImage,
   }): super(key: key);
   
   @override
@@ -66,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> getInfoFromSupabase() async{
     try{
 
-      final profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", widget.userId);
+      final profileData = await supabase.from("profiles").select().eq("id", widget.userId);
 
       setState(() {
         
@@ -159,13 +158,13 @@ class _ProfilePageState extends State<ProfilePage> {
     try{
       _imageData = await supabase
         .from('image_data')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('user_id', widget.userId)
         .order('created_at', ascending: true);
 
       final response = await supabase
         .from("likes")
-        .select<List<Map<String,dynamic>>>("image_id")
+        .select("image_id")
         .eq("user_id", widget.userId)
         .eq("add", true)
         .order("added_at", ascending: false);
@@ -174,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
       for(int i = 0; i < response.length; i++){
         final response2 = await supabase
           .from("image_data")
-          .select<List<Map<String,dynamic>>>()
+          .select()
           .eq("image_data_id", response[i]["image_id"]);
         
         likesData.add(response2[0]);
@@ -387,13 +386,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
       followerData = await supabase
         .from("follow")
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq("followed_id", widget.userId)
         .eq("add", true);
 
       followData = await supabase
         .from("follow")
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq("follower_id", widget.userId)
         .eq("add", true);
 
@@ -433,13 +432,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
       final response = await supabase
         .from('follow')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('follower_id', myUserId)
         .eq('followed_id', widget.userId);
 
       final res = await supabase 
         .from("profiles")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("id", myUserId);
 
       myUsername = res[0]["username"];

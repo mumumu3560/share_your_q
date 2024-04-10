@@ -213,9 +213,9 @@ void _toggleSystemBars100(Function(void Function()) setState) {
       // `user_id`と`image_id`の組み合わせで既存のレコードを検索する
       final existingRecord = await supabase
           .from('likes')
-          .select<List<Map<String, dynamic>>>()
+          .select()
           .eq('user_id', myUserId)
-          .eq('image_id', widget.image_id);
+          .eq('image_id', widget.image_id!);
 
 
       // レコードが存在する場合はアップデート、存在しない場合は挿入する
@@ -232,7 +232,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
             .from('likes')
             .update({ 'add': isLiked })
             .eq('user_id', myUserId)
-            .eq('image_id', widget.image_id);
+            .eq('image_id', widget.image_id!);
           isFirst = false;
         }
         else{
@@ -240,7 +240,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
             .from('likes')
             .update({ 'add': !isLiked })
             .eq('user_id', myUserId)
-            .eq('image_id', widget.image_id);
+            .eq('image_id', widget.image_id!);
         }
 
         //isLiked = !isLiked;
@@ -292,13 +292,13 @@ void _toggleSystemBars100(Function(void Function()) setState) {
 
       final response = await supabase
         .from('follow')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('follower_id', myUserId)
         .eq('followed_id', widget.image_own_user_id);
 
       final res = await supabase 
         .from("profiles")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("id", myUserId);
 
       myUsername = res[0]["username"];
@@ -563,7 +563,7 @@ void _toggleSystemBars100(Function(void Function()) setState) {
                               MaterialPageRoute(builder: (context) => ProfilePage(
                                 userName: widget.userName!,
                                 userId: widget.image_own_user_id,
-                                profileImage: widget.profileImage,
+                                //profileImage: widget.profileImage,
                               )),
                             );
                           }

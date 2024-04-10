@@ -87,7 +87,7 @@ class ImageListDisplayState extends State<ImageListDisplay> {
       //Conditional Chaining
       //https://supabase.com/docs/reference/dart/using-filters
       var query =
-          supabase.from("image_data").select<List<Map<String, dynamic>>>();
+          supabase.from("image_data").select();
       if (widget.level != "全て" && widget.level != null) {
         query = query.eq("level", widget.level as String);
       }
@@ -346,7 +346,7 @@ class _MyListItemState extends State<MyListItem>
 
         final response = await supabase
             .from("profiles")
-            .select<List<Map<String, dynamic>>>()
+            .select()
             .eq("id", target);
 
         if (response[0]["profile_image_id"] == null) {
@@ -460,7 +460,7 @@ class _MyListItemState extends State<MyListItem>
                               builder: (context) => ProfilePage(
                                 userId: widget.item["user_id"],
                                 userName: widget.item["user_name"],
-                                profileImage: profileImageId,
+                                //profileImage: profileImageId,
                               ),
                             ),
                           );

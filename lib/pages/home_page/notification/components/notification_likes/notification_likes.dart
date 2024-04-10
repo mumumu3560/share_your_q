@@ -38,7 +38,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
     try {
       final response = await supabase
           .from("likes")
-          .select<List<Map<String, dynamic>>>("image_id, user_id")
+          .select("image_id, user_id")
           .eq("image_own_user_id", myUserId)
           .eq("add", true)
           .order("added_at", ascending: false);
@@ -50,13 +50,12 @@ class LikesNotificationListState extends State<LikesNotificationList> {
 
         final response1 = await supabase
             .from("profiles")
-            .select<List<Map<String, dynamic>>>(
-                "id, username, profile_image_id")
+            .select("id, username, profile_image_id")
             .eq("id", response[i]["user_id"]);
 
         final response2 = await supabase
             .from("image_data")
-            .select<List<Map<String, dynamic>>>()
+            .select()
             .eq("image_data_id", response[i]["image_id"]);
 
         // 新たな入れ子構造を作成します。
@@ -414,7 +413,7 @@ class _LikesNotificationItemState extends State<LikesNotificationItem>
                               builder: (context) => ProfilePage(
                                 userId: widget.profileItem["id"],
                                 userName: widget.profileItem["username"],
-                                profileImage: likesUserImageId,
+                                //profileImage: likesUserImageId,
                               ),
                             ),
                           );

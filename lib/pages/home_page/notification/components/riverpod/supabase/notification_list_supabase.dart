@@ -13,7 +13,7 @@ class NotificationListSupabase extends _$NotificationListSupabase {
     try{
       final response = await supabase
         .from("inquiries_reply")
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq("user_id", myUserId)
         .order("created_at", ascending: false);
 
@@ -39,7 +39,7 @@ class NotificationListSupabase extends _$NotificationListSupabase {
 
     final response = await supabase
       .from("inquiries_reply")
-      .select<List<Map<String,dynamic>>>("contents, created_at")
+      .select("contents, created_at")
       .eq("user_id", myUserId)
       .order("created_at", ascending: false);
 

@@ -61,7 +61,7 @@ class CommentListState extends State<CommentList> {
 
       response = await supabase
         .from("comments")
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq("image_id", widget.imageId)
         .eq("response_id", widget.responseId)
         .order('created_at', ascending: false);
@@ -506,7 +506,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
     try{
       final response = await supabase
         .from("profiles")
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq("id", target);
       
       setState(() {
@@ -531,7 +531,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
 
       final response = await supabase
         .from("profiles")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("id", target);
 
 
@@ -701,7 +701,7 @@ Consider canceling any active work during "dispose" or using the "mounted" gette
                               builder: (context) => ProfilePage(
                                 userId: targetUserId, 
                                 userName: userName, 
-                                profileImage: profileImageId,
+                                //profileImage: profileImageId,
                               ),
                             ),
                           );

@@ -42,7 +42,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
     try{
       List<Map<String, dynamic>> data = await supabase
         .from('image_data')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('image_data_id', widget.image_id!);
 
         setState(() {
@@ -91,7 +91,7 @@ class _EvaluateDisplayState extends State<EvaluateDisplay>{
           "difficulty": diff_point,
           "eval": evalValue,
         })
-        .eq("image_id", widget.image_id)
+        .eq("image_id", widget.image_id!)
         .eq("user_id", myUserId);
 
     } on PostgrestException catch (error) {

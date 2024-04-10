@@ -108,7 +108,7 @@ class _CreatePageState extends State<CreatePage> {
 
   Future<void> fetchProfileImage() async{
     try{
-      final response = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+      final response = await supabase.from("profiles").select().eq("id", myUserId);
       setState(() {
         profileImageId = response;
       });
@@ -132,7 +132,7 @@ class _CreatePageState extends State<CreatePage> {
     try{
       final response = await supabase
         .from("image_data")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("user_id", myUserId)
         .order("created_at", ascending: false)
         .limit(4);

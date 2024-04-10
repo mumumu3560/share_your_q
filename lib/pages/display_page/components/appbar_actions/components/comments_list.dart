@@ -56,7 +56,7 @@ class CommentListState extends State<CommentList> {
 
       response = await supabase
           .from("comments")
-          .select<List<Map<String, dynamic>>>()
+          .select()
           .eq("image_id", widget.imageId)
           .eq("response_id", widget.responseId)
           .order('created_at', ascending: false);
@@ -421,11 +421,14 @@ class _CommentItemState extends State<CommentItem>
     try {
       final response = await supabase
           .from("profiles")
-          .select<List<Map<String, dynamic>>>()
+          .select()
           .eq("id", target);
 
       setState(() {
-        userName = response[0]["username"];
+        //userName = response[0]["username"];
+        response[0]["username"] == null 
+          ? userName = "名無し"
+          : userName = response[0]["username"];
       });
     } on PostgrestException catch (error) {
       if(mounted){
@@ -444,7 +447,7 @@ class _CommentItemState extends State<CommentItem>
     try {
       final response = await supabase
           .from("profiles")
-          .select<List<Map<String, dynamic>>>()
+          .select()
           .eq("id", target);
 
       if (response[0]["profile_image_id"] == null) {
@@ -487,7 +490,7 @@ class _CommentItemState extends State<CommentItem>
   Future<void> fetchCommentsLike()async{
     final response = await supabase
       .from("comments_like")
-      .select<List<Map<String,dynamic>>>()
+      .select()
       .eq("comments_id", widget.commentsId)
       .eq("user_id", myUserId);
 
@@ -820,7 +823,7 @@ class _CommentItemState extends State<CommentItem>
                     builder: (context) => ProfilePage(
                       userId: targetUserId,
                       userName: userName,
-                      profileImage: profileImageId,
+                      //profileImage: profileImageId,
                     ),
                   ),
                 );

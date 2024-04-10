@@ -46,8 +46,8 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
     try{
       likesData = await supabase
         .from('likes')
-        .select<List<Map<String, dynamic>>>()
-        .eq('image_id', widget.imageId)
+        .select()
+        .eq('image_id', widget.imageId!)
         .eq('user_id', widget.userId);
 
       if(likesData.isNotEmpty){
@@ -84,14 +84,14 @@ class _ProblemAddingState extends State<ProblemOrCommentAdding>{
         await supabase
           .from('likes')
           .update({proOrCom: false})
-          .eq('image_id', widget.imageId)
+          .eq('image_id', widget.imageId!)
           .eq('user_id', widget.userId);
       }
       else{
         await supabase
           .from('likes')
           .update({proOrCom: true})
-          .eq('image_id', widget.imageId)
+          .eq('image_id', widget.imageId!)
           .eq('user_id', widget.userId);
       }
       setState(() {

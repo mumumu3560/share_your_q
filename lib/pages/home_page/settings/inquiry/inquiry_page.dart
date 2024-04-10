@@ -205,12 +205,12 @@ class InquiryPageState extends State<InquiryPage> {
     try{
       final response = await supabase
         .from('inquiries')
-        .select<List<Map<String,dynamic>>>("contents, created_at")
+        .select("contents, created_at")
         .eq('user_id', myUserId);
 
       final response2 = await supabase
         .from('inquiries_reply')
-        .select<List<Map<String,dynamic>>>("contents , created_at")
+        .select("contents , created_at")
         .eq('user_id', myUserId);
 
       //inquiriesのものとinquiries_replyのものを結合するが、その際に新しい変数bool isYouを加えて、

@@ -252,7 +252,7 @@ class _MyListItemState extends State<MyListItem> {
 
       final response = await supabase
         .from("profiles")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("id", target);
 
       if(response[0]["profile_image_id"] == null){
@@ -392,7 +392,7 @@ class _MyListItemState extends State<MyListItem> {
                         builder: (context) => ProfilePage(
                           userId: widget.isFollow ? widget.item["followed_id"] : widget.item["follower_id"], 
                           userName: userName, 
-                          profileImage: profileImageId,
+                          //profileImage: profileImageId,
                         ),
                       ),
                     );
@@ -443,7 +443,7 @@ class _MyListItemState extends State<MyListItem> {
               builder: (context) => ProfilePage(
                 userId: widget.isFollow ? widget.item["followed_id"] : widget.item["follower_id"], 
                 userName: userName, 
-                profileImage: profileImageId,
+                //profileImage: profileImageId,
               ),
             )
 

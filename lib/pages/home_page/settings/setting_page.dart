@@ -57,7 +57,7 @@ class SettingPageState extends State<SettingPage> {
 
       final response = await supabase
         .from('profiles')
-        .select<List<Map<String,dynamic>>>('allow_notification')
+        .select('allow_notification')
         .eq('id', myUserId);
 
       setState(() {

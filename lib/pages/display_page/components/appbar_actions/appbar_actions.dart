@@ -58,9 +58,9 @@ class _AppBarActionsState extends State<AppBarActions> {
       // `user_id`と`image_id`の組み合わせで既存のレコードを検索する
       final existingRecord = await supabase
           .from('likes')
-          .select<List<Map<String, dynamic>>>()
+          .select()
           .eq('user_id', myUserId)
-          .eq('image_id', widget.imageId);
+          .eq('image_id', widget.imageId!);
 
       // レコードが存在する場合はアップデート、存在しない場合は挿入する
       if (existingRecord.isNotEmpty) {
@@ -76,7 +76,7 @@ class _AppBarActionsState extends State<AppBarActions> {
             .from('likes')
             .update({ 'add': isLiked })
             .eq('user_id', myUserId)
-            .eq('image_id', widget.imageId);
+            .eq('image_id', widget.imageId!);
           isFirst = false;
         }
         else{
@@ -84,7 +84,7 @@ class _AppBarActionsState extends State<AppBarActions> {
             .from('likes')
             .update({ 'add': !isLiked })
             .eq('user_id', myUserId)
-            .eq('image_id', widget.imageId);
+            .eq('image_id', widget.imageId!);
         }
 
         /*

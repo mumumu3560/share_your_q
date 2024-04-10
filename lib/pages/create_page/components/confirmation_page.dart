@@ -184,7 +184,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
     try{
       final response = await supabase
         .from("image_data")
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq("user_id", myUserId)
         .order("created_at", ascending: false)
         .limit(4);
@@ -346,12 +346,15 @@ class _ConfirmPageState extends State<ConfirmPage> {
     //numとusernameはsupabase側で行えばよい
     try{
 
+      /**
+        .eq('problem_id', null)
+        .eq('comment_id', null)
+       */
+
       final response = await supabase
         .from('image_data')
-        .select<List<Map<String,dynamic>>>()
+        .select()
         .eq('user_id', myUserId)
-        .is_('problem_id', null)
-        .is_('comment_id', null)
         .order('created_at', ascending: false) // 降順で並べ替え
         .limit(1); // 最新の1件のみ取得
 
@@ -401,7 +404,7 @@ class _ConfirmPageState extends State<ConfirmPage> {
       //ここではknownUserInfoとonServerResponseReceived(関数)が必要なのでそれを渡す。
       response1 = await ImageSelectionAndRequest(
         
-        knownUserInfo: myUserId,
+      knownUserInfo: myUserId ?? "",
         isProblem: isOne,
         type: "create",
         //1回目ならisOne=true、2回目ならisOne=false
