@@ -37,8 +37,9 @@ class ProfileSettings extends StatefulWidget {
 class _ProfileSettingsState extends State<ProfileSettings> {
 
   final TextEditingController _explainController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
 
-  String? userName = "";
+  String userName = "";
 
   List<int> years = List.generate(130, (index) => DateTime.now().year - index); // 130年前~現在までの年度ギネスだと122らしい
 
@@ -66,7 +67,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   Future<void> getInfoFromSupabase() async{
     try{
 
-      profileData = await supabase.from("profiles").select<List<Map<String, dynamic>>>().eq("id", myUserId);
+      profileData = await supabase.from("profiles").select().eq("id", myUserId);
 
 
       setState(() {
@@ -86,9 +87,13 @@ class _ProfileSettingsState extends State<ProfileSettings> {
         
 
         _explainController.text = explainText;
+
+        _nameController.text = userName;
         _linkController1.text = linkText1;
         _linkController2.text = linkText2;
         _linkController3.text = linkText3;
+
+
 
       });
       return ;
@@ -119,7 +124,7 @@ class _ProfileSettingsState extends State<ProfileSettings> {
       linkText = [linkText1, linkText2, linkText3];
 
       await supabase.from("profiles").update({
-        //"username": userName,
+        "username": userName,
         "age": selectedYear,
         "explain": explainText,
         "links": linkText,
@@ -148,6 +153,16 @@ class _ProfileSettingsState extends State<ProfileSettings> {
   void initState() {
     super.initState();
     getInfoFromSupabase();
+  }
+
+  @override
+  void dispose(){
+    _explainController.dispose();
+    _nameController.dispose();
+    _linkController1.dispose();
+    _linkController2.dispose();
+    _linkController3.dispose();
+    super.dispose();
   }
 
 
@@ -185,6 +200,33 @@ class _ProfileSettingsState extends State<ProfileSettings> {
           
                       Column(
                         children: [
+
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
+                            alignment: Alignment.centerLeft,
+                            width: SizeConfig.blockSizeHorizontal! * 95,
+                            child: TextFormField(
+                              
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 1,
+                              maxLength: 24,
+                              controller: _nameController,
+                              onChanged: (value) {
+                                setState(() {
+                                  userName = value;
+                                });
+                              },
+                          
+                              decoration: const InputDecoration(
+                                labelText: 'ユーザーネーム',
+                              ),
+                          
+                            ),
+                          ),
+
+
+
+
                           Container(
                             margin: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal!*5),
                             alignment: Alignment.centerLeft,
