@@ -27,12 +27,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   //TODO ここはandroidビルドリリースの時のみ
-  //MobileAds.instance.initialize();
+  MobileAds.instance.initialize();
 
   //TODO ここはandroidビルドリリースの時のみ
-  //OneSignal.initialize(Env.o1);
+  OneSignal.initialize(Env.o1);
 
-  //OneSignal.Notifications.requestPermission(true);
+  OneSignal.Notifications.requestPermission(true);
+
+  
   
   
 
