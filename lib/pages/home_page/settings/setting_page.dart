@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/home_page/settings/inquiry/inquiry_page.dart';
@@ -168,10 +167,8 @@ class SettingPageState extends State<SettingPage> {
                   title: const Text('お問い合わせ'),
                   onTap: () {
                     if(context.mounted){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => InquiryPage()),
-                      );
+                      final url = Uri.parse(Env.g1);
+                      launchUrl(url);
                     }
                   },
                 ),
