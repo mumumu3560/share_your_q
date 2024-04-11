@@ -129,7 +129,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
             children: [
               if (likesUserData.isEmpty && !isLoading)
                 Container(
-                    padding: EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 10),
+                    padding: EdgeInsets.all(SizeConfig.blockSizeHorizontal! * 3),
                     child: const Text(
                   "data is empty",
                   style: TextStyle(
@@ -148,13 +148,13 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                           onRefresh: () async {
                             reloadList();
                           },
-
+          
                           //リストビューを作成する
                           //TODOスクロールバーの追加
                           child: ListView.builder(
                             //https://stackoverflow.com/questions/68623174/why-cant-i-slide-the-listview-builder-on-flutter-web
                             physics: const AlwaysScrollableScrollPhysics(),
-
+          
                             //TODO ここでリストの保持を行う。
                             itemCount: likesUserData.length,
                             //itemCount: 10,
@@ -176,7 +176,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                       //child: _adMob.getAdBanner(),
                                     ),
                                      */
-
+          
                                     /*
                                     SizedBox(
                                       height:
@@ -193,7 +193,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                     ),
                                      */
                                     //const ,
-
+          
                                     LikesNotificationItem(
                                       imageItem: imageItem,
                                       profileItem: profileItem,
@@ -206,7 +206,7 @@ class LikesNotificationListState extends State<LikesNotificationList> {
                                     likesUserData[index]["imageData"];
                                 final profileItem =
                                     likesUserData[index]["profile"];
-
+          
                                 return LikesNotificationItem(
                                   imageItem: imageItem,
                                   profileItem: profileItem,
