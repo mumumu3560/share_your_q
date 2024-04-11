@@ -4,6 +4,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
 import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
 import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
+import 'package:share_your_q/pages/redirect_page/fetchLikedImageWithId.dart';
 import 'package:share_your_q/pages/redirect_page/redirect_to_liked_page.dart';
 
 import 'package:share_your_q/pages/search_page/search_page.dart';
@@ -67,24 +68,40 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> onTapPushNotification()async {
 
-    OneSignal.Notifications.addClickListener((event) {
+    
+    OneSignal.Notifications.addClickListener((event) async {
+
 
       final additionalData = event.notification.additionalData;
 
       //ここでredirectToLikedPageに飛ばす
       if (additionalData!["action"] == "like") {
+        //OneSignal.Notifications.clearAll();
+        //await fetchLikedAndRedirect(context, additionalData["imageId"]);
+        /*
+        
+         */
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => RedirectToLikedPage(
-              likedImageId: additionalData["image_id"],
+              likedImageId: additionalData["imageId"],
             ),
           ),
         );
       }
-      else{
-        return;
+
+      if(additionalData!["action"] == "follow"){
+        //OneSignal.Notifications.clearAll();
+        if(!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(userId: additionalData["userId"], userName: additionalData["userName"], /*profileImage: profileId,*/),
+          ),
+        );
       }
+      
 
 
     });
@@ -132,6 +149,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> initFetch() async{
+    await onTapPushNotification();
+    await fetchData();
+    await fetchProfile();
+
+  }
+
   
 
   @override
@@ -140,10 +164,12 @@ class _HomePageState extends State<HomePage> {
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
 
     //TODO ここでOneSignalの通知をタップした時の処理を書く
-    onTapPushNotification();
-    
-    fetchData();
-    fetchProfile();
+    //onTapPushNotification();
+
+    //fetchData();
+    //fetchProfile();
+
+    initFetch();
 
     
     
