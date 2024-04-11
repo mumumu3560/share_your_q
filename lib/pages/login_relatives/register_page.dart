@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/utils/various.dart';
@@ -8,6 +6,8 @@ import 'package:share_your_q/pages/home_page/home_page_web.dart';
 import 'package:share_your_q/pages/login_relatives/login_page.dart';
 import 'package:email_validator/email_validator.dart';
 import 'dart:async';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/gestures.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -273,6 +273,50 @@ class _RegisterPageState extends State<RegisterPage> {
                 return null;
               },
             ),
+
+            formSpacer,
+
+            //ここに利用規約とプライバシーポリシーのリンクを追加する
+            Align(
+              alignment: Alignment.center,
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '利用規約',
+                      style: TextStyle(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          // 利用規約のURLを開く
+                          final url = Uri.parse(Env.u3);
+                          launchUrl(url);
+                          
+                        },
+                    ),
+              
+                    TextSpan(
+                      text: 'と',
+                    ),
+              
+                    TextSpan(
+                      text: 'プライバシーポリシー',
+                      style: TextStyle(color: Colors.blue),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          final url = Uri.parse(Env.u1);
+                          // プライバシーポリシーのURLを開く
+                          launchUrl(url);
+                        },
+                    ),
+                    TextSpan(text: 'に同意して登録。'),
+              
+                    
+                  ],
+                ),
+              ),
+            ),
+
 
             formSpacer,
 
