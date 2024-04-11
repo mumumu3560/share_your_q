@@ -425,6 +425,8 @@ class _MyListItemState extends State<MyListItem>
                               return const CircularProgressIndicator();
                             } else if (imageSnapshot.hasError ||
                                 imageSnapshot.data == null) {
+                                  
+                                  
                               // エラーが発生した場合は代替のアイコンを表示する
                               return const Icon(
                                 Icons.error_outline,
@@ -440,6 +442,8 @@ class _MyListItemState extends State<MyListItem>
                                 height: 40,
                                 errorBuilder: (context, error, stackTrace) {
                                   // エラーが発生した場合の代替イメージを表示する
+                                  print(imageSnapshot);
+                                  print("aaaaaaaaaa");
                                   return const Icon(
                                     Icons.error_outline,
                                     color: Colors.red,
