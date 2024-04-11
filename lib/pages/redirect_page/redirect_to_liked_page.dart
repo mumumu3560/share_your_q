@@ -68,9 +68,9 @@ class _RedirectToLikedPageState extends State<RedirectToLikedPage>{
       final List<Map<String, dynamic>> response;
 
       response = await supabase
-          .from('images')
+          .from('image_data')
           .select()
-          .eq('id', widget.likedImageId);
+          .eq('image_data_id', widget.likedImageId);
 
       return response;
     }
@@ -90,13 +90,14 @@ class _RedirectToLikedPageState extends State<RedirectToLikedPage>{
   }
 
   Future<void> _fetchLikedAndRedirect() async {
+    await Future.delayed(Duration.zero);
     //TODO ここでlikedのimage_idを取得して、それを元にDisplayPageにリダイレクトする
 
     final response = await fetchData();
 
     final imageData = response[0];
 
-    final profileImage = await fetchProfileImage(imageData["image_own_user_id"]);
+    final profileImage = await fetchProfileImage(imageData["user_id"]);
 
 
     //これ必要なやつ全部持ってくる
@@ -108,10 +109,10 @@ class _RedirectToLikedPageState extends State<RedirectToLikedPage>{
     //TODO ここでlikedのimage_idを取得して、それを元にDisplayPageにリダイレクトする
     if(!mounted) return;
     if (response.isNotEmpty) {
-      Navigator.push(
-        context,
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => DisplayPage(
+            // パラメータをここに保持します
             image1: null,
             image2: null,
             title: imageData["title"],
@@ -122,42 +123,27 @@ class _RedirectToLikedPageState extends State<RedirectToLikedPage>{
             tag3: imageData["tag3"],
             tag4: imageData["tag4"],
             tag5: imageData["tag5"],
-
-
             level: imageData["level"],
             subject: imageData["subject"],
-
             imageUrlPX: imageData["problem_id"],
             imageUrlCX: imageData["comment_id"],
-
             explanation: imageData["explain"],
             num: imageData["num"],
-
-
             watched: imageData["watched"],
             likes: imageData["likes"],
-
-
             problem_id: imageData["problem_id"],
             comment_id: imageData["comment_id"],
-
-
             userName: imageData["user_name"],
-
             difficulty: imageData["eval_num"] != 0
-                  ? imageData["difficulty_point"] /
-                      imageData["eval_num"].toDouble()
+                  ? imageData["difficulty_point"] / imageData["eval_num"].toDouble()
                   : 0,
-
-
             profileImage: profileImage,
-
             problemAdd: imageData["pro_add"],
             commentAdd: imageData["com_add"],
-            
           ),
-        ),
+        ), 
       );
+      
     } else {
       context.showErrorSnackBar(message: '問題が見つかりません。');
     }
