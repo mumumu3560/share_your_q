@@ -5,10 +5,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_your_q/env/env.dart';
 
 
-/*
 
-
- */
 
 class InlineAdaptiveAdBanner extends StatelessWidget{
   final String requestId;
@@ -25,6 +22,18 @@ class InlineAdaptiveAdBanner extends StatelessWidget{
   }
 }
 
+/*
+
+
+
+ */
+
+
+
+
+
+
+
 
 
 
@@ -38,6 +47,7 @@ class InlineAdaptiveAdBanner extends StatelessWidget{
 
 
 /*
+
 
 class InlineAdaptiveAdBanner extends StatelessWidget {
 
@@ -119,6 +129,6 @@ class InlineAdaptiveAdBanner extends StatelessWidget {
     });
   }
 }
-
  */
+
 

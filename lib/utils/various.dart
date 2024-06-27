@@ -14,7 +14,7 @@ import "package:share_your_q/image_operations/image_request.dart";
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
 final supabase = Supabase.instance.client;
-final myUserId = supabase.auth.currentUser!.id.toString();
+late String myUserId;
 
 String userLang = "jp";
 

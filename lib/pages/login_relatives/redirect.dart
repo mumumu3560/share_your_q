@@ -26,12 +26,16 @@ class SplashPageState extends State<SplashPage> {
 
     //ログインしている→ホーム画面へ
     //ログインしていない→ログイン画面へ
+    if (!mounted) {
+      return;
+    }
     final session = supabase.auth.currentSession;
     if (session == null) {
       //falseで前のページに戻れないようにする
       Navigator.of(context).pushAndRemoveUntil(RegisterPage.route(), (route) => false);
     } else {
       Navigator.of(context).pushAndRemoveUntil(HomePage.route(), (route) => false);
+      //Navigator.of(context).pushAndRemoveUntil(RegisterPage.route(), (route) => false);
     }
   }
 

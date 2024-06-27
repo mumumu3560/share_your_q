@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:share_your_q/env/env.dart';
 
 //import "package:google_fonts/google_fonts.dart";
@@ -11,7 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 //OneSignal
 //TODO
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+//import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 
 import 'package:timeago/timeago.dart' as timeago;
@@ -27,15 +28,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   //TODO ここはandroidビルドリリースの時のみ
-  MobileAds.instance.initialize();
-
-  //TODO ここはandroidビルドリリースの時のみ
+  await MobileAds.instance.initialize();
   OneSignal.initialize(Env.o1);
-
-  OneSignal.Notifications.requestPermission(true);
-
-  
-  
+ 
   
 
   timeago.setLocaleMessages("ja", timeago.JaMessages());
@@ -48,16 +43,6 @@ Future<void> main() async {
     url: Env.s1,
     anonKey: Env.s2,
   );
-
-  /*
-  
-   */
-
-
-  
-
-  
-
   
   runApp(const ProviderScope(child: MyApp()));
 }

@@ -69,12 +69,14 @@ class SettingPageState extends State<SettingPage> {
     on PostgrestException catch (e){
       if(mounted){
         context.showErrorSnackBar(message: e.message);
+
       }
 
       return;
     }
     catch(e){
       if(mounted){
+        
         context.showErrorSnackBar(message: unexpectedErrorMessage);
       }
       return;
@@ -87,11 +89,19 @@ class SettingPageState extends State<SettingPage> {
     if(!isChecked){
       //TODO 通知を受けらない OneSignal
       await OneSignal.logout();
+      //OneSignal.User.pushSubscription.optOut();
+      
+      
     }
     else{
       //TODO 通知を受ける OneSignal
-      
+
+
+      await OneSignal.InAppMessages.addTrigger("permission", "false");
+
       await OneSignal.login(myUserId);
+      
+      //OneSignal.User.pushSubscription.optIn(); 
 
 
     }
@@ -179,6 +189,8 @@ class SettingPageState extends State<SettingPage> {
                     
             
                     /*
+                    
+                     */
                     await OneSignal.logout();
             
                     await supabase
@@ -189,7 +201,6 @@ class SettingPageState extends State<SettingPage> {
                       }
                     )
                     .eq('id', myUserId);
-                     */
                     await supabase.auth.signOut();
             
                     

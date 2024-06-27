@@ -51,6 +51,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
     bool haveNavigated = false;
     //ここで認証のリッスンを行うsessionがあるならhomepageに移動
+    /*
+    
+    
+     */
     _authSubscription = supabase.auth.onAuthStateChange.listen((data) {
 
       final session = data.session;
@@ -60,6 +64,8 @@ class _RegisterPageState extends State<RegisterPage> {
       }
 
     });
+    
+    
 
     _setupAuthListener();
 

@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
 import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
 import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
-import 'package:share_your_q/pages/redirect_page/fetchLikedImageWithId.dart';
+import 'package:share_your_q/pages/login_relatives/register_page.dart';
 import 'package:share_your_q/pages/redirect_page/redirect_to_liked_page.dart';
 
 import 'package:share_your_q/pages/search_page/search_page.dart';
@@ -76,8 +77,6 @@ class _HomePageState extends State<HomePage> {
 
       //ここでredirectToLikedPageに飛ばす
       if (additionalData!["action"] == "like") {
-        //OneSignal.Notifications.clearAll();
-        //await fetchLikedAndRedirect(context, additionalData["imageId"]);
         /*
         
          */
@@ -114,8 +113,10 @@ class _HomePageState extends State<HomePage> {
             .from("image_data")
             .select()
             .order('created_at');
+
       isLoading = false;
       imageData = response;
+
       
       if(!firstFetch){
         //ここでヴィジェットが再構築される
@@ -150,7 +151,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> initFetch() async{
+
+    myUserId = supabase.auth.currentUser!.id.toString();
+
+    //TODO ここはandroidビルドリリースの時のみ
+    //await OneSignal.login(myUserId);
+
     await onTapPushNotification();
+
+    
+
+    
+    
+
+    
+    
     await fetchData();
     await fetchProfile();
 
@@ -164,20 +179,14 @@ class _HomePageState extends State<HomePage> {
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
 
     //TODO ここでOneSignalの通知をタップした時の処理を書く
-    //onTapPushNotification();
 
-    //fetchData();
-    //fetchProfile();
 
     initFetch();
 
     
+ 
     
     
-    //
-    final String externalId = supabase.auth.currentUser!.id.toString();
-    //TODO ここはandroidビルドリリースの時のみ
-    //OneSignal.login(externalId);
   }
 
 
