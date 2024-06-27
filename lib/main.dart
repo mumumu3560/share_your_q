@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:share_your_q/env/env.dart';
+
 //import "package:google_fonts/google_fonts.dart";
 
 import 'package:share_your_q/pages/login_relatives/redirect.dart';
@@ -6,54 +9,40 @@ import 'package:share_your_q/pages/login_relatives/redirect.dart';
 //Supabase
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-//dotenv
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 //OneSignal
+//TODO
 //import 'package:onesignal_flutter/onesignal_flutter.dart';
+
 
 import 'package:timeago/timeago.dart' as timeago;
 
-//google_admob
-//import 'package:google_mobile_ads/google_mobile_ads.dart';
-//import "package:share_your_q/admob/ad_helper.dart";
-//import "package:share_your_q/admob/ad_mob.dart";
+// TODO google_admob
+
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   //TODO ここはandroidビルドリリースの時のみ
-  //MobileAds.instance.initialize();
+  await MobileAds.instance.initialize();
+  OneSignal.initialize(Env.o1);
+ 
   
-  await dotenv.load(fileName: '.env');
 
   timeago.setLocaleMessages("ja", timeago.JaMessages());
 
 
+
   await Supabase.initialize(
     // TODO: ここにSupabaseのURLとAnon Keyを入力
-    url: dotenv.get('SUPABASE_URL'),
-    anonKey: dotenv.get('SUPABASE_KEY'),
+
+    url: Env.s1,
+    anonKey: Env.s2,
   );
-
-  /*
-  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
-
-  
-
-  // The promptForPushNotificationsWithUserResponse function will show the iOS or Android 
-  //push notification prompt. We recommend removing the following code and 
-  //instead using an In-App Message to prompt for notification permission
-  
-  OneSignal.Notifications.requestPermission(true);
-   */
-
-  //TODO ここはandroidビルドリリースの時のみ
-  //OneSignal.initialize(dotenv.get('ONESIGNAL_ID'));
-
-  
   
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -68,34 +57,12 @@ class MyApp extends StatelessWidget {
       title: 'タイトル',
       theme: ThemeData.dark().copyWith( 
 
-        primaryColor: Colors.green,
-        //scaffoldBackgroundColor: Colors.black,
-
-        /*
-        textTheme: GoogleFonts.dotGothic16TextTheme(
-          Theme.of(context).textTheme.copyWith(
-            //テキストの色は白
-            bodyLarge: const TextStyle(color: Colors.white),
-
-          ),
-          
+        primaryColor: Colors.white,
         
-        ),
-         */
 
-        /*
-        // テキストのテーマ
-        textTheme: GoogleFonts.dotGothic16TextTheme(
-          Theme.of(context).textTheme.copyWith(
-            //テキストの色は白
-            bodyText1: const TextStyle(color: Colors.white),
 
-          ),
-          
-        
-        ),
-         */
 
+   
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: Colors.green,

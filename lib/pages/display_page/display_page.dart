@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+//import 'package:share_your_q/admob/ad_test.dart';
+import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:file_picker/file_picker.dart';
-import "package:share_your_q/image_operations/problem_view.dart";
+import 'package:share_your_q/image_operations/problem_view/problem_view.dart';
 import 'package:share_your_q/pages/display_page/components/appbar_actions/appbar_actions.dart';
-import "package:share_your_q/image_operations/image_request.dart";
-
 //google_admob
 //TODO ビルドリリースの時のみ
 //import "package:share_your_q/admob/ad_mob.dart";
@@ -51,6 +51,9 @@ class DisplayPage extends StatefulWidget {
   final double difficulty;
 
   final String profileImage;
+
+  final int? problemAdd;
+  final int? commentAdd;
   
 
 
@@ -91,6 +94,9 @@ class DisplayPage extends StatefulWidget {
 
     required this.profileImage,
 
+    required this.problemAdd,
+    required this.commentAdd,
+
   }) : super(key: key);
 
   @override
@@ -99,41 +105,29 @@ class DisplayPage extends StatefulWidget {
 
 class _DisplayPageState extends State<DisplayPage>{
 
-
-  final userId = supabase.auth.currentUser!.id;
-  //bool isLiked = false;
+  bool isLiked = false;
   bool isLoading = true; // ローディング中かどうかを示すフラグ
   //TODO ビルドリリースの時のみ
-  //final AdMob _adMob = AdMob();
+  
 
-  /*
-  late Future<List<int>> problemImageFuture;
-  late Future<List<int>> commentimageFuture;
+  List<Map<String,dynamic>> likesData = [];
 
-   */
+
 
   @override
   void initState(){
     
 
-    /*
-    problemImageFuture = fetchImage(widget.problem_id!);
-    commentimageFuture = fetchImage(widget.comment_id!);
-     */
-
     super.initState();
-    //_insertOrUpdateDataToSupabaseTable();
     _initializeData();
 
     //TODO ビルドリリースの時のみ
-    //_adMob.load();
   }
 
   @override
   void dispose() {
     super.dispose();
     //TODO ビルドリリースの時のみ
-    //_adMob.dispose();
   }
 
 
@@ -153,7 +147,7 @@ class _DisplayPageState extends State<DisplayPage>{
   Widget build(BuildContext context){
 
      return Scaffold(
-      //resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         //title: const Text('画像一覧'),
 
@@ -173,33 +167,32 @@ class _DisplayPageState extends State<DisplayPage>{
 
       ),
 
-      endDrawer: const Drawer(child: Center(child: Text("EndDrawer"))),
+      //endDrawer: const Drawer(child: Center(child: Text("EndDrawer"))),
 
-      body: SingleChildScrollView(
-        
-        child: Column(
-          children: [
-            Container(
-              
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.blue),
-                borderRadius: BorderRadius.circular(10),
-              ),
-
-              alignment: Alignment.center,
-              height: SizeConfig.blockSizeVertical! * 75,
-      
-              child: ListView(
-                children: [
-                  ProblemViewWidget(
+      body: Column(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+          
+                  alignment: Alignment.center,
+                  height: SizeConfig.blockSizeVertical! * 75,
+            
+                  child: ProblemViewWidget(
                     title: widget.title,
-      
+                              
                     tag1: widget.tag1,
                     tag2: widget.tag2,
                     tag3: widget.tag3,
                     tag4: widget.tag4,
                     tag5: widget.tag5,
-      
+                              
                     //tags: tags,
                     level: widget.level,
                     subject: widget.subject,
@@ -207,52 +200,65 @@ class _DisplayPageState extends State<DisplayPage>{
                     image2: null,
                     imageUrlPX: widget.imageUrlPX,
                     imageUrlCX: widget.imageUrlCX,
-      
+                              
                     explanation: widget.explanation,
-
+                            
                     isCreate: false,
-                    image_id: widget.image_id,
-
+                    image_id: widget.image_id!,
+                            
                     problem_id: widget.problem_id!,
                     comment_id: widget.comment_id!,
-
+                            
                     watched: widget.watched,
-
+                            
                     likes: widget.likes,
-
+                            
                     userName: widget.userName,
-
+                            
                     image_own_user_id: widget.image_own_user_id!,
-
+                            
                     difficulty: widget.difficulty,
-
+                            
                     profileImage: widget.profileImage,
-      
-                  ),
-
-                ],
-              )
-      
+                  
+                    problemAdd: widget.problemAdd,
+                    commentAdd: widget.commentAdd,
+                              
+                  )
+            
+                ),
+          
+                SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
+          
+                /*
+                Container(
+                  height: SizeConfig.blockSizeVertical! * 10,
+                  width: double.infinity,
+                  color: Colors.white,
+                  //TODO ビルドリリースの時のみ
+                  //child: _adMob.getAdBanner(),
+                ),
+                */
+          
+                //
+          
+          
+              ],
             ),
+          ),
 
-            SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
-
-            Container(
-              height: SizeConfig.blockSizeVertical! * 10,
-              width: double.infinity,
-              color: Colors.white,
-              //TODO ビルドリリースの時のみ
-              //child: _adMob.getAdBanner(),
-            ),
-
-            SizedBox(height: SizeConfig.blockSizeVertical! * 2,),
-
-          ],
-        ),
-
-        
-
-
+          
+          /*
+          
+           */
+          Container(
+            height: SizeConfig.blockSizeVertical!* 10,
+            color: Colors.white,
+            child: AdaptiveAdBanner(requestId: "DISPLAY",)
+          ),
+          //BannerContainer(height: SizeConfig.blockSizeHorizontal! * 10),
+          //InlineAdaptiveExample(),
+        ],
       ),
 
       

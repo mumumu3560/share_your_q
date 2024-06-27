@@ -10,6 +10,43 @@ pluginManagement {
 
     includeBuild("${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle")
 
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+
+    //kotlin ver ext.kotlin_version = '1.7.10'
+    //android ver 'com.android.tools.build:gradle:7.3.0'
+
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    //id "com.android.application" version "{agpVersion}" apply false
+    id "com.android.application" version "7.3.0" apply false
+    
+    //id "org.jetbrains.kotlin.android" version "{kotlinVersion}" apply false
+    id "org.jetbrains.kotlin.android" version "1.7.10" apply false
+}
+
+include ":app"
+
+
+
+/*
+pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file("local.properties").withInputStream { properties.load(it) }
+        def flutterSdkPath = properties.getProperty("flutter.sdk")
+        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+        return flutterSdkPath
+    }
+    settings.ext.flutterSdkPath = flutterSdkPath()
+
+    includeBuild("${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle")
+
     plugins {
         id "dev.flutter.flutter-gradle-plugin" version "1.0.0" apply false
     }
@@ -18,3 +55,5 @@ pluginManagement {
 include ":app"
 
 apply from: "${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
+ */

@@ -1,21 +1,25 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 
-import 'package:timeago/timeago.dart';
 
 import 'dart:collection';
 import 'dart:typed_data';
 
 import "package:share_your_q/image_operations/image_request.dart";
 
+//TODO ビルドリリースの時のみ
+//import 'package:share_your_q/admob/anchored_adaptive_banner.dart';
 //https://www.kamo-it.org/blog/flutter-extension/
 //https://zenn.dev/dshukertjr/books/flutter-supabase-chat/viewer/page1
 
 final supabase = Supabase.instance.client;
-final myUserId = supabase.auth.currentUser!.id.toString();
+late String myUserId;
+
+String userLang = "jp";
+
+int now = 0;
+
 //プリローダー
 const preloader = Center(child: CircularProgressIndicator(color: Colors.orange));
 
@@ -26,12 +30,24 @@ void showLoadingDialog(BuildContext context, String message) {
     barrierDismissible: false, // ユーザーがダイアログ外をタップして閉じられないようにする
     builder: (BuildContext context) {
       return AlertDialog(
-        content: Row(
-          children: [
-            CircularProgressIndicator(color: Colors.orange),
-            SizedBox(width: 20),
-            Text(message), // ローディング中のメッセージ
-          ],
+        content: SizedBox(
+          height: SizeConfig.blockSizeVertical! * 20,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  const CircularProgressIndicator(color: Colors.orange),
+                  const SizedBox(width: 20),
+                  Text(message), // ローディング中のメッセージ                
+                ],
+              ),
+
+              SizedBox(height: SizeConfig.blockSizeVertical! * 2),
+        
+              Text("処理中です。\nしばらくお待ちください。"),
+        
+            ],
+          ),
         ),
       );
     },
@@ -51,7 +67,7 @@ void showFinisheDialog(BuildContext context, String title, String message) {
             onPressed: () {
               Navigator.of(context).pop(); // ダイアログを閉じる
             },
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       );
@@ -99,94 +115,6 @@ extension ShowSnackBar on BuildContext {
 }
 
 
-/*
-
-/// チャットのメッセージを表示するためのウィジェット
-class ChatBubble extends StatelessWidget {
-
-  final Map<String, dynamic> commentData;
-  
-  const ChatBubble({
-    Key? key,
-    required this.commentData,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: Row(
-        children: [
-            const SizedBox(width: 12),
-            GestureDetector(
-
-              child: CircleAvatar(
-                radius: 20,
-                child: Image.network("https://storage.divcurious.com/rufy.png"),
-                /*
-                child: Icon(
-                  Icons.error_outline,
-                  color: Colors.blue,
-                  size: 40,
-                ),
-                 */
-
-              ),
-
-              onTap: () async{
-                //profilepageに飛ぶ
-
-              },
-
-
-            ),
-
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  commentData["user_name"],
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-                const SizedBox(height: 4),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 6,
-                      horizontal: 14,
-                  ),
-                  decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SelectionArea(
-                    child: Text(
-                      commentData["comments"],
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                  
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Text(format(DateTime.parse(commentData["created_at"]), locale: 'ja')),
-             // 時間を表示
-            const SizedBox(width: 60),
-        ],
-      ),
-    );
-  }
-}
- */
-
-
 
 class ShowDialogWithFunction {
   final String title;
@@ -214,14 +142,14 @@ class ShowDialogWithFunction {
               onPressed: () {
                 Navigator.of(context).pop(); // ダイアログを閉じる
               },
-              child: Text('キャンセル'),
+              child: const Text('キャンセル'),
             ),
             TextButton(
               onPressed: () async{
                 Navigator.of(context).pop(); // ダイアログを閉じる
                 await functionOnPressed();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -249,6 +177,8 @@ class SizeConfig {
   static double? safeBlockHorizontal;
   static double? safeBlockVertical;
 
+  static double? safeAreaTop;
+
   void init(BuildContext context) {
     _mediaQueryData = MediaQuery.of(context);
     screenWidth = _mediaQueryData!.size.width;
@@ -261,6 +191,8 @@ class SizeConfig {
 
     _safeAreaVertical =
         _mediaQueryData!.padding.top + _mediaQueryData!.padding.bottom;
+
+    safeAreaTop = _mediaQueryData!.padding.top;
         
     safeBlockHorizontal = (screenWidth! - _safeAreaHorizontal!) / 100;
     safeBlockVertical = (screenHeight! - _safeAreaVertical!) / 100;
@@ -271,11 +203,18 @@ class SizeConfig {
 
 
 
+
+
+//TODO ここのキャッシュが遅いので変更する必要があるかも
 class LRUCache {
   late int _capacity;
   late LinkedHashMap<String, Uint8List> _cache;
-
+  //LRUCache(this._capacity) : _cache = LinkedHashMap<String, Uint8List>();
   LRUCache(this._capacity) : _cache = LinkedHashMap<String, Uint8List>();
+  /*
+  late Map<String, Uint8List> _cache = {};
+  LRUCache(this._capacity) : _cache = <String, Uint8List>{};
+   */
 
   factory LRUCache.create(int capacity) {
     return LRUCache(capacity);
@@ -312,8 +251,6 @@ var cache = LRUCache.create(20);
 Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   // キャッシュから画像を取得
 
-  print("ここはfetchImageWithCacheの中です");
-  print(imageId);
 
   if(imageId == null){
     return Uint8List(0);
@@ -328,8 +265,6 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   Uint8List? imageBytes = await fetchImage(imageId);
 
   if(imageBytes == null){
-    print("ここに入ってくるかな？");
-    print("ここじゃなかったらどうなるんだ？？");
     return null;
   }
 
@@ -338,3 +273,13 @@ Future<Uint8List?> fetchImageWithCache(String? imageId) async {
   cache.put(imageId, imageBytes);
   return imageBytes;
 }
+
+
+
+
+
+
+
+
+
+

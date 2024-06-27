@@ -1,29 +1,31 @@
-//import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:share_your_q/env/env.dart';
 import 'package:share_your_q/pages/create_page/create_page_test2.dart';
+import 'package:share_your_q/pages/home_page/notification/notification_page.dart';
+import 'package:share_your_q/pages/home_page/settings/setting_page.dart';
+import 'package:share_your_q/pages/login_relatives/register_page.dart';
+import 'package:share_your_q/pages/redirect_page/redirect_to_liked_page.dart';
+
 import 'package:share_your_q/pages/search_page/search_page.dart';
 import 'package:share_your_q/utils/various.dart';
 import 'package:share_your_q/image_operations/image_list_display.dart';
-import "package:share_your_q/pages/test_pages.dart";
 import 'package:share_your_q/pages/profile_page/profile_page.dart';
-//import 'package:onesignal_flutter/onesignal_flutter.dart';
 
-import "package:share_your_q/utils/various.dart";
-import "package:share_your_q/image_operations/test_override.dart";
-
+//TODO OneSignal
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
-//homepage
-//TODO ここではホームページを作成する
-//navigationbottombarを使って、ホーム、検索、プロフィール、設定の4つのページに遷移できるようにしたい？
-//プロフィールはボトムナビゲーションよりも左上のappbarから遷移できるようにした方がいいかもしれない
 
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   
   static MaterialPageRoute route() {
     return MaterialPageRoute(
-      builder: (_) => HomePage(),
+      builder: (_) => const HomePage(),
     );
   }
 
@@ -40,23 +42,68 @@ class _HomePageState extends State<HomePage> {
 
   bool firstFetch = true;
 
-  String profileId = "";
+  String? profileId = "";
   String userName = "";
 
   Future<void> fetchProfile() async{
     try{
       final response = await supabase
         .from('profiles')
-        .select<List<Map<String, dynamic>>>()
+        .select()
         .eq('id', myUserId);
       setState(() {
         profileId = response[0]["profile_image_id"];
         userName = response[0]["username"];
       });
+    } on PostgrestException catch(e){
+      if(mounted){
+        context.showErrorSnackBar(message: e.message);
+      }
+      
+    } catch(e){
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
     }
-    catch(e){
-      print("error");
-    }
+  }
+
+  Future<void> onTapPushNotification()async {
+
+    
+    OneSignal.Notifications.addClickListener((event) async {
+
+
+      final additionalData = event.notification.additionalData;
+
+      //ここでredirectToLikedPageに飛ばす
+      if (additionalData!["action"] == "like") {
+        /*
+        
+         */
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RedirectToLikedPage(
+              likedImageId: additionalData["imageId"],
+            ),
+          ),
+        );
+      }
+
+      if(additionalData!["action"] == "follow"){
+        //OneSignal.Notifications.clearAll();
+        if(!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProfilePage(userId: additionalData["userId"], userName: additionalData["userName"], /*profileImage: profileId,*/),
+          ),
+        );
+      }
+      
+
+
+    });
   }
 
 
@@ -64,10 +111,12 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await supabase
             .from("image_data")
-            .select<List<Map<String, dynamic>>>()
+            .select()
             .order('created_at');
+
       isLoading = false;
       imageData = response;
+
       
       if(!firstFetch){
         //ここでヴィジェットが再構築される
@@ -82,35 +131,63 @@ class _HomePageState extends State<HomePage> {
         firstFetch = false;
       }
 
-    } catch (e) {
-      // エラーハンドリングを実装
-      print('Error fetching data: $e');
-      context.showErrorSnackBar(message: "データの取得に失敗しました。");
+      return;
+
+    } on PostgrestException catch(error){
+      if(mounted){
+        context.showErrorSnackBar(message: error.message);
+      }
+
+      return;
+
+    }
+    catch (e) {
+      if(mounted){
+        context.showErrorSnackBar(message: unexpectedErrorMessage);
+      }
+
+      return;
     }
   }
+
+  Future<void> initFetch() async{
+
+    myUserId = supabase.auth.currentUser!.id.toString();
+
+    //TODO ここはandroidビルドリリースの時のみ
+    //await OneSignal.login(myUserId);
+
+    await onTapPushNotification();
+
+    
+
+    
+    
+
+    
+    
+    await fetchData();
+    await fetchProfile();
+
+  }
+
+  
 
   @override
   void initState() {
     super.initState();
     // ここでSupabaseからデータを取得し、リストに格納する処理を呼び出す
-    fetchData();
-    fetchProfile();
-    //
-    final String External_id = supabase.auth.currentUser!.id.toString();
-    print(External_id);
-    //TODO ここはandroidビルドリリースの時のみ
-    //OneSignal.login(External_id);
-  }
 
-  /*
-  void _handleLogin() {
-    print("Setting external user ID");
-    if ( == null) return;
-    OneSignal.login(_externalUserId!);
-    OneSignal.User.addAlias("fb_id", "1341524");
-  }
-   */
+    //TODO ここでOneSignalの通知をタップした時の処理を書く
 
+
+    initFetch();
+
+    
+ 
+    
+    
+  }
 
 
   
@@ -124,6 +201,7 @@ class _HomePageState extends State<HomePage> {
     SizeConfig().init(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
 
       appBar: AppBar(
         //title: Text('ホーム'),
@@ -136,7 +214,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             SizedBox(
               height: SizeConfig.blockSizeVertical! * 15,
-              child: DrawerHeader(
+              child: const DrawerHeader(
                 child: Text("Share"),
               ),
             ),
@@ -147,18 +225,18 @@ class _HomePageState extends State<HomePage> {
                 // 画像投稿ページに遷移するコードを追加
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => CreatePage(), // ImageDisplayに遷移
+                    builder: (context) => const CreatePage(), // ImageDisplayに遷移
                   ),
                 );
               },
             ),
 
             ListTile(
-              title: Text('問題を探す'),
+              title: const Text('問題を探す'),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => SearchPage(), // ImageDisplayに遷移
+                    builder: (context) => const SearchPage(), // ImageDisplayに遷移
                   ),
                 );
                 // 画像探しページに遷移するコードを追加
@@ -173,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                 
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(userId:myUserId, userName: userName, profileImage: profileId,), // ImageDisplayに遷移
+                    builder: (context) => ProfilePage(userId:myUserId, userName: userName, /*profileImage: profileId, */), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -184,7 +262,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString()), // ImageDisplayに遷移
+                    builder: (context) => ImageListDisplay(subject: "全て", level: "全て", method: "新着", tags: const [], title: "自分の投稿一覧", searchUserId: supabase.auth.currentUser!.id.toString(), showAppbar: true, lang: "全て", canToPage: true, add: false, showAdd: true,), // ImageDisplayに遷移
                   ),
                 );
               },
@@ -197,12 +275,20 @@ class _HomePageState extends State<HomePage> {
 
       body: PageView(
         controller: _pageViewController,
+        // スワイプ無効
+        physics: const NeverScrollableScrollPhysics(),
+        
         children:  <Widget>[
-          ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "",),
-          SearchPage(),
-          ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
-          const TestPages(title: "D"),
+          const ImageListDisplay(title: "新着", subject: "全て", level: "全て", method: "新着",tags: [], searchUserId: "", showAppbar: false, lang: "全て", canToPage: true, add: false,  showAdd: true,),
+          const SearchPage(),
+          const NotificationPage(),
+          SettingPage(),
+          //ProfilePage(userId: myUserId,userName: userName, profileImage: profileId,),
+          //const TestPages(title: "D"),
         ],
+        
+        /*
+         */
         onPageChanged: (index) {
           setState(() {
             _selectedIndex = index;
@@ -213,7 +299,8 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          _pageViewController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeOut);
+          //_pageViewController.animateToPage(index, duration: const Duration(milliseconds: 200), curve: Curves.easeOut);
+          _pageViewController.jumpToPage(index);
         },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -232,26 +319,27 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Colors.black,
           ),
 
+          //通知欄
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-            tooltip: "Profile",
+            icon: Icon(Icons.notifications_outlined),
+            activeIcon: Icon(Icons.notifications),
+            label: 'notification',
+            tooltip: "notification",
             backgroundColor: Colors.black,
-            
           ),
 
+          //設定
           BottomNavigationBarItem(
             icon: Icon(Icons.settings_outlined),
             activeIcon: Icon(Icons.settings),
-            label: 'Settings',
-            tooltip: "This is a Settings Page",
+            label: 'setting',
+            tooltip: "setting",
             backgroundColor: Colors.black,
           ),
-        ],
 
-        //type: BottomNavigationBarType.shifting,
-        //type: BottomNavigationBarType.fixed,
+          
+
+        ],
 
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black87,
